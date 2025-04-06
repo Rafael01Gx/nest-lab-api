@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                   String         @id @default(auto()) @map("_id") @db.ObjectId
+  name                 String
+  email                String         @unique
+  password             String
+  phone                String?        @default("")
+  area                 String?        @default("")
+  funcao               String?        @default("")
+  authorization        Boolean        @default(false)
+  level                String         @default("Usuário")
+  passwordResetToken   String?
+  passwordResetExpires DateTime?
+  Notification         Notification[]
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  Amostra              Amostra[]
+}
+
+model Notification {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  title   String  @default("")
+  message String  @default("")
+  data    String  @default("")
+  read    Boolean @default(false)
+  userId  String  @db.ObjectId
+  user    User    @relation(fields: [userId], references: [id])
+}
+
+model TipoDeAnalise {
+  id                    String                  @id @default(auto()) @map("_id") @db.ObjectId
+  tipo                  String                  @default("")
+  classe                String                  @default("")
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  ParametrosDeAnalise   ParametrosDeAnalise[]
+  ConfiguracaoDeAnalise ConfiguracaoDeAnalise[]
+}
+
+model ParametrosDeAnalise {
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
+  tipo_de_analise_id String        @db.ObjectId
+  tipoDeAnalise      TipoDeAnalise @relation(fields: [tipo_de_analise_id], references: [id])
+  unidade_de_medida  String?       @default("")
+  descricao          String        @default("")
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+}
+
+model Amostra {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  numeroOs            String
+  nome_amostra        String
+  data_amostra        String
+  ensaios_solicitados String
+  amostra_tipo        String?  @default("Não definido")
+  userId              String   @db.ObjectId
+  user                User     @relation(fields: [userId], references: [id])
+  resultados          Json?
+  analistas           Json?
+  status              String   @default("Aguardando Autorização")
+  progresso           Int      @default(0)
+  prazo_inicio_fim    String?  @default("Aguardando")
+  data_recepcao       String?  @default("Aguardando")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model ConfiguracaoDeAnalise {
+  id                    String        @id @default(auto()) @map("_id") @db.ObjectId
+  tipoDeAnalise         TipoDeAnalise @relation(fields: [tipo_de_analise_id], references: [id])
+  tipo_de_analise_id    String        @db.ObjectId
+  materiaPrima          MateriaPrima  @relation(fields: [materia_prima_id], references: [id])
+  materia_prima_id      String        @db.ObjectId
+  parametros_de_analise Json
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+}
+
+model MateriaPrima {
+  id                    String                  @id @default(auto()) @map("_id") @db.ObjectId
+  nome_descricao        String                  @default("")
+  classe_tipo           String                  @default("")
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  ConfiguracaoDeAnalise ConfiguracaoDeAnalise[]
+}
