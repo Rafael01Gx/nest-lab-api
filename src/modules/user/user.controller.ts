@@ -2,16 +2,6 @@ import { Controller, Delete, Get, Patch, Post } from '@nestjs/common';
 
 @Controller('users')
 export class UserController {
-  @Post('signin')
-  signin() {
-    return 'signin';
-  }
-
-  @Post('signup')
-  create() {
-    return 'signup';
-  }
-
   @Get()
   getAll() {
     return 'getAllUsers';

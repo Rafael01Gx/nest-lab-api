@@ -21,7 +21,7 @@ model User {
   phone                String?        @default("")
   area                 String?        @default("")
   funcao               String?        @default("")
-  authorization        Boolean        @default(false)
+  authorization        Boolean?        @default(false)
   level                String         @default("Usuário")
   passwordResetToken   String?
   passwordResetExpires DateTime?
