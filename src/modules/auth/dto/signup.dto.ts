@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
@@ -32,6 +33,7 @@ export class SignUpDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
+  @Transform(({ value }) => value.toUpperCase())
   area: string;
 
   @IsNotEmpty()

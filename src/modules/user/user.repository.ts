@@ -8,11 +8,22 @@ export class UserRepository {
   constructor(private prismaService: PrismaService) {}
 
   async create(user: SignUpDto) {
-    return this.prismaService.user.create({ data: { ...user } });
+    await this.prismaService.user.create({ data: { ...user } });
+    return 'User created successfully';
   }
 
   async findByEmail(email: string) {
-    return this.prismaService.user.findUnique({ where: { email: email } });
+    return this.prismaService.user.findUnique({
+      where: { email: email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        password: true,
+        level: true,
+        authorization: true,
+      },
+    });
   }
 
   getAll() {
