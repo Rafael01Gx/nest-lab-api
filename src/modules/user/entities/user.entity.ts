@@ -1,3 +1,5 @@
+import { Role } from '../../auth/enum/roles.enum';
+
 export class User {
   id: string;
   name: string;
@@ -7,5 +9,5 @@ export class User {
   area?: string;
   funcao?: string;
   authorization?: boolean;
-  level?: string;
+  level?: Role;
 }

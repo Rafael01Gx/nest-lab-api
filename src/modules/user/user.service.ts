@@ -19,7 +19,7 @@ export class UserService {
       }
       user.password = await this.hashingService.hash(user.password);
       await this.userRepository.create(user);
-      return 'Usuário criado com sucesso.';
+      return { message: 'Usuário criado com sucesso.' };
     } catch (err) {
       console.log(err);
       throw new HttpException(
@@ -63,11 +63,29 @@ export class UserService {
       if (!userExist) {
         throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
       }
-      return await this.userRepository.update(id, user);
+      await this.userRepository.update(id, user);
+      return { message: 'Usuário atualizado com sucesso.' };
     } catch (err) {
       console.log(err);
       throw new HttpException(
         'Ocorreu um erro inesperado ao atualizar o usuário.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async delete(id: string) {
+    try {
+      const userExist = await this.userRepository.getById(id);
+      if (!userExist) {
+        throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+      }
+      await this.userRepository.delete(id);
+      return { message: 'Usuário deletado com sucesso.' };
+    } catch (err) {
+      console.log(err);
+      throw new HttpException(
+        'Ocorreu um erro inesperado ao deletar o usuário.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

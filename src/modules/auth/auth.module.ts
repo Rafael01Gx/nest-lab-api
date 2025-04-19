@@ -8,20 +8,24 @@ import { JwtModule } from '@nestjs/jwt';
 import { HashingServiceProtocol } from './hash/hashing.service';
 import { BcryptService } from './hash/bcrypt.service';
 import { UserModule } from '../user/user.module';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Global()
 @Module({
   providers: [
     AuthService,
+    JwtStrategy,
     { provide: HashingServiceProtocol, useClass: BcryptService },
   ],
-  exports: [HashingServiceProtocol],
+  exports: [HashingServiceProtocol, JwtModule, ConfigModule],
   controllers: [AuthController],
   imports: [
     PrismaModule,
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     UserModule,
+    PassportModule,
   ],
 })
 export class AuthModule {}

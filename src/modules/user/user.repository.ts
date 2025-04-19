@@ -8,8 +8,7 @@ export class UserRepository {
   constructor(private prismaService: PrismaService) {}
 
   async create(user: SignUpDto) {
-    await this.prismaService.user.create({ data: { ...user } });
-    return 'User created successfully';
+    return this.prismaService.user.create({ data: { ...user } });
   }
 
   async findByEmail(email: string) {
@@ -27,11 +26,24 @@ export class UserRepository {
   }
 
   getAll() {
-    return this.prismaService.user.findMany();
+    return this.prismaService.user.findMany({
+      omit: {
+        password: true,
+        passwordResetToken: true,
+        passwordResetExpires: true,
+      },
+    });
   }
 
   getById(id: string) {
-    return this.prismaService.user.findUnique({ where: { id: id } });
+    return this.prismaService.user.findUnique({
+      where: { id: id },
+      omit: {
+        password: true,
+        passwordResetToken: true,
+        passwordResetExpires: true,
+      },
+    });
   }
 
   update(id: string, user: UpdateUserDto) {
