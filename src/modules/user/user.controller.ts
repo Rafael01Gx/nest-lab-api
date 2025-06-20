@@ -9,8 +9,12 @@ import {
   Param,
   Patch,
   Post,
+  Req,
 } from '@nestjs/common';
 import { Role } from '../auth/enum/roles.enum';
+import { Public } from 'src/common/decorators/public.decorator';
+import { Request } from 'express';
+import { UserPayload } from '../auth/types/user-payload.type';
 
 @Controller('users')
 export class UserController {
@@ -28,25 +32,33 @@ export class UserController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() body: UpdateUserDto) {
-    return this.userService.update(id, body);
+  update(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Body() body: UpdateUserDto,
+  ) {
+    return this.userService.update(id, req.user as UserPayload, body);
   }
 
+  @Roles(Role.ADMIN)
   @Patch('status/:id')
-  updateStatus() {
-    return 'updateUserStatus';
+  updateStatus(@Param('id') id: string, @Body() body: UpdateUserDto) {
+    return this.userService.updateStatusAndRole(id, body);
   }
 
+  @Roles(Role.ADMIN)
   @Delete(':id')
   delete(@Param('id') id: string) {
     return this.userService.delete(id);
   }
 
+  @Public()
   @Post('forgot-password')
   forgotPassword() {
     return 'forgotPassword';
   }
 
+  @Public()
   @Post('reset-password')
   resetPassword() {
     return 'resetPassword';

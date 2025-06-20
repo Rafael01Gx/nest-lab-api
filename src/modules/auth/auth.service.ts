@@ -59,7 +59,7 @@ export class AuthService {
         sub: user.id,
         name: user.name,
         email: user.email,
-        role: user.level,
+        role: user.role,
       },
       {
         secret: this.jwtConfiguration.secret,

@@ -3,6 +3,7 @@ import { UserRepository } from './user.repository';
 import { SignUpDto } from '../auth/dto/signup.dto';
 import { HashingServiceProtocol } from '../auth/hash/hashing.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserPayload } from '../auth/types/user-payload.type';
 
 @Injectable()
 export class UserService {
@@ -57,13 +58,21 @@ export class UserService {
     }
   }
 
-  async update(id: string, user: UpdateUserDto) {
+  async update(id: string, user: UserPayload, updateUser: UpdateUserDto) {
+    if (user.sub !== id) {
+      throw new HttpException(
+        'Você não tem permissão para atualizar esse usuário.',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
     try {
       const userExist = await this.userRepository.getById(id);
       if (!userExist) {
         throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
       }
-      await this.userRepository.update(id, user);
+      if (updateUser.authorization) delete updateUser.authorization;
+      if (updateUser.role) delete updateUser.role;
+      await this.userRepository.update(id, updateUser);
       return { message: 'Usuário atualizado com sucesso.' };
     } catch (err) {
       console.log(err);
@@ -86,6 +95,26 @@ export class UserService {
       console.log(err);
       throw new HttpException(
         'Ocorreu um erro inesperado ao deletar o usuário.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async updateStatusAndRole(id: string, user: UpdateUserDto) {
+    try {
+      const userExist = await this.userRepository.getById(id);
+      if (!userExist) {
+        throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+      }
+
+      await this.userRepository.update(id, {
+        authorization: user.authorization,
+        role: user.role,
+      });
+      return { message: 'Usuário atualizado com sucesso.' };
+    } catch (err) {
+      console.log(err);
+      throw new HttpException(
+        'Ocorreu um erro inesperado ao atualizar o usuário.',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

@@ -9,5 +9,5 @@ export class User {
   area?: string;
   funcao?: string;
   authorization?: boolean;
-  level?: Role;
+  role?: Role;
 }

@@ -19,7 +19,7 @@ export class UserRepository {
         name: true,
         email: true,
         password: true,
-        level: true,
+        role: true,
         authorization: true,
       },
     });
