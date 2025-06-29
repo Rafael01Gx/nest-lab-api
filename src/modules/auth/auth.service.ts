@@ -7,6 +7,7 @@ import { SignUpDto } from './dto/signup.dto';
 import jwtConfig from './config/jwt.config';
 import { ConfigType } from '@nestjs/config';
 import { User } from '@prisma/client';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -18,8 +19,9 @@ export class AuthService {
     private userRepository: UserRepository,
   ) {}
 
-  async signIn(user: SignInDto) {
+  async signIn(user: SignInDto, res: Response) {
     const userExists = await this.userRepository.findByEmail(user.email);
+
     if (!userExists) {
       throw new HttpException(
         'Invalid email or password',
@@ -34,12 +36,27 @@ export class AuthService {
         HttpStatus.UNAUTHORIZED,
       );
     }
+
     if (userExists.authorization !== true) {
       throw new HttpException('Unauthorized', HttpStatus.FORBIDDEN);
     }
     const token = await this.generateToken(userExists as User);
+    res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: false, //HTTPS
+      maxAge: 1000 * 60 * 60 * 24,
+      sameSite: 'none',
+      path: '/',
+    });
+    const resUser = {
+      id: userExists.id,
+      name: userExists.name,
+      email: userExists.email,
+      authorization: userExists.authorization,
+      role: userExists.role,
+    };
 
-    return { access_token: token };
+    return { user: resUser };
   }
 
   async signUp(user: SignUpDto) {

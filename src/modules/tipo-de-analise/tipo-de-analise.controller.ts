@@ -7,10 +7,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { Public } from 'src/common/decorators/public.decorator';
 import { TipoDeAnaliseService } from './tipo-de-analise.service';
 import { TipoDeAnaliseDto } from './dto/tipo-de-analise.dto';
-@Public() //Remover
 @Controller('tipo-de-analise')
 export class TipoDeAnaliseController {
   constructor(private readonly tipoAnaliseService: TipoDeAnaliseService) {}
