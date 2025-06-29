@@ -10,4 +10,8 @@ export class User {
   funcao?: string;
   authorization?: boolean;
   role?: Role;
+  passwordResetToken?: string | null;
+  passwordResetExpires?: Date | null;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

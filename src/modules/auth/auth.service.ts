@@ -40,20 +40,18 @@ export class AuthService {
     if (userExists.authorization !== true) {
       throw new HttpException('Unauthorized', HttpStatus.FORBIDDEN);
     }
-    const token = await this.generateToken(userExists as User);
-    res.cookie('access_token', token, {
-      httpOnly: true,
-      secure: false, //HTTPS
-      maxAge: 1000 * 60 * 60 * 24,
-      sameSite: 'none',
-      path: '/',
-    });
+
+    await this.setCookie(userExists, res);
+
     const resUser = {
       id: userExists.id,
       name: userExists.name,
       email: userExists.email,
       authorization: userExists.authorization,
       role: userExists.role,
+      phone: userExists.phone,
+      area: userExists.area,
+      funcao: userExists.funcao,
     };
 
     return { user: resUser };
@@ -76,6 +74,10 @@ export class AuthService {
         sub: user.id,
         name: user.name,
         email: user.email,
+        phone: user.phone,
+        area: user.area,
+        funcao: user.funcao,
+        authorization: user.authorization,
         role: user.role,
       },
       {
@@ -85,5 +87,16 @@ export class AuthService {
         issuer: this.jwtConfiguration.issuer,
       },
     );
+  }
+  private async setCookie(user: User, res: Response) {
+    const token = await this.generateToken(user);
+
+    return res.cookie('access_token', token, {
+      httpOnly: true,
+      secure: false, //HTTPS
+      maxAge: 1000 * 60 * 60 * 24,
+      sameSite: 'none',
+      path: '/',
+    });
   }
 }
