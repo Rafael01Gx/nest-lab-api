@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { SignInDto } from './dto/signin.dto';
 import { SignUpDto } from './dto/signup.dto';
 import { AuthService } from './auth.service';
 import { Public } from 'src/common/decorators/public.decorator';
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { User } from '../user/entities/user.entity';
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -19,15 +21,15 @@ export class AuthController {
     return this.authService.signUp(body);
   }
 
+  @Public()
   @Post('logout')
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('auth_token');
+    res.clearCookie('access_token');
     return { message: 'Logged out successfully' };
   }
 
   @Get('profile')
-  currentUser(@Req() req: Request) {
-    console.log(req['user']);
-    return 'ok';
+  currentUser(@CurrentUser() user: User) {
+    return { user };
   }
 }
