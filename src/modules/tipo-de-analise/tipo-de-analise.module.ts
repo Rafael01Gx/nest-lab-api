@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TipoDeAnaliseService } from './tipo-de-analise.service';
-import { TipoDeAnaliseController } from './tipo-de-analise.controller';
+import { TipoAnaliseService } from './tipo-de-analise.service';
+import { TipoAnaliseController } from './tipo-de-analise.controller';
 import { TipoAnaliseRepository } from './repositories/tipo-analise.repository';
 import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   imports: [PrismaModule],
-  controllers: [TipoDeAnaliseController],
-  providers: [TipoDeAnaliseService, TipoAnaliseRepository],
+  controllers: [TipoAnaliseController],
+  providers: [TipoAnaliseService, TipoAnaliseRepository],
+  exports: [TipoAnaliseRepository],
 })
-export class TipoDeAnaliseModule {}
+export class TipoAnaliseModule {}

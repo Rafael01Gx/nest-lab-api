@@ -7,23 +7,23 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { TipoDeAnaliseService } from './tipo-de-analise.service';
-import { TipoDeAnaliseDto } from './dto/tipo-de-analise.dto';
+import { TipoAnaliseService } from './tipo-de-analise.service';
+import { TipoAnaliseDto } from './dto/tipo-de-analise.dto';
 @Controller('tipo-de-analise')
-export class TipoDeAnaliseController {
-  constructor(private readonly tipoAnaliseService: TipoDeAnaliseService) {}
+export class TipoAnaliseController {
+  constructor(private readonly tipoAnaliseService: TipoAnaliseService) {}
 
   @Get()
   findAll() {
     return this.tipoAnaliseService.findAll();
   }
   @Post()
-  create(@Body() dto: TipoDeAnaliseDto) {
+  create(@Body() dto: TipoAnaliseDto) {
     return this.tipoAnaliseService.create(dto);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: TipoDeAnaliseDto) {
+  update(@Param('id') id: string, @Body() dto: TipoAnaliseDto) {
     return this.tipoAnaliseService.update(id, dto);
   }
 

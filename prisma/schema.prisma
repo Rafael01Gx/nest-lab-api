@@ -41,22 +41,22 @@ model Notification {
   user    User    @relation(fields: [userId], references: [id])
 }
 
-model TipoDeAnalise {
+model TipoAnalise {
   id                    String                  @id @default(auto()) @map("_id") @db.ObjectId
   tipo                  String                  @default("")
   classe                String                  @default("")
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
-  ParametrosDeAnalise   ParametrosDeAnalise[]
-  ConfiguracaoDeAnalise ConfiguracaoDeAnalise[]
+  ParametrosAnalise   ParametrosAnalise[]
+  ConfiguracaoAnalise ConfiguracaoAnalise[]
 }
 
-model ParametrosDeAnalise {
+model ParametrosAnalise {
   id                 String        @id @default(auto()) @map("_id") @db.ObjectId
-  tipo_de_analise_id String        @db.ObjectId
-  tipoDeAnalise      TipoDeAnalise @relation(fields: [tipo_de_analise_id], references: [id])
-  unidade_de_medida  String?       @default("")
-  descricao          String        @default("")
+  tipo_analise_id    String        @db.ObjectId
+  tipoAnalise        TipoAnalise   @relation(fields: [tipo_analise_id], references: [id])
+  unidade_medida     String?       @default("")
+  descricao          String        @default(" ")
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
 }
@@ -80,13 +80,13 @@ model Amostra {
   updatedAt           DateTime @updatedAt
 }
 
-model ConfiguracaoDeAnalise {
+model ConfiguracaoAnalise {
   id                    String        @id @default(auto()) @map("_id") @db.ObjectId
-  tipoDeAnalise         TipoDeAnalise @relation(fields: [tipo_de_analise_id], references: [id])
-  tipo_de_analise_id    String        @db.ObjectId
+  tipoAnalise           TipoAnalise @relation(fields: [tipo_analise_id], references: [id])
+  tipo_analise_id    String        @db.ObjectId
   materiaPrima          MateriaPrima  @relation(fields: [materia_prima_id], references: [id])
   materia_prima_id      String        @db.ObjectId
-  parametros_de_analise Json
+  parametros            Json
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
 }
@@ -97,5 +97,5 @@ model MateriaPrima {
   classe_tipo           String                  @default("")
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
-  ConfiguracaoDeAnalise ConfiguracaoDeAnalise[]
+  ConfiguracaoAnalise ConfiguracaoAnalise[]
 }

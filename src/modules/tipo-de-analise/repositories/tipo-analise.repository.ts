@@ -1,39 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { TipoDeAnaliseDto } from '../dto/tipo-de-analise.dto';
+import { TipoAnaliseDto } from '../dto/tipo-de-analise.dto';
 
 @Injectable()
 export class TipoAnaliseRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: TipoDeAnaliseDto): Promise<TipoDeAnaliseDto> {
-    return this.prisma.tipoDeAnalise.create({
+  async create(data: TipoAnaliseDto): Promise<TipoAnaliseDto> {
+    return this.prisma.tipoAnalise.create({
       data,
     });
   }
 
-  async findAll(): Promise<TipoDeAnaliseDto[]> {
-    return this.prisma.tipoDeAnalise.findMany();
+  async findAll(): Promise<TipoAnaliseDto[]> {
+    return this.prisma.tipoAnalise.findMany();
   }
 
   async update(
     id: string,
-    data: Partial<TipoDeAnaliseDto>,
-  ): Promise<TipoDeAnaliseDto> {
-    return this.prisma.tipoDeAnalise.update({
+    data: Partial<TipoAnaliseDto>,
+  ): Promise<TipoAnaliseDto> {
+    return this.prisma.tipoAnalise.update({
       where: { id },
       data,
     });
   }
 
-  async delete(id: string): Promise<TipoDeAnaliseDto> {
-    return this.prisma.tipoDeAnalise.delete({
+  async delete(id: string): Promise<TipoAnaliseDto> {
+    return this.prisma.tipoAnalise.delete({
       where: { id },
     });
   }
 
-  async findById(id: string): Promise<TipoDeAnaliseDto | null> {
-    return this.prisma.tipoDeAnalise.findUnique({
+  async findById(id: string): Promise<TipoAnaliseDto | null> {
+    return this.prisma.tipoAnalise.findUnique({
       where: { id },
     });
   }

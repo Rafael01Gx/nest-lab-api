@@ -1,4 +1,4 @@
-export interface ITipoDeAnalise {
+export interface ITipoAnalise {
   id?: string;
   tipo: string;
   classe: string;

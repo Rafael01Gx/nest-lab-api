@@ -1,24 +1,24 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TipoAnaliseRepository } from './repositories/tipo-analise.repository';
-import { ITipoDeAnalise } from './interfaces/tipo-de-analise.interface';
-import { TipoDeAnaliseDto } from './dto/tipo-de-analise.dto';
+import { ITipoAnalise } from './interfaces/tipo-de-analise.interface';
+import { TipoAnaliseDto } from './dto/tipo-de-analise.dto';
 
 @Injectable()
-export class TipoDeAnaliseService {
+export class TipoAnaliseService {
   constructor(private readonly tipoAnaliseRepo: TipoAnaliseRepository) {}
 
-  async findAll(): Promise<ITipoDeAnalise[]> {
+  async findAll(): Promise<ITipoAnalise[]> {
     return this.tipoAnaliseRepo.findAll();
   }
 
-  async create(dto: TipoDeAnaliseDto) {
+  async create(dto: TipoAnaliseDto) {
     return this.tipoAnaliseRepo.create(dto);
   }
-  async update(id: string, dto: TipoDeAnaliseDto) {
+  async update(id: string, dto: TipoAnaliseDto) {
     const existingTipoAnalise = await this.tipoAnaliseRepo.findById(id);
     if (!existingTipoAnalise) {
       throw new HttpException(
-        'Tipo de analíse não encontrada !',
+        'Tipo de analíse não encontrado!',
         HttpStatus.NOT_FOUND,
       );
     }
@@ -32,7 +32,7 @@ export class TipoDeAnaliseService {
   async delete(id: string) {
     await this.tipoAnaliseRepo.delete(id);
     return {
-      message: 'Tipo de análise deletada com sucesso!',
+      message: 'Tipo de análise deletado com sucesso!',
     };
   }
 }

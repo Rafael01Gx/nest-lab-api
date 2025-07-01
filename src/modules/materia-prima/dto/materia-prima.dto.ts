@@ -6,7 +6,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class TipoAnaliseDto {
+export class MateriaPrimaDto {
   @IsOptional()
   @IsString()
   id?: string;
@@ -14,12 +14,12 @@ export class TipoAnaliseDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
-  tipo: string;
+  nome_descricao: string;
 
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
-  classe: string;
+  classe_tipo: string;
 
   @IsOptional()
   @IsDate()
