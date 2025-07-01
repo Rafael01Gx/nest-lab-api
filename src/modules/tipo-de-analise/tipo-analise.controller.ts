@@ -7,8 +7,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { TipoAnaliseService } from './tipo-de-analise.service';
-import { TipoAnaliseDto } from './dto/tipo-de-analise.dto';
+import { TipoAnaliseService } from './tipo-analise.service';
+import { TipoAnaliseDto } from './dto/tipo-analise.dto';
 @Controller('tipo-de-analise')
 export class TipoAnaliseController {
   constructor(private readonly tipoAnaliseService: TipoAnaliseService) {}

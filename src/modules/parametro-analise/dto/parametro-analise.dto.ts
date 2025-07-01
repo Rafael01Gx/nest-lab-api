@@ -7,7 +7,7 @@ export class ParametrosAnaliseDto {
 
   @IsNotEmpty()
   @IsString()
-  tipo_de_analise_id: string;
+  tipo_analise_id: string;
 
   @IsNotEmpty()
   @IsString()
@@ -15,7 +15,7 @@ export class ParametrosAnaliseDto {
 
   @IsOptional()
   @IsString()
-  unidade_de_medida: string | null;
+  unidade_medida: string | null;
 
   @IsOptional()
   @IsDate()

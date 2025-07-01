@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { ParametrosAnaliseRepository } from './repositories/parametro-de-analise.repository';
-import { IParametrosAnalise } from './interfaces/parametro-de-analise.interface';
+import { ParametrosAnaliseRepository } from './repositories/parametro-analise.repository';
+import { IParametrosAnalise } from './interfaces/parametro-analise.interface';
 import { TipoAnaliseRepository } from '../tipo-de-analise/repositories/tipo-analise.repository';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class ParametrosAnaliseService {
   }
 
   async create(dto: IParametrosAnalise) {
-    await this.verifyAnalysisType(dto.tipo_de_analise_id);
+    await this.verifyAnalysisType(dto.tipo_analise_id);
     return this.paramAnaliseRepo.create(dto);
   }
 
@@ -27,13 +27,13 @@ export class ParametrosAnaliseService {
         HttpStatus.NOT_FOUND,
       );
     }
-    if (dto.tipo_de_analise_id) {
-      await this.verifyAnalysisType(dto.tipo_de_analise_id);
+    if (dto.tipo_analise_id) {
+      await this.verifyAnalysisType(dto.tipo_analise_id);
     }
     const updateDto = {
-      tipo_de_analise_id: dto.tipo_de_analise_id,
+      tipo_analise_id: dto.tipo_analise_id,
       descricao: dto.descricao,
-      unidade_de_medida: dto.unidade_de_medida,
+      unidade_medida: dto.unidade_medida,
     };
     return this.paramAnaliseRepo.update(id, updateDto);
   }

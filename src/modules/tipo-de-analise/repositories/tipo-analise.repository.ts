@@ -1,15 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { TipoAnaliseDto } from '../dto/tipo-de-analise.dto';
+import { TipoAnaliseDto } from '../dto/tipo-analise.dto';
 
 @Injectable()
 export class TipoAnaliseRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: TipoAnaliseDto): Promise<TipoAnaliseDto> {
-    return this.prisma.tipoAnalise.create({
-      data,
-    });
+    return this.prisma.tipoAnalise.create({ data });
   }
 
   async findAll(): Promise<TipoAnaliseDto[]> {

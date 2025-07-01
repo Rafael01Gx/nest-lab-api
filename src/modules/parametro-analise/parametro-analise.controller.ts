@@ -7,8 +7,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ParametrosAnaliseService } from './parametro-de-analise.service';
-import { ParametrosAnaliseDto } from './dto/parametro-de-analise.dto';
+import { ParametrosAnaliseService } from './parametro-analise.service';
+import { ParametrosAnaliseDto } from './dto/parametro-analise.dto';
 
 @Controller('parametro-analise')
 export class ParametrosAnaliseController {

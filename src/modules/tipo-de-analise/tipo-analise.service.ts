@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { TipoAnaliseRepository } from './repositories/tipo-analise.repository';
-import { ITipoAnalise } from './interfaces/tipo-de-analise.interface';
-import { TipoAnaliseDto } from './dto/tipo-de-analise.dto';
+import { ITipoAnalise } from './interfaces/tipo-analise.interface';
+import { TipoAnaliseDto } from './dto/tipo-analise.dto';
 
 @Injectable()
 export class TipoAnaliseService {
