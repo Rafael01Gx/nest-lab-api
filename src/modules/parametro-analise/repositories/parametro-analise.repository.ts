@@ -1,3 +1,4 @@
+import { ParametrosAnaliseDto } from './../dto/parametro-analise.dto';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IParametrosAnalise } from '../interfaces/parametro-analise.interface';
@@ -6,18 +7,33 @@ import { IParametrosAnalise } from '../interfaces/parametro-analise.interface';
 export class ParametrosAnaliseRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: IParametrosAnalise): Promise<IParametrosAnalise> {
+  async create(data: ParametrosAnaliseDto): Promise<IParametrosAnalise> {
     return this.prisma.parametrosAnalise.create({
       data,
       include: {
-        tipoAnalise: true,
+        tipoAnalise: {
+          select: {
+            id: true,
+            tipo: true,
+            classe: true,
+          },
+        },
       },
     });
   }
 
   async findAll(): Promise<IParametrosAnalise[]> {
     return this.prisma.parametrosAnalise.findMany({
-      include: { tipoAnalise: true },
+      omit: { tipo_analise_id: true },
+      include: {
+        tipoAnalise: {
+          select: {
+            id: true,
+            tipo: true,
+            classe: true,
+          },
+        },
+      },
     });
   }
 
@@ -28,8 +44,15 @@ export class ParametrosAnaliseRepository {
     return this.prisma.parametrosAnalise.update({
       where: { id },
       data,
+      omit: { tipo_analise_id: true },
       include: {
-        tipoAnalise: true,
+        tipoAnalise: {
+          select: {
+            id: true,
+            tipo: true,
+            classe: true,
+          },
+        },
       },
     });
   }
@@ -43,8 +66,15 @@ export class ParametrosAnaliseRepository {
   async findById(id: string): Promise<IParametrosAnalise | null> {
     return this.prisma.parametrosAnalise.findUnique({
       where: { id },
+      omit: { tipo_analise_id: true },
       include: {
-        tipoAnalise: true,
+        tipoAnalise: {
+          select: {
+            id: true,
+            tipo: true,
+            classe: true,
+          },
+        },
       },
     });
   }

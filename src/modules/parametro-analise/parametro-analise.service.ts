@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ParametrosAnaliseRepository } from './repositories/parametro-analise.repository';
 import { IParametrosAnalise } from './interfaces/parametro-analise.interface';
 import { TipoAnaliseRepository } from '../tipo-de-analise/repositories/tipo-analise.repository';
+import { ParametrosAnaliseDto } from './dto/parametro-analise.dto';
 
 @Injectable()
 export class ParametrosAnaliseService {
@@ -14,7 +15,7 @@ export class ParametrosAnaliseService {
     return this.paramAnaliseRepo.findAll();
   }
 
-  async create(dto: IParametrosAnalise) {
+  async create(dto: ParametrosAnaliseDto): Promise<IParametrosAnalise> {
     await this.verifyAnalysisType(dto.tipo_analise_id);
     return this.paramAnaliseRepo.create(dto);
   }

@@ -7,6 +7,7 @@ import { AuthModule } from 'src/modules/auth/auth.module';
 import { AmostraModule } from '../modules/amostra/amostra.module';
 import { TipoAnaliseModule } from 'src/modules/tipo-de-analise/tipo-analise.module';
 import { MateriaPrimaModule } from 'src/modules/materia-prima/materia-prima.module';
+import { ParametrosAnaliseModule } from 'src/modules/parametro-analise/parametro-analise.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MateriaPrimaModule } from 'src/modules/materia-prima/materia-prima.modu
     AmostraModule,
     TipoAnaliseModule,
     MateriaPrimaModule,
+    ParametrosAnaliseModule,
   ],
   controllers: [AppController],
   providers: [AppService],
