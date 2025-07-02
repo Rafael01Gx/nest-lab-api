@@ -14,7 +14,7 @@ export class TipoAnaliseService {
   async create(dto: TipoAnaliseDto) {
     return this.tipoAnaliseRepo.create(dto);
   }
-  async update(id: string, dto: TipoAnaliseDto) {
+  async update(id: number, dto: TipoAnaliseDto) {
     const existingTipoAnalise = await this.tipoAnaliseRepo.findById(id);
     if (!existingTipoAnalise) {
       throw new HttpException(
@@ -29,7 +29,7 @@ export class TipoAnaliseService {
     return this.tipoAnaliseRepo.update(id, updateDto);
   }
 
-  async delete(id: string) {
+  async delete(id: number) {
     await this.tipoAnaliseRepo.delete(id);
     return {
       message: 'Tipo de análise deletado com sucesso!',

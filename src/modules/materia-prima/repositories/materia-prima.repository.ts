@@ -17,7 +17,7 @@ export class MateriaPrimaRepository {
   }
 
   async update(
-    id: string,
+    id: number,
     data: Partial<MateriaPrimaDto>,
   ): Promise<MateriaPrimaDto> {
     return this.prisma.materiaPrima.update({
@@ -26,13 +26,13 @@ export class MateriaPrimaRepository {
     });
   }
 
-  async delete(id: string): Promise<MateriaPrimaDto> {
+  async delete(id: number): Promise<MateriaPrimaDto> {
     return this.prisma.materiaPrima.delete({
       where: { id },
     });
   }
 
-  async findById(id: string): Promise<MateriaPrimaDto | null> {
+  async findById(id: number): Promise<MateriaPrimaDto | null> {
     return this.prisma.materiaPrima.findUnique({
       where: { id },
     });

@@ -38,7 +38,7 @@ export class ParametrosAnaliseRepository {
   }
 
   async update(
-    id: string,
+    id: number,
     data: Partial<IParametrosAnalise>,
   ): Promise<IParametrosAnalise> {
     return this.prisma.parametrosAnalise.update({
@@ -57,13 +57,13 @@ export class ParametrosAnaliseRepository {
     });
   }
 
-  async delete(id: string): Promise<IParametrosAnalise> {
+  async delete(id: number): Promise<IParametrosAnalise> {
     return this.prisma.parametrosAnalise.delete({
       where: { id },
     });
   }
 
-  async findById(id: string): Promise<IParametrosAnalise | null> {
+  async findById(id: number): Promise<IParametrosAnalise | null> {
     return this.prisma.parametrosAnalise.findUnique({
       where: { id },
       omit: { tipo_analise_id: true },

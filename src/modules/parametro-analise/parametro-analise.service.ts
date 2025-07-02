@@ -20,7 +20,7 @@ export class ParametrosAnaliseService {
     return this.paramAnaliseRepo.create(dto);
   }
 
-  async update(id: string, dto: IParametrosAnalise) {
+  async update(id: number, dto: IParametrosAnalise) {
     const existingparamAnalise = await this.paramAnaliseRepo.findById(id);
     if (!existingparamAnalise) {
       throw new HttpException(
@@ -39,14 +39,14 @@ export class ParametrosAnaliseService {
     return this.paramAnaliseRepo.update(id, updateDto);
   }
 
-  async delete(id: string) {
+  async delete(id: number) {
     await this.paramAnaliseRepo.delete(id);
     return {
       message: 'Parâmetro deletado com sucesso!',
     };
   }
 
-  async verifyAnalysisType(id: string): Promise<void> {
+  async verifyAnalysisType(id: number): Promise<void> {
     const existTipoAnalise = await this.tipoAnaliseRepo.findById(id);
     if (!existTipoAnalise) {
       throw new HttpException(

@@ -1,13 +1,19 @@
-import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class ParametrosAnaliseDto {
   @IsOptional()
-  @IsString()
-  id?: string;
+  @IsNumber()
+  id?: number;
 
   @IsNotEmpty()
-  @IsString()
-  tipo_analise_id: string;
+  @IsNumber()
+  tipo_analise_id: number;
 
   @IsNotEmpty()
   @IsString()

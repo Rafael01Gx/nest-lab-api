@@ -1,6 +1,6 @@
 export interface IParametrosAnalise {
-  id?: string;
-  tipo_analise_id?: string;
+  id?: number;
+  tipo_analise_id?: number;
   descricao: string;
   unidade_medida?: string | null;
   createdAt?: Date;

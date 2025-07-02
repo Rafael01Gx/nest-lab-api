@@ -21,7 +21,7 @@ export class AuthService {
 
   async signIn(user: SignInDto, res: Response) {
     const userExists = await this.userRepository.findByEmail(user.email);
-
+    console.log(userExists);
     if (!userExists) {
       throw new HttpException(
         'Invalid email or password',

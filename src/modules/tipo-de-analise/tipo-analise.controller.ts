@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -23,12 +24,12 @@ export class TipoAnaliseController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: TipoAnaliseDto) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() dto: TipoAnaliseDto) {
     return this.tipoAnaliseService.update(id, dto);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
+  delete(@Param('id', ParseIntPipe) id: number) {
     return this.tipoAnaliseService.delete(id);
   }
 }

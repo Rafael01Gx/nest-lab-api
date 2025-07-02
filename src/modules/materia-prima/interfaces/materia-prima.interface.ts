@@ -1,5 +1,5 @@
 export interface IMateriaPrima {
-  id?: string;
+  id?: number;
   nome_descricao: string;
   classe_tipo: string;
   createdAt?: Date;

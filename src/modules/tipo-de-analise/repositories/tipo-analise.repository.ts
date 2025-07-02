@@ -15,7 +15,7 @@ export class TipoAnaliseRepository {
   }
 
   async update(
-    id: string,
+    id: number,
     data: Partial<TipoAnaliseDto>,
   ): Promise<TipoAnaliseDto> {
     return this.prisma.tipoAnalise.update({
@@ -24,13 +24,13 @@ export class TipoAnaliseRepository {
     });
   }
 
-  async delete(id: string): Promise<TipoAnaliseDto> {
+  async delete(id: number): Promise<TipoAnaliseDto> {
     return this.prisma.tipoAnalise.delete({
       where: { id },
     });
   }
 
-  async findById(id: string): Promise<TipoAnaliseDto | null> {
+  async findById(id: number): Promise<TipoAnaliseDto | null> {
     return this.prisma.tipoAnalise.findUnique({
       where: { id },
     });

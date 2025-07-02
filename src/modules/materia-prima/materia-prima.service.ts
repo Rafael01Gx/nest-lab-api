@@ -14,7 +14,7 @@ export class MateriaPrimaService {
     return this.materiaPrimaRepo.create(dto);
   }
 
-  async update(id: string, dto: IMateriaPrima) {
+  async update(id: number, dto: IMateriaPrima) {
     const existingMateriaPrima = await this.materiaPrimaRepo.findById(id);
     if (!existingMateriaPrima) {
       throw new HttpException(
@@ -29,7 +29,7 @@ export class MateriaPrimaService {
     return this.materiaPrimaRepo.update(id, updateDto);
   }
 
-  async delete(id: string) {
+  async delete(id: number) {
     await this.materiaPrimaRepo.delete(id);
     return {
       message: 'Matéria-prima deletada com sucesso!',
