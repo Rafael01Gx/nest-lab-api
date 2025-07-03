@@ -1,12 +1,12 @@
 import {
+  IsArray,
   IsDate,
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsString,
 } from 'class-validator';
 
-export class ParametrosAnaliseDto {
+export class UpdateConfigAnaliseDto {
   @IsOptional()
   @IsNumber()
   id?: number;
@@ -16,12 +16,13 @@ export class ParametrosAnaliseDto {
   tipoAnaliseId: number;
 
   @IsNotEmpty()
-  @IsString()
-  descricao: string;
+  @IsNumber()
+  materiaPrimaId: number;
 
-  @IsOptional()
-  @IsString()
-  unidadeMedida: string | null;
+  @IsNotEmpty()
+  @IsArray()
+  @IsNumber({}, { each: true })
+  parametros: number[];
 
   @IsOptional()
   @IsDate()

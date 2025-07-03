@@ -1,4 +1,4 @@
-import { UserRepository } from './../../user/user.repository';
+import { UserRepository } from './../../user/repositories/user.repository';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import jwtConfig from '../config/jwt.config';
 import { ConfigType } from '@nestjs/config';

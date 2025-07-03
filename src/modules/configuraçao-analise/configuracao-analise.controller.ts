@@ -1,0 +1,42 @@
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { ConfiguracaoAnaliseService } from './configuracao-analise.service';
+import { CreateConfigAnaliseDto } from './dto/create-config-analise.dto';
+import { UpdateConfigAnaliseDto } from './dto/update-config-analise.dto';
+
+@Controller('config-analise')
+export class ConfiguracaoAnaliseController {
+  constructor(
+    private readonly configuracaoAnaliseService: ConfiguracaoAnaliseService,
+  ) {}
+
+  @Get()
+  findAll() {
+    return this.configuracaoAnaliseService.findAll();
+  }
+  @Post()
+  create(@Body() dto: CreateConfigAnaliseDto) {
+    return this.configuracaoAnaliseService.create(dto);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateConfigAnaliseDto,
+  ) {
+    return this.configuracaoAnaliseService.update(id, dto);
+  }
+
+  @Delete(':id')
+  delete(@Param('id', ParseIntPipe) id: number) {
+    return this.configuracaoAnaliseService.delete(id);
+  }
+}

@@ -7,11 +7,16 @@ export class TipoAnaliseRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: TipoAnaliseDto): Promise<TipoAnaliseDto> {
-    return this.prisma.tipoAnalise.create({ data });
+    return this.prisma.tipoAnalise.create({
+      data,
+      omit: { createdAt: true, updatedAt: true },
+    });
   }
 
   async findAll(): Promise<TipoAnaliseDto[]> {
-    return this.prisma.tipoAnalise.findMany();
+    return this.prisma.tipoAnalise.findMany({
+      omit: { createdAt: true, updatedAt: true },
+    });
   }
 
   async update(
@@ -21,6 +26,7 @@ export class TipoAnaliseRepository {
     return this.prisma.tipoAnalise.update({
       where: { id },
       data,
+      omit: { createdAt: true, updatedAt: true },
     });
   }
 
@@ -33,6 +39,7 @@ export class TipoAnaliseRepository {
   async findById(id: number): Promise<TipoAnaliseDto | null> {
     return this.prisma.tipoAnalise.findUnique({
       where: { id },
+      omit: { createdAt: true, updatedAt: true },
     });
   }
 }

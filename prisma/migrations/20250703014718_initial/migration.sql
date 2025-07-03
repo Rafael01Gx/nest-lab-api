@@ -19,7 +19,7 @@ CREATE TABLE `User` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Notification` (
+CREATE TABLE `Notifications` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(191) NOT NULL DEFAULT '',
     `message` VARCHAR(191) NOT NULL DEFAULT '',
@@ -44,8 +44,8 @@ CREATE TABLE `TipoAnalise` (
 -- CreateTable
 CREATE TABLE `ParametrosAnalise` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `tipo_analise_id` INTEGER NOT NULL,
-    `unidade_medida` VARCHAR(191) NULL DEFAULT '',
+    `tipoAnaliseId` INTEGER NOT NULL,
+    `unidadeMedida` VARCHAR(191) NULL DEFAULT '',
     `descricao` VARCHAR(191) NOT NULL DEFAULT '',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
@@ -57,17 +57,17 @@ CREATE TABLE `ParametrosAnalise` (
 CREATE TABLE `Amostra` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `numeroOs` VARCHAR(191) NOT NULL,
-    `nome_amostra` VARCHAR(191) NOT NULL,
-    `data_amostra` VARCHAR(191) NOT NULL,
-    `ensaios_solicitados` VARCHAR(191) NOT NULL,
-    `amostra_tipo` VARCHAR(191) NULL DEFAULT 'Não definido',
+    `nomeAmostra` VARCHAR(191) NOT NULL,
+    `dataAmostra` VARCHAR(191) NOT NULL,
+    `ensaiosSolicitados` VARCHAR(191) NOT NULL,
+    `amostraTipo` VARCHAR(191) NULL DEFAULT 'Não definido',
     `userId` VARCHAR(191) NOT NULL,
     `resultados` JSON NULL,
     `analistas` JSON NULL,
     `status` VARCHAR(191) NOT NULL DEFAULT 'Aguardando Autorização',
     `progresso` INTEGER NOT NULL DEFAULT 0,
-    `prazo_inicio_fim` VARCHAR(191) NULL DEFAULT 'Aguardando',
-    `data_recepcao` VARCHAR(191) NULL DEFAULT 'Aguardando',
+    `prazoInicioFim` VARCHAR(191) NULL DEFAULT 'Aguardando',
+    `dataRecepcao` VARCHAR(191) NULL DEFAULT 'Aguardando',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -77,9 +77,8 @@ CREATE TABLE `Amostra` (
 -- CreateTable
 CREATE TABLE `ConfiguracaoAnalise` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `tipo_analise_id` INTEGER NOT NULL,
-    `materia_prima_id` INTEGER NOT NULL,
-    `parametros` JSON NOT NULL,
+    `tipoAnaliseId` INTEGER NOT NULL,
+    `materiaPrimaId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -97,17 +96,32 @@ CREATE TABLE `MateriaPrima` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- AddForeignKey
-ALTER TABLE `Notification` ADD CONSTRAINT `Notification_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateTable
+CREATE TABLE `_ConfiguracaoAnaliseToParametrosAnalise` (
+    `A` INTEGER NOT NULL,
+    `B` INTEGER NOT NULL,
+
+    UNIQUE INDEX `_ConfiguracaoAnaliseToParametrosAnalise_AB_unique`(`A`, `B`),
+    INDEX `_ConfiguracaoAnaliseToParametrosAnalise_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `ParametrosAnalise` ADD CONSTRAINT `ParametrosAnalise_tipo_analise_id_fkey` FOREIGN KEY (`tipo_analise_id`) REFERENCES `TipoAnalise`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Notifications` ADD CONSTRAINT `Notifications_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `ParametrosAnalise` ADD CONSTRAINT `ParametrosAnalise_tipoAnaliseId_fkey` FOREIGN KEY (`tipoAnaliseId`) REFERENCES `TipoAnalise`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Amostra` ADD CONSTRAINT `Amostra_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ConfiguracaoAnalise` ADD CONSTRAINT `ConfiguracaoAnalise_tipo_analise_id_fkey` FOREIGN KEY (`tipo_analise_id`) REFERENCES `TipoAnalise`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ConfiguracaoAnalise` ADD CONSTRAINT `ConfiguracaoAnalise_tipoAnaliseId_fkey` FOREIGN KEY (`tipoAnaliseId`) REFERENCES `TipoAnalise`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `ConfiguracaoAnalise` ADD CONSTRAINT `ConfiguracaoAnalise_materia_prima_id_fkey` FOREIGN KEY (`materia_prima_id`) REFERENCES `MateriaPrima`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `ConfiguracaoAnalise` ADD CONSTRAINT `ConfiguracaoAnalise_materiaPrimaId_fkey` FOREIGN KEY (`materiaPrimaId`) REFERENCES `MateriaPrima`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_ConfiguracaoAnaliseToParametrosAnalise` ADD CONSTRAINT `_ConfiguracaoAnaliseToParametrosAnalise_A_fkey` FOREIGN KEY (`A`) REFERENCES `ConfiguracaoAnalise`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_ConfiguracaoAnaliseToParametrosAnalise` ADD CONSTRAINT `_ConfiguracaoAnaliseToParametrosAnalise_B_fkey` FOREIGN KEY (`B`) REFERENCES `ParametrosAnalise`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

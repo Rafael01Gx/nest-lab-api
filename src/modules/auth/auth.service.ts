@@ -1,4 +1,4 @@
-import { UserRepository } from './../user/user.repository';
+import { UserRepository } from './../user/repositories/user.repository';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { SignInDto } from './dto/signin.dto';
 import { HashingServiceProtocol } from './hash/hashing.service';
@@ -21,7 +21,6 @@ export class AuthService {
 
   async signIn(user: SignInDto, res: Response) {
     const userExists = await this.userRepository.findByEmail(user.email);
-    console.log(userExists);
     if (!userExists) {
       throw new HttpException(
         'Invalid email or password',

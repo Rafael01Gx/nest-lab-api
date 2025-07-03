@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UserRepository } from './user.repository';
 import { SignUpDto } from '../auth/dto/signup.dto';
 import { HashingServiceProtocol } from '../auth/hash/hashing.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserPayload } from '../auth/types/user-payload.type';
+import { UserRepository } from './repositories/user.repository';
 
 @Injectable()
 export class UserService {

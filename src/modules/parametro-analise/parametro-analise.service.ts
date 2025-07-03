@@ -16,7 +16,7 @@ export class ParametrosAnaliseService {
   }
 
   async create(dto: ParametrosAnaliseDto): Promise<IParametrosAnalise> {
-    await this.verifyAnalysisType(dto.tipo_analise_id);
+    await this.verifyAnalysisType(dto.tipoAnaliseId);
     return this.paramAnaliseRepo.create(dto);
   }
 
@@ -28,13 +28,13 @@ export class ParametrosAnaliseService {
         HttpStatus.NOT_FOUND,
       );
     }
-    if (dto.tipo_analise_id) {
-      await this.verifyAnalysisType(dto.tipo_analise_id);
+    if (dto.tipoAnaliseId) {
+      await this.verifyAnalysisType(dto.tipoAnaliseId);
     }
     const updateDto = {
-      tipo_analise_id: dto.tipo_analise_id,
+      tipoAnaliseId: dto.tipoAnaliseId,
       descricao: dto.descricao,
-      unidade_medida: dto.unidade_medida,
+      unidadeMedida: dto.unidadeMedida,
     };
     return this.paramAnaliseRepo.update(id, updateDto);
   }

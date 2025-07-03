@@ -8,5 +8,6 @@ import { MateriaPrimaService } from './materia-prima.service';
   imports: [PrismaModule],
   controllers: [MateriaPrimaController],
   providers: [MateriaPrimaService, MateriaPrimaRepository],
+  exports: [MateriaPrimaRepository],
 })
 export class MateriaPrimaModule {}

@@ -9,5 +9,6 @@ import { TipoAnaliseModule } from '../tipo-de-analise/tipo-analise.module';
   imports: [PrismaModule, TipoAnaliseModule],
   controllers: [ParametrosAnaliseController],
   providers: [ParametrosAnaliseService, ParametrosAnaliseRepository],
+  exports: [ParametrosAnaliseRepository],
 })
 export class ParametrosAnaliseModule {}

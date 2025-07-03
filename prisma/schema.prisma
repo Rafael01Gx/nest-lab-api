@@ -14,24 +14,24 @@ datasource db {
 }
 
 model User {
-  id                   String         @id @default(uuid())
+  id                   String          @id @default(uuid())
   name                 String
-  email                String         @unique
+  email                String          @unique
   password             String
-  phone                String?        @default("")
-  area                 String?        @default("")
-  funcao               String?        @default("")
-  authorization        Boolean?       @default(false)
-  role                 String?        @default("Usuário")
+  phone                String?         @default("")
+  area                 String?         @default("")
+  funcao               String?         @default("")
+  authorization        Boolean?        @default(false)
+  role                 String?         @default("Usuário")
   passwordResetToken   String?
   passwordResetExpires DateTime?
-  Notification         Notification[]
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
-  Amostra              Amostra[]
+  notifications        Notifications[]
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  amostra              Amostra[]
 }
 
-model Notification {
+model Notifications {
   id      Int     @id @default(autoincrement())
   title   String  @default("")
   message String  @default("")
@@ -47,55 +47,56 @@ model TipoAnalise {
   classe              String                @default("")
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
-  ParametrosAnalise   ParametrosAnalise[]
-  ConfiguracaoAnalise ConfiguracaoAnalise[]
+  parametroAnalise    ParametrosAnalise[]
+  configuracaoAnalise ConfiguracaoAnalise[]
 }
 
 model ParametrosAnalise {
-  id              Int         @id @default(autoincrement())
-  tipo_analise_id Int
-  tipoAnalise     TipoAnalise @relation(fields: [tipo_analise_id], references: [id])
-  unidade_medida  String?     @default("")
-  descricao       String      @default("")
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id            Int         @id @default(autoincrement())
+  tipoAnaliseId Int
+  tipoAnalise   TipoAnalise @relation(fields: [tipoAnaliseId], references: [id])
+  unidadeMedida String?     @default("")
+  descricao     String      @default("")
+  configuracoes    ConfiguracaoAnalise[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
 model Amostra {
   id                  Int      @id @default(autoincrement())
   numeroOs            String
-  nome_amostra        String
-  data_amostra        String
-  ensaios_solicitados String
-  amostra_tipo        String?  @default("Não definido")
+  nomeAmostra         String
+  dataAmostra         String
+  ensaiosSolicitados String
+  amostraTipo        String?  @default("Não definido")
   userId              String
   user                User     @relation(fields: [userId], references: [id])
   resultados          Json?
   analistas           Json?
   status              String   @default("Aguardando Autorização")
   progresso           Int      @default(0)
-  prazo_inicio_fim    String?  @default("Aguardando")
-  data_recepcao       String?  @default("Aguardando")
+  prazoInicioFim    String?  @default("Aguardando")
+  dataRecepcao       String?  @default("Aguardando")
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
 
 model ConfiguracaoAnalise {
-  id               Int          @id @default(autoincrement())
-  tipoAnalise      TipoAnalise  @relation(fields: [tipo_analise_id], references: [id])
-  tipo_analise_id  Int
-  materiaPrima     MateriaPrima @relation(fields: [materia_prima_id], references: [id])
-  materia_prima_id Int
-  parametros       Json
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  id             Int          @id @default(autoincrement())
+  tipoAnalise    TipoAnalise  @relation(fields: [tipoAnaliseId], references: [id])
+  tipoAnaliseId  Int
+  materiaPrima   MateriaPrima @relation(fields: [materiaPrimaId], references: [id])
+  materiaPrimaId Int
+  parametros     ParametrosAnalise[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
 model MateriaPrima {
-  id                  Int @id @default(autoincrement())
+  id                  Int                   @id @default(autoincrement())
   nome_descricao      String                @default("")
   classe_tipo         String                @default("")
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
-  ConfiguracaoAnalise ConfiguracaoAnalise[]
+  configuracaoAnalise ConfiguracaoAnalise[]
 }

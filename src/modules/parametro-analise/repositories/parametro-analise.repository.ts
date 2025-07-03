@@ -19,12 +19,13 @@ export class ParametrosAnaliseRepository {
           },
         },
       },
+      omit: { tipoAnaliseId: true, createdAt: true, updatedAt: true },
     });
   }
 
   async findAll(): Promise<IParametrosAnalise[]> {
     return this.prisma.parametrosAnalise.findMany({
-      omit: { tipo_analise_id: true },
+      omit: { tipoAnaliseId: true, createdAt: true, updatedAt: true },
       include: {
         tipoAnalise: {
           select: {
@@ -44,7 +45,7 @@ export class ParametrosAnaliseRepository {
     return this.prisma.parametrosAnalise.update({
       where: { id },
       data,
-      omit: { tipo_analise_id: true },
+      omit: { tipoAnaliseId: true, createdAt: true, updatedAt: true },
       include: {
         tipoAnalise: {
           select: {
@@ -66,7 +67,7 @@ export class ParametrosAnaliseRepository {
   async findById(id: number): Promise<IParametrosAnalise | null> {
     return this.prisma.parametrosAnalise.findUnique({
       where: { id },
-      omit: { tipo_analise_id: true },
+      omit: { tipoAnaliseId: true, createdAt: true, updatedAt: true },
       include: {
         tipoAnalise: {
           select: {
