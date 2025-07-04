@@ -13,6 +13,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USUARIO  @map("Usuário")
+  OPERADOR @map("Operador")
+  ADMIN    @map("Administrador")
+}
+
 model User {
   id                   String          @id @default(uuid())
   name                 String
@@ -22,13 +28,14 @@ model User {
   area                 String?         @default("")
   funcao               String?         @default("")
   authorization        Boolean?        @default(false)
-  role                 String?         @default("Usuário")
+  role                 Role            @default(USUARIO)
   passwordResetToken   String?
   passwordResetExpires DateTime?
   notifications        Notifications[]
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
   amostra              Amostra[]
+  OrdemServico         OrdemServico[]
 }
 
 model Notifications {
@@ -52,44 +59,25 @@ model TipoAnalise {
 }
 
 model ParametrosAnalise {
-  id            Int         @id @default(autoincrement())
+  id            Int                   @id @default(autoincrement())
   tipoAnaliseId Int
-  tipoAnalise   TipoAnalise @relation(fields: [tipoAnaliseId], references: [id])
-  unidadeMedida String?     @default("")
-  descricao     String      @default("")
-  configuracoes    ConfiguracaoAnalise[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-}
-
-model Amostra {
-  id                  Int      @id @default(autoincrement())
-  numeroOs            String
-  nomeAmostra         String
-  dataAmostra         String
-  ensaiosSolicitados String
-  amostraTipo        String?  @default("Não definido")
-  userId              String
-  user                User     @relation(fields: [userId], references: [id])
-  resultados          Json?
-  analistas           Json?
-  status              String   @default("Aguardando Autorização")
-  progresso           Int      @default(0)
-  prazoInicioFim    String?  @default("Aguardando")
-  dataRecepcao       String?  @default("Aguardando")
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  tipoAnalise   TipoAnalise           @relation(fields: [tipoAnaliseId], references: [id])
+  unidadeMedida String?               @default("")
+  descricao     String                @default("")
+  configuracoes ConfiguracaoAnalise[]
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
 }
 
 model ConfiguracaoAnalise {
-  id             Int          @id @default(autoincrement())
-  tipoAnalise    TipoAnalise  @relation(fields: [tipoAnaliseId], references: [id])
+  id             Int                 @id @default(autoincrement())
+  tipoAnalise    TipoAnalise         @relation(fields: [tipoAnaliseId], references: [id])
   tipoAnaliseId  Int
-  materiaPrima   MateriaPrima @relation(fields: [materiaPrimaId], references: [id])
+  materiaPrima   MateriaPrima        @relation(fields: [materiaPrimaId], references: [id])
   materiaPrimaId Int
   parametros     ParametrosAnalise[]
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
 }
 
 model MateriaPrima {
@@ -99,4 +87,48 @@ model MateriaPrima {
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   configuracaoAnalise ConfiguracaoAnalise[]
+}
+
+model Amostra {
+  id                 Int          @id @default(autoincrement())
+  numeroOs           String
+  ordemServico       OrdemServico @relation(fields: [numeroOs], references: [id])
+  nomeAmostra        String
+  dataAmostra        String       
+  ensaiosSolicitados Json?
+  amostraTipo        String?      @default("Não definido")
+  userId             String
+  user               User         @relation(fields: [userId], references: [id])
+  resultados         Json?
+  analistas          Json?
+  status             EStatus      @default(AGUARDANDO)
+  progresso          Int          @default(0)
+  prazoInicioFim     String?      @default("Aguardando")
+  dataRecepcao       String?      @default("Aguardando")
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
+
+enum EStatus {
+  AGUARDANDO @map("Aguardando Autorização")
+  AUTORIZADA @map("Autorizada")
+  EXECUCAO   @map("Em Execução")
+  FINALIZADA @map("Finalizada")
+  CANCELADA  @map("Cancelada")
+}
+
+model OrdemServico {
+  id             String    @id
+  numeroOs       String
+  solicitanteId  String
+  solicitante    User      @relation(fields: [solicitanteId], references: [id])
+  amostras       Amostra[]
+  status         String    @default("")
+  dataRecepcao   String    @default("")
+  prazoInicioFim String    @default("")
+  progresso      String?   @default("")
+  observacao     String?   @default("")
+  revisorId      String?   @default("")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }

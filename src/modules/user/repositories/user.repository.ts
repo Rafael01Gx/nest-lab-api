@@ -41,7 +41,12 @@ export class UserRepository {
   update(id: string, user: UpdateUserDto) {
     return this.prismaService.user.update({
       where: { id: id },
-      data: { ...user },
+      data: {
+        role: {
+          set: user.role,
+        },
+        ...user,
+      },
     });
   }
 

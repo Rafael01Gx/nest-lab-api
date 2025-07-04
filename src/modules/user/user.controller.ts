@@ -11,10 +11,10 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
-import { Role } from '../auth/enum/roles.enum';
 import { Public } from 'src/common/decorators/public.decorator';
 import { Request } from 'express';
 import { UserPayload } from '../auth/types/user-payload.type';
+import { Role } from '@prisma/client';
 
 @Controller('users')
 export class UserController {

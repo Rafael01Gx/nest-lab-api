@@ -1,4 +1,4 @@
-import { Role } from 'src/modules/auth/enum/roles.enum';
+import { Role } from '@prisma/client';
 
 export type UserPayload = {
   sub: string;

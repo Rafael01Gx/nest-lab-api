@@ -1,4 +1,4 @@
-import { Role } from '../../auth/enum/roles.enum';
+import { Role } from '@prisma/client';
 
 export class User {
   id: string;
