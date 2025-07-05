@@ -2,8 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { SignUpDto } from '../auth/dto/signup.dto';
 import { HashingServiceProtocol } from '../auth/hash/hashing.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserPayload } from '../auth/types/user-payload.type';
 import { UserRepository } from './repositories/user.repository';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -58,22 +58,45 @@ export class UserService {
     }
   }
 
-  async update(id: string, user: UserPayload, updateUser: UpdateUserDto) {
-    if (user.sub !== id) {
+  async update(
+    id: string,
+    user: User,
+    updateUser: UpdateUserDto,
+  ): Promise<User> {
+    if (user.id !== id) {
       throw new HttpException(
         'Você não tem permissão para atualizar esse usuário.',
         HttpStatus.UNAUTHORIZED,
       );
     }
     try {
-      const userExist = await this.userRepository.getById(id);
+      const userExist = await this.userRepository.findByEmail(user.email);
       if (!userExist) {
         throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
       }
-      if (updateUser.authorization) delete updateUser.authorization;
-      if (updateUser.role) delete updateUser.role;
-      await this.userRepository.update(id, updateUser);
-      return { message: 'Usuário atualizado com sucesso.' };
+      const _updateUser = {
+        name: updateUser.name ? updateUser.name : userExist.name,
+        phone: updateUser.phone ? updateUser.phone : userExist.phone || '',
+        area: updateUser.area ? updateUser.area : userExist.area || '',
+        funcao: updateUser.funcao ? updateUser.funcao : userExist.funcao || '',
+      };
+      if (updateUser.oldPassword && updateUser.password) {
+        if (
+          !(await this.hashingService.compare(
+            updateUser.oldPassword,
+            userExist.password,
+          ))
+        ) {
+          throw new HttpException(
+            'Invalid email or password',
+            HttpStatus.UNAUTHORIZED,
+          );
+        }
+        _updateUser['password'] = await this.hashingService.hash(
+          updateUser.password,
+        );
+      }
+      return this.userRepository.update(id, _updateUser);
     } catch (err) {
       console.log(err);
       throw new HttpException(

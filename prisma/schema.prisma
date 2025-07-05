@@ -82,8 +82,8 @@ model ConfiguracaoAnalise {
 
 model MateriaPrima {
   id                  Int                   @id @default(autoincrement())
-  nome_descricao      String                @default("")
-  classe_tipo         String                @default("")
+  nomeDescricao      String                @default("")
+  classeTipo         String                @default("")
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
   configuracaoAnalise ConfiguracaoAnalise[]

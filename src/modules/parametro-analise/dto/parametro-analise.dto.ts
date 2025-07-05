@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   IsDate,
   IsNotEmpty,
@@ -12,6 +13,13 @@ export class ParametrosAnaliseDto {
   id?: number;
 
   @IsNotEmpty()
+  @Transform(({ value }: { value: unknown }) => {
+    if (typeof value === 'string') {
+      const parsed = parseInt(value, 10);
+      return isNaN(parsed) ? value : parsed;
+    }
+    return value;
+  })
   @IsNumber()
   tipoAnaliseId: number;
 

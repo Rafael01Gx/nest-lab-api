@@ -9,14 +9,13 @@ import {
   Param,
   Patch,
   Post,
-  Req,
 } from '@nestjs/common';
 import { Public } from 'src/common/decorators/public.decorator';
-import { Request } from 'express';
-import { UserPayload } from '../auth/types/user-payload.type';
 import { Role } from '@prisma/client';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { User } from './entities/user.entity';
 
-@Controller('users')
+@Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -34,10 +33,10 @@ export class UserController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Req() req: Request,
-    @Body() body: UpdateUserDto,
+    @CurrentUser() user: User,
+    @Body() dto: UpdateUserDto,
   ) {
-    return this.userService.update(id, req.user as UserPayload, body);
+    return this.userService.update(id, user, dto);
   }
 
   @Roles(Role.ADMIN)

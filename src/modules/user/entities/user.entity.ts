@@ -5,10 +5,10 @@ export class User {
   name: string;
   email: string;
   password?: string;
-  phone?: string;
-  area?: string;
-  funcao?: string;
-  authorization?: boolean;
+  phone?: string | null;
+  area?: string | null;
+  funcao?: string | null;
+  authorization?: boolean | null;
   role?: Role;
   passwordResetToken?: string | null;
   passwordResetExpires?: Date | null;

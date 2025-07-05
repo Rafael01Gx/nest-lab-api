@@ -15,12 +15,12 @@ export class MateriaPrimaDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
-  nome_descricao: string;
+  nomeDescricao: string;
 
   @IsNotEmpty()
   @IsString()
   @MinLength(3)
-  classe_tipo: string;
+  classeTipo: string;
 
   @IsOptional()
   @IsDate()

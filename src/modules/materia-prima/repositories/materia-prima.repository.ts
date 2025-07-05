@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { MateriaPrimaDto } from '../dto/materia-prima.dto';
+import { IMateriaPrima } from '../interfaces/materia-prima.interface';
 
 @Injectable()
 export class MateriaPrimaRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: MateriaPrimaDto): Promise<MateriaPrimaDto> {
+  async create(data: MateriaPrimaDto): Promise<IMateriaPrima> {
     return this.prisma.materiaPrima.create({
       data,
     });
@@ -19,20 +20,20 @@ export class MateriaPrimaRepository {
   async update(
     id: number,
     data: Partial<MateriaPrimaDto>,
-  ): Promise<MateriaPrimaDto> {
+  ): Promise<IMateriaPrima> {
     return this.prisma.materiaPrima.update({
       where: { id },
       data,
     });
   }
 
-  async delete(id: number): Promise<MateriaPrimaDto> {
+  async delete(id: number): Promise<IMateriaPrima> {
     return this.prisma.materiaPrima.delete({
       where: { id },
     });
   }
 
-  async findById(id: number): Promise<MateriaPrimaDto | null> {
+  async findById(id: number): Promise<IMateriaPrima | null> {
     return this.prisma.materiaPrima.findUnique({
       where: { id },
     });

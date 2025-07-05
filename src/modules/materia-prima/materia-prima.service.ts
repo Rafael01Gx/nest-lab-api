@@ -23,8 +23,8 @@ export class MateriaPrimaService {
       );
     }
     const updateDto = {
-      nome_descricao: dto.nome_descricao,
-      classe_tipo: dto.classe_tipo,
+      nomeDescricao: dto.nomeDescricao,
+      classeTipo: dto.classeTipo,
     };
     return this.materiaPrimaRepo.update(id, updateDto);
   }

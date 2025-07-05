@@ -67,8 +67,8 @@ CREATE TABLE `ConfiguracaoAnalise` (
 -- CreateTable
 CREATE TABLE `MateriaPrima` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `nome_descricao` VARCHAR(191) NOT NULL DEFAULT '',
-    `classe_tipo` VARCHAR(191) NOT NULL DEFAULT '',
+    `nomeDescricao` VARCHAR(191) NOT NULL DEFAULT '',
+    `classeTipo` VARCHAR(191) NOT NULL DEFAULT '',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
