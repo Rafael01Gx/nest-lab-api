@@ -39,8 +39,8 @@ export class ConfiguracaoAnaliseService {
     }
     await this.isValidConfig(dto);
     const updateDto = {
+      nomeDescricao: dto.nomeDescricao,
       tipoAnaliseId: dto.tipoAnaliseId,
-      materiaPrimaId: dto.materiaPrimaId,
       parametros: dto.parametros,
     };
     return this.configuracaoAnaliseRepo.update(id, updateDto);
@@ -54,12 +54,6 @@ export class ConfiguracaoAnaliseService {
   }
 
   async isValidConfig(dto: CreateConfigAnaliseDto): Promise<void> {
-    const materiaPrima = await this.materiaPrimaRepo.findById(
-      dto.materiaPrimaId,
-    );
-    if (!materiaPrima) {
-      throw new HttpException('Matéria-prima inválida!', HttpStatus.NOT_FOUND);
-    }
     const tipoAnalise = await this.tipoAnaliseRepo.findById(dto.tipoAnaliseId);
     if (!tipoAnalise) {
       throw new HttpException('Análise inválida!', HttpStatus.NOT_FOUND);

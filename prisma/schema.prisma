@@ -59,34 +59,34 @@ model TipoAnalise {
 }
 
 model ParametrosAnalise {
-  id            Int                   @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   tipoAnaliseId Int
-  tipoAnalise   TipoAnalise           @relation(fields: [tipoAnaliseId], references: [id])
-  unidadeMedida String?               @default("")
-  descricao     String                @default("")
-  configuracoes ConfiguracaoAnalise[]
-  createdAt     DateTime              @default(now())
-  updatedAt     DateTime              @updatedAt
+  tipoAnalise   TipoAnalise @relation(fields: [tipoAnaliseId], references: [id])
+  descricao     String      @default("")
+  unidadeMedida String?     @default("")
+  unidadeResultado String?               @default("")
+  casasDecimais    Int                   @default(0)
+  configuracoes    ConfiguracaoAnalise[]
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
 }
 
 model ConfiguracaoAnalise {
-  id             Int                 @id @default(autoincrement())
-  tipoAnalise    TipoAnalise         @relation(fields: [tipoAnaliseId], references: [id])
-  tipoAnaliseId  Int
-  materiaPrima   MateriaPrima        @relation(fields: [materiaPrimaId], references: [id])
-  materiaPrimaId Int
-  parametros     ParametrosAnalise[]
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  id            Int                 @id @default(autoincrement())
+  nomeDescricao String
+  tipoAnalise   TipoAnalise         @relation(fields: [tipoAnaliseId], references: [id])
+  tipoAnaliseId Int
+  parametros    ParametrosAnalise[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
 }
 
 model MateriaPrima {
-  id                  Int                   @id @default(autoincrement())
-  nomeDescricao      String                @default("")
-  classeTipo         String                @default("")
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  configuracaoAnalise ConfiguracaoAnalise[]
+  id            Int      @id @default(autoincrement())
+  nomeDescricao String   @default("")
+  classeTipo    String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Amostra {
@@ -94,7 +94,7 @@ model Amostra {
   numeroOs           String
   ordemServico       OrdemServico @relation(fields: [numeroOs], references: [id])
   nomeAmostra        String
-  dataAmostra        String       
+  dataAmostra        String
   ensaiosSolicitados Json?
   amostraTipo        String?      @default("Não definido")
   userId             String

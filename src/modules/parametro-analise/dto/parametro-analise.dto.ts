@@ -29,7 +29,22 @@ export class ParametrosAnaliseDto {
 
   @IsOptional()
   @IsString()
-  unidadeMedida: string | null;
+  unidadeMedida?: string | null;
+
+  @IsOptional()
+  @IsString()
+  unidadeResultado?: string | null;
+
+  @IsNotEmpty()
+  @Transform(({ value }: { value: unknown }) => {
+    if (typeof value === 'string') {
+      const parsed = parseInt(value, 10);
+      return isNaN(parsed) ? value : parsed;
+    }
+    return value;
+  })
+  @IsNumber()
+  casasDecimais: number;
 
   @IsOptional()
   @IsDate()

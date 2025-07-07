@@ -12,20 +12,37 @@ export class ConfiguracaoAnaliseRepository {
     const { parametros, ...configAnalise } = _data;
     return this.prisma.configuracaoAnalise.create({
       data: {
-        materiaPrimaId: configAnalise.materiaPrimaId,
+        nomeDescricao: configAnalise.nomeDescricao,
         tipoAnaliseId: configAnalise.tipoAnaliseId,
         parametros: {
           connect: parametros.map((id) => ({ id })),
         },
       },
       include: {
-        materiaPrima: true,
-        tipoAnalise: true,
-        parametros: true,
+        tipoAnalise: {
+          omit: {
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        parametros: {
+          include: {
+            tipoAnalise: {
+              omit: {
+                createdAt: true,
+                updatedAt: true,
+              },
+            },
+          },
+          omit: {
+            tipoAnaliseId: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
       },
       omit: {
         tipoAnaliseId: true,
-        materiaPrimaId: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -35,13 +52,28 @@ export class ConfiguracaoAnaliseRepository {
   async findAll(): Promise<IConfiguracaoAnalise[]> {
     return this.prisma.configuracaoAnalise.findMany({
       include: {
-        materiaPrima: true,
-        tipoAnalise: true,
-        parametros: true,
+        tipoAnalise: {
+          omit: {
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        parametros: {
+          include: {
+            tipoAnalise: {
+              omit: {
+                createdAt: true,
+                updatedAt: true,
+              },
+            },
+          },
+          omit: {
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
       },
       omit: {
-        tipoAnaliseId: true,
-        materiaPrimaId: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -56,20 +88,35 @@ export class ConfiguracaoAnaliseRepository {
     return this.prisma.configuracaoAnalise.update({
       where: { id },
       data: {
-        materiaPrimaId: configAnalise.materiaPrimaId,
+        nomeDescricao: configAnalise.nomeDescricao,
         tipoAnaliseId: configAnalise.tipoAnaliseId,
         parametros: {
           connect: parametros.map((id) => ({ id })),
         },
       },
       include: {
-        materiaPrima: true,
-        tipoAnalise: true,
-        parametros: true,
+        tipoAnalise: {
+          omit: {
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        parametros: {
+          include: {
+            tipoAnalise: {
+              omit: {
+                createdAt: true,
+                updatedAt: true,
+              },
+            },
+          },
+          omit: {
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
       },
       omit: {
-        tipoAnaliseId: true,
-        materiaPrimaId: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -87,13 +134,29 @@ export class ConfiguracaoAnaliseRepository {
     return this.prisma.configuracaoAnalise.findUnique({
       where: { id },
       include: {
-        materiaPrima: true,
-        tipoAnalise: true,
-        parametros: true,
+        tipoAnalise: {
+          omit: {
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        parametros: {
+          include: {
+            tipoAnalise: {
+              omit: {
+                createdAt: true,
+                updatedAt: true,
+              },
+            },
+          },
+          omit: {
+            tipoAnaliseId: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
       },
       omit: {
-        tipoAnaliseId: true,
-        materiaPrimaId: true,
         createdAt: true,
         updatedAt: true,
       },

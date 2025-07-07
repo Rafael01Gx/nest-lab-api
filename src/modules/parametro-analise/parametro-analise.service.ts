@@ -35,6 +35,8 @@ export class ParametrosAnaliseService {
       tipoAnaliseId: dto.tipoAnaliseId,
       descricao: dto.descricao,
       unidadeMedida: dto.unidadeMedida,
+      casasDecimais: dto.casasDecimais,
+      unidadeResultado: dto.unidadeResultado,
     };
     return this.paramAnaliseRepo.update(id, updateDto);
   }
