@@ -64,7 +64,7 @@ export class AuthService {
 
     user.password = await this.hashingService.hash(user.password);
     await this.userRepository.create(user);
-    return { message: 'User created successfully' };
+    return { message: 'Usuário criado com sucesso!' };
   }
 
   private async generateToken(user: User) {

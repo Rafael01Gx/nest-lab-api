@@ -1,6 +1,8 @@
+import { Role } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsString,
   IsStrongPassword,
@@ -46,4 +48,8 @@ export class SignUpDto {
   @IsString()
   @MinLength(3)
   funcao: string;
+
+  @IsEnum(Role)
+  @MinLength(3)
+  role?: Role;
 }
