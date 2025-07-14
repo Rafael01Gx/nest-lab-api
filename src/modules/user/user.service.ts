@@ -4,6 +4,7 @@ import { HashingServiceProtocol } from '../auth/hash/hashing.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './repositories/user.repository';
 import { User } from './entities/user.entity';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -128,7 +129,14 @@ export class UserService {
       if (!userExist) {
         throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
       }
-
+      if (user.role == Role.ADMIN) {
+        if (user.authorization !== true) {
+          throw new HttpException(
+            'Um Administrador não pode ter a AUTORIZAÇÃO removida !',
+            HttpStatus.NOT_FOUND,
+          );
+        }
+      }
       await this.userRepository.update(id, {
         authorization: user.authorization,
         role: user.role,
