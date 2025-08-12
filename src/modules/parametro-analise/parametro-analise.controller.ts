@@ -10,7 +10,10 @@ import {
 } from '@nestjs/common';
 import { ParametrosAnaliseService } from './parametro-analise.service';
 import { ParametrosAnaliseDto } from './dto/parametro-analise.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 
+@Roles(Role.ADMIN, Role.OPERADOR)
 @Controller('parametro-analise')
 export class ParametrosAnaliseController {
   constructor(private readonly paramAnaliseService: ParametrosAnaliseService) {}

@@ -10,6 +10,10 @@ import {
 } from '@nestjs/common';
 import { TipoAnaliseService } from './tipo-analise.service';
 import { TipoAnaliseDto } from './dto/tipo-analise.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from '@prisma/client';
+
+@Roles(Role.ADMIN, Role.OPERADOR)
 @Controller('tipo-de-analise')
 export class TipoAnaliseController {
   constructor(private readonly tipoAnaliseService: TipoAnaliseService) {}
@@ -18,6 +22,7 @@ export class TipoAnaliseController {
   findAll() {
     return this.tipoAnaliseService.findAll();
   }
+
   @Post()
   create(@Body() dto: TipoAnaliseDto) {
     return this.tipoAnaliseService.create(dto);

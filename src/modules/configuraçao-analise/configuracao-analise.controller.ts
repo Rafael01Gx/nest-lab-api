@@ -11,7 +11,10 @@ import {
 import { ConfiguracaoAnaliseService } from './configuracao-analise.service';
 import { CreateConfigAnaliseDto } from './dto/create-config-analise.dto';
 import { UpdateConfigAnaliseDto } from './dto/update-config-analise.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 
+@Roles(Role.ADMIN, Role.OPERADOR)
 @Controller('config-analise')
 export class ConfiguracaoAnaliseController {
   constructor(

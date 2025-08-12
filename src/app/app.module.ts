@@ -1,3 +1,4 @@
+import { ElementoQuimicoModule } from './../modules/laboratorios-externos/elemento-quimico/elemento-quimico.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,6 +10,8 @@ import { TipoAnaliseModule } from 'src/modules/tipo-de-analise/tipo-analise.modu
 import { MateriaPrimaModule } from 'src/modules/materia-prima/materia-prima.module';
 import { ParametrosAnaliseModule } from 'src/modules/parametro-analise/parametro-analise.module';
 import { ConfiguracaoAnaliseModule } from 'src/modules/configuraçao-analise/configuracao-analise.module';
+import { OrdemServicoModule } from 'src/modules/ordem-servico/ordem-servico.module';
+import { LaboratorioModule } from 'src/modules/laboratorios-externos/laboratorio/laboratorio.module';
 
 @Module({
   imports: [
@@ -20,6 +23,9 @@ import { ConfiguracaoAnaliseModule } from 'src/modules/configuraçao-analise/con
     MateriaPrimaModule,
     ParametrosAnaliseModule,
     ConfiguracaoAnaliseModule,
+    OrdemServicoModule,
+    ElementoQuimicoModule,
+    LaboratorioModule,
   ],
   controllers: [AppController],
   providers: [AppService],

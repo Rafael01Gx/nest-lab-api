@@ -11,7 +11,7 @@ export class TipoAnaliseService {
     return this.tipoAnaliseRepo.findAll();
   }
 
-  async create(dto: TipoAnaliseDto) {
+  async create(dto: TipoAnaliseDto): Promise<ITipoAnalise> {
     return this.tipoAnaliseRepo.create(dto);
   }
   async update(id: number, dto: TipoAnaliseDto) {

@@ -1,55 +1,50 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { IConfiguracaoAnalise } from '../interfaces/configuracao-analise.interface';
-import { CreateConfigAnaliseDto } from '../dto/create-config-analise.dto';
-import { UpdateConfigAnaliseDto } from '../dto/update-config-analise.dto';
+import { IOrdemServico } from '../interfaces/ordem-servico.interface';
 
 @Injectable()
-export class ConfiguracaoAnaliseRepository {
+export class OrdemServicoRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(_data: CreateConfigAnaliseDto): Promise<IConfiguracaoAnalise> {
-    const { parametros, ...configAnalise } = _data;
-    return this.prisma.configuracaoAnalise.create({
+  async create(_data: IOrdemServico): Promise<IOrdemServico | any> {
+    const { amostras, ...ordemServico } = _data;
+    return this.prisma.ordemServico.create({
       data: {
-        nomeDescricao: configAnalise.nomeDescricao,
-        tipoAnaliseId: configAnalise.tipoAnaliseId,
-        parametros: {
-          connect: parametros.map((id) => ({ id })),
+        id: ordemServico.id,
+        solicitanteId: ordemServico.solicitanteId,
+        observacao: ordemServico.observacao ? ordemServico.observacao : '',
+        amostras: {
+          create: amostras.map((amostra) => ({
+            nomeAmostra: amostra.nomeAmostra,
+            dataAmostra: amostra.dataAmostra,
+            userId: amostra.userId,
+            ensaiosSolicitados: {
+              connect: amostra.ensaiosSolicitados.map((id) => ({
+                id: Number(id),
+              })),
+            },
+          })),
         },
       },
       include: {
-        tipoAnalise: {
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        parametros: {
+        amostras: {
           include: {
-            tipoAnalise: {
-              omit: {
-                createdAt: true,
-                updatedAt: true,
-              },
-            },
+            ensaiosSolicitados: true,
           },
+        },
+        solicitante: {
           omit: {
-            tipoAnaliseId: true,
             createdAt: true,
             updatedAt: true,
           },
         },
       },
-      omit: {
-        tipoAnaliseId: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      omit: { createdAt: true, updatedAt: true },
     });
   }
-
-  async findAll(): Promise<IConfiguracaoAnalise[]> {
+  /*
+  
+  async findAll(): Promise<IOrdemServico[] | any> {
     return this.prisma.configuracaoAnalise.findMany({
       include: {
         tipoAnalise: {
@@ -82,8 +77,9 @@ export class ConfiguracaoAnaliseRepository {
 
   async update(
     id: number,
-    _data: UpdateConfigAnaliseDto,
-  ): Promise<IConfiguracaoAnalise> {
+    _data: UpdateOrdemServicoDto,
+    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  ): Promise<IOrdemServico | any> {
     const { parametros, ...configAnalise } = _data;
     return this.prisma.configuracaoAnalise.update({
       where: { id },
@@ -91,7 +87,7 @@ export class ConfiguracaoAnaliseRepository {
         nomeDescricao: configAnalise.nomeDescricao,
         tipoAnaliseId: configAnalise.tipoAnaliseId,
         parametros: {
-          set: parametros.map((id) => ({ id })),
+          connect: parametros.map((id) => ({ id })),
         },
       },
       include: {
@@ -130,7 +126,8 @@ export class ConfiguracaoAnaliseRepository {
     return;
   }
 
-  async findById(id: number): Promise<IConfiguracaoAnalise | null> {
+ 
+  async findById(id: number): Promise<IOrdemServico | any> {
     return this.prisma.configuracaoAnalise.findUnique({
       where: { id },
       include: {
@@ -162,4 +159,6 @@ export class ConfiguracaoAnaliseRepository {
       },
     });
   }
+
+  */
 }

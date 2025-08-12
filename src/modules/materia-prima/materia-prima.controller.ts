@@ -10,7 +10,10 @@ import {
 } from '@nestjs/common';
 import { MateriaPrimaService } from './materia-prima.service';
 import { MateriaPrimaDto } from './dto/materia-prima.dto';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from '@prisma/client';
 
+@Roles(Role.ADMIN, Role.OPERADOR)
 @Controller('materia-prima')
 export class MateriaPrimaController {
   constructor(private readonly materiaPrimaService: MateriaPrimaService) {}

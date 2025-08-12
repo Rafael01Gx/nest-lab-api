@@ -19,6 +19,14 @@ enum Role {
   ADMIN    @map("Administrador")
 }
 
+enum EStatus {
+  AGUARDANDO @map("Aguardando Autorização")
+  AUTORIZADA @map("Autorizada")
+  EXECUCAO   @map("Em Execução")
+  FINALIZADA @map("Finalizada")
+  CANCELADA  @map("Cancelada")
+}
+
 model User {
   id                   String          @id @default(uuid())
   name                 String
@@ -56,14 +64,16 @@ model TipoAnalise {
   updatedAt           DateTime              @updatedAt
   parametroAnalise    ParametrosAnalise[]
   configuracaoAnalise ConfiguracaoAnalise[]
+  Amostra             Amostra?              @relation(fields: [amostraId], references: [id])
+  amostraId           Int?
 }
 
 model ParametrosAnalise {
-  id            Int         @id @default(autoincrement())
-  tipoAnaliseId Int
-  tipoAnalise   TipoAnalise @relation(fields: [tipoAnaliseId], references: [id])
-  descricao     String      @default("")
-  unidadeMedida String?     @default("")
+  id               Int                   @id @default(autoincrement())
+  tipoAnaliseId    Int
+  tipoAnalise      TipoAnalise           @relation(fields: [tipoAnaliseId], references: [id])
+  descricao        String                @default("")
+  unidadeMedida    String?               @default("")
   unidadeResultado String?               @default("")
   casasDecimais    Int                   @default(0)
   configuracoes    ConfiguracaoAnalise[]
@@ -90,40 +100,31 @@ model MateriaPrima {
 }
 
 model Amostra {
-  id                 Int          @id @default(autoincrement())
+  id                 Int           @id @default(autoincrement())
   numeroOs           String
-  ordemServico       OrdemServico @relation(fields: [numeroOs], references: [id])
+  ordemServico       OrdemServico  @relation(fields: [numeroOs], references: [id])
   nomeAmostra        String
   dataAmostra        String
-  ensaiosSolicitados Json?
-  amostraTipo        String?      @default("Não definido")
+  ensaiosSolicitados TipoAnalise[]
+  amostraTipo        String        @default("Não definido")
   userId             String
-  user               User         @relation(fields: [userId], references: [id])
+  user               User          @relation(fields: [userId], references: [id])
   resultados         Json?
   analistas          Json?
-  status             EStatus      @default(AGUARDANDO)
-  progresso          Int          @default(0)
-  prazoInicioFim     String?      @default("Aguardando")
-  dataRecepcao       String?      @default("Aguardando")
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
-}
-
-enum EStatus {
-  AGUARDANDO @map("Aguardando Autorização")
-  AUTORIZADA @map("Autorizada")
-  EXECUCAO   @map("Em Execução")
-  FINALIZADA @map("Finalizada")
-  CANCELADA  @map("Cancelada")
+  status             EStatus       @default(AGUARDANDO)
+  progresso          Int           @default(0)
+  prazoInicioFim     String        @default("Aguardando")
+  dataRecepcao       String        @default("Aguardando")
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 }
 
 model OrdemServico {
   id             String    @id
-  numeroOs       String
   solicitanteId  String
   solicitante    User      @relation(fields: [solicitanteId], references: [id])
   amostras       Amostra[]
-  status         String    @default("")
+  status         EStatus   @default(AGUARDANDO)
   dataRecepcao   String    @default("")
   prazoInicioFim String    @default("")
   progresso      String?   @default("")
@@ -131,4 +132,22 @@ model OrdemServico {
   revisorId      String?   @default("")
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+}
+
+model ElementoQuimico {
+  id          Int      @id @default(autoincrement())
+  elementName String   @default("")
+  simbolo     String   @default("")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Laboratorio {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  endereco  Json
+  telefone  String?  @default("")
+  email     String?  @default("")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
