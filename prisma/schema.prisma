@@ -71,7 +71,7 @@ model TipoAnalise {
 model ParametrosAnalise {
   id               Int                   @id @default(autoincrement())
   tipoAnaliseId    Int
-  tipoAnalise      TipoAnalise           @relation(fields: [tipoAnaliseId], references: [id])
+  tipoAnalise      TipoAnalise           @relation(fields: [tipoAnaliseId], references: [id], onDelete: Cascade)
   descricao        String                @default("")
   unidadeMedida    String?               @default("")
   unidadeResultado String?               @default("")
@@ -84,7 +84,7 @@ model ParametrosAnalise {
 model ConfiguracaoAnalise {
   id            Int                 @id @default(autoincrement())
   nomeDescricao String
-  tipoAnalise   TipoAnalise         @relation(fields: [tipoAnaliseId], references: [id])
+  tipoAnalise   TipoAnalise         @relation(fields: [tipoAnaliseId], references: [id], onDelete: Cascade)
   tipoAnaliseId Int
   parametros    ParametrosAnalise[]
   createdAt     DateTime            @default(now())
@@ -102,7 +102,7 @@ model MateriaPrima {
 model Amostra {
   id                 Int           @id @default(autoincrement())
   numeroOs           String
-  ordemServico       OrdemServico  @relation(fields: [numeroOs], references: [id])
+  ordemServico       OrdemServico  @relation(fields: [numeroOs], references: [id], onDelete: Cascade)
   nomeAmostra        String
   dataAmostra        String
   ensaiosSolicitados TipoAnalise[]
@@ -135,19 +135,54 @@ model OrdemServico {
 }
 
 model ElementoQuimico {
-  id          Int      @id @default(autoincrement())
-  elementName String   @default("")
-  simbolo     String   @default("")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id                  Int                @id @default(autoincrement())
+  elementName         String             @default("")
+  simbolo             String             @default("")
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+  AmostraLabExterno   AmostraLabExterno[]
 }
 
-model Laboratorio {
-  id        Int      @id @default(autoincrement())
+model LaboratorioExterno {
+  id        Int                 @id @default(autoincrement())
   nome      String
   endereco  Json
-  telefone  String?  @default("")
-  email     String?  @default("")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  telefone  String?             @default("")
+  email     String?             @default("")
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  Remessa   RemessaLabExterno[]
+}
+
+model AmostraLabExterno {
+  id                     Int               @id @default(autoincrement())
+  amostraName            String
+  elementosAnalisados ElementoQuimico[]
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+}
+
+model RemessaLabExterno {
+  id        Int                     @id @default(autoincrement())
+  data      String
+  destinoId Int
+  destino   LaboratorioExterno      @relation(fields: [destinoId], references: [id])
+  amostras  AmostraAnaliseExterna[]
+  createdAt DateTime                @default(now())
+  updatedAt DateTime                @updatedAt
+}
+
+model AmostraAnaliseExterna {
+  id                   Int               @id @default(autoincrement())
+  amostraName          String
+  subIdentificacao     String?           @default("")
+  dataInicio           String
+  dataFim              String
+  elementosSolicitados Json
+  elementosAnalisados  Json?
+  analiseConcluida     Boolean           @default(false)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  RemessaLabExterno    RemessaLabExterno @relation(fields: [remessaLabExternoId], references: [id])
+  remessaLabExternoId  Int
 }

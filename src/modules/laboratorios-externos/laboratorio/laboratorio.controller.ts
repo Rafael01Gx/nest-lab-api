@@ -15,7 +15,7 @@ import { CreateLaboratorioDto } from './dto/create-laboratorio.dto';
 import { UpdateLaboratorioDto } from './dto/update-laboratorio.dto';
 
 @Roles(Role.ADMIN, Role.OPERADOR)
-@Controller('amostra')
+@Controller('laboratorio-externo')
 export class LaboratorioController {
   constructor(private readonly laboratorioService: LaboratorioService) {}
 

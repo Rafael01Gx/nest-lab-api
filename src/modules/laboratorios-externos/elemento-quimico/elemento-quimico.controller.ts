@@ -15,7 +15,7 @@ import { CreateElementoQuimicoDto } from './dto/create-elemento-quimico.dto';
 import { UpdateElementoQuimicoDto } from './dto/update-elemento-quimico.dto';
 
 @Roles(Role.ADMIN, Role.OPERADOR)
-@Controller('amostra')
+@Controller('elemento-quimico')
 export class ElementoQuimicoController {
   constructor(
     private readonly elementoQuimicoService: ElementoQuimicoService,

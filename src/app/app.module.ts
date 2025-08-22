@@ -12,6 +12,8 @@ import { ParametrosAnaliseModule } from 'src/modules/parametro-analise/parametro
 import { ConfiguracaoAnaliseModule } from 'src/modules/configuraçao-analise/configuracao-analise.module';
 import { OrdemServicoModule } from 'src/modules/ordem-servico/ordem-servico.module';
 import { LaboratorioModule } from 'src/modules/laboratorios-externos/laboratorio/laboratorio.module';
+import { RemessaLabExternoModule } from 'src/modules/laboratorios-externos/remessa/remessa-lab-externo.module';
+import { AmostraLabExternoModule } from 'src/modules/laboratorios-externos/amostra-lab-externo/amostra-lab-externo.module';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { LaboratorioModule } from 'src/modules/laboratorios-externos/laboratorio
     OrdemServicoModule,
     ElementoQuimicoModule,
     LaboratorioModule,
+    RemessaLabExternoModule,
+    AmostraLabExternoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

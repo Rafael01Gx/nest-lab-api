@@ -8,29 +8,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-export class CreateLaboratorioDto {
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(3)
-  nome: string;
-
-  @IsNotEmpty()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => EnderecoDto)
-  endereco: EnderecoDto;
-
-  @IsOptional()
-  @IsString()
-  @MinLength(10)
-  telefone?: string;
-
-  @IsOptional()
-  @IsString()
-  @MinLength(5)
-  email?: string;
-}
-
 export class EnderecoDto {
   @IsString()
   @IsNotEmpty()
@@ -70,4 +47,26 @@ export class EnderecoDto {
   @IsNotEmpty()
   @MinLength(2)
   pais: string;
+}
+export class CreateLaboratorioDto {
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
+  nome: string;
+
+  @IsNotEmpty()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => EnderecoDto)
+  endereco: EnderecoDto;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(10)
+  telefone?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(5)
+  email?: string;
 }

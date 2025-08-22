@@ -9,7 +9,7 @@ export class LaboratorioRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(dto: CreateLaboratorioDto): Promise<ILaboratorio> {
-    return this.prisma.laboratorio.create({
+    return this.prisma.laboratorioExterno.create({
       data: {
         nome: dto.nome,
         endereco: { ...dto.endereco },
@@ -21,13 +21,13 @@ export class LaboratorioRepository {
   }
 
   async findAll(): Promise<ILaboratorio[]> {
-    return this.prisma.laboratorio.findMany({
+    return this.prisma.laboratorioExterno.findMany({
       omit: { createdAt: true, updatedAt: true },
     });
   }
 
   async findById(id: number): Promise<ILaboratorio | null> {
-    return this.prisma.laboratorio.findFirst({
+    return this.prisma.laboratorioExterno.findFirst({
       where: { id },
       omit: { createdAt: true, updatedAt: true },
     });
@@ -35,7 +35,7 @@ export class LaboratorioRepository {
 
   async update(id: number, dto: UpdateLaboratorioDto): Promise<ILaboratorio> {
     const { nome, endereco, telefone, email } = dto;
-    return this.prisma.laboratorio.update({
+    return this.prisma.laboratorioExterno.update({
       where: { id },
       data: { nome, endereco: { ...endereco }, telefone, email },
       omit: { createdAt: true, updatedAt: true },
@@ -43,7 +43,7 @@ export class LaboratorioRepository {
   }
 
   async delete(id: number): Promise<any> {
-    return this.prisma.laboratorio.delete({
+    return this.prisma.laboratorioExterno.delete({
       where: { id },
     });
   }
