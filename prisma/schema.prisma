@@ -183,6 +183,6 @@ model AmostraAnaliseExterna {
   analiseConcluida     Boolean           @default(false)
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
-  RemessaLabExterno    RemessaLabExterno @relation(fields: [remessaLabExternoId], references: [id])
+  RemessaLabExterno    RemessaLabExterno @relation(fields: [remessaLabExternoId], references: [id], onDelete: Cascade)
   remessaLabExternoId  Int
 }

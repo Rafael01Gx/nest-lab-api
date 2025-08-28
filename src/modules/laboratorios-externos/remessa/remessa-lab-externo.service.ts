@@ -11,6 +11,14 @@ export class RemessaLabExternoService {
   ) {}
 
   async create(dto: CreateRemessaLabExternoDto): Promise<IRemessaLabExterno> {
+    dto.amostras.forEach((amostra) => {
+      if (new Date(amostra.dataFim) < new Date(amostra.dataInicio)) {
+        throw new HttpException(
+          `A data Final não pode ser anterior à data de início para a amostra "${amostra.amostraName}".`,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    });
     return this.remessaLabExternoRepository.create(dto);
   }
 
