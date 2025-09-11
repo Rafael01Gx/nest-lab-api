@@ -13,13 +13,21 @@ import { UpdateAmostraDto } from './dto/update-amostra.dto';
 import { CreateAmostraDto } from './dto/create-amostra.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { User } from '../user/entities/user.entity';
 
 @Controller('amostra')
 export class AmostraController {
   constructor(private readonly amostraService: AmostraService) {}
+
+  @Roles(Role.ADMIN, Role.OPERADOR)
   @Get()
   findAll() {
     return this.amostraService.findAll();
+  }
+  @Get('user')
+  findAllByUser(@CurrentUser() user: User) {
+    return this.amostraService.findAllByUser(user);
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR)

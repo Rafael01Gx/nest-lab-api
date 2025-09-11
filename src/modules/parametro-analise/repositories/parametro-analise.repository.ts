@@ -7,7 +7,14 @@ import { IParametrosAnalise } from '../interfaces/parametro-analise.interface';
 export class ParametrosAnaliseRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(data: ParametrosAnaliseDto): Promise<IParametrosAnalise> {
+  async create(dto: ParametrosAnaliseDto): Promise<IParametrosAnalise> {
+    const data = {
+      tipoAnaliseId: dto.tipoAnaliseId,
+      descricao: dto.descricao,
+      unidadeMedida: dto.unidadeMedida ?? '',
+      unidadeResultado: dto.unidadeResultado ?? '',
+      casasDecimais: dto.casasDecimais,
+    };
     return this.prisma.parametrosAnalise.create({
       data,
       include: {
@@ -40,7 +47,7 @@ export class ParametrosAnaliseRepository {
 
   async update(
     id: number,
-    data: Partial<IParametrosAnalise>,
+    data: ParametrosAnaliseDto,
   ): Promise<IParametrosAnalise> {
     return this.prisma.parametrosAnalise.update({
       where: { id },

@@ -9,7 +9,7 @@ export interface IOrdemServico {
   status?: string;
   dataRecepcao?: string;
   prazoInicioFim?: string;
-  progresso?: string;
+  progresso?: number | null;
   observacao?: string;
   revisorId?: string;
   createdAt?: Date;

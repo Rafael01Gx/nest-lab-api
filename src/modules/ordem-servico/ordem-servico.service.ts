@@ -6,11 +6,16 @@ import { IAmostra } from '../amostra/interfaces/amostra.interface';
 import { ITipoAnalise } from '../tipo-de-analise/interfaces/tipo-analise.interface';
 import { User } from '../user/entities/user.entity';
 import { ulid } from 'ulid';
+import { UserRepository } from '../user/repositories/user.repository';
+import { EStatus } from '@prisma/client';
+import { AmostraRepository } from '../amostra/repositories/amostra.repository';
 
 @Injectable()
 export class OrdemServicoService {
   constructor(
     private readonly ordemServicoRepository: OrdemServicoRepository,
+    private readonly userRepository: UserRepository,
+    private readonly amostraRepository: AmostraRepository,
   ) {}
 
   async create(dto: CreateOrdemServicoDto, user: User): Promise<IOrdemServico> {
@@ -50,10 +55,41 @@ export class OrdemServicoService {
     return this.ordemServicoRepository.create(newOrdemServico as IOrdemServico);
   }
 
-  /*
   async findAll(): Promise<IOrdemServico[]> {
-    return this.configuracaoAnaliseRepo.findAll();
+    return this.ordemServicoRepository.findAll();
   }
+
+  async findAllByUser(user: User): Promise<IOrdemServico[]> {
+    if (!user || !user.id) {
+      throw new HttpException('Usuário inválido!', HttpStatus.BAD_REQUEST);
+    }
+    const userExist = await this.userRepository.getById(user.id);
+
+    if (!userExist) {
+      throw new HttpException('Usuário não encontrado!', HttpStatus.NOT_FOUND);
+    }
+
+    return this.ordemServicoRepository.findAllByUser(user.id);
+  }
+
+  async updateStatus(id: string, status: EStatus): Promise<IOrdemServico> {
+    const existingOrdemServico = await this.ordemServicoRepository.findById(id);
+    if (!existingOrdemServico) {
+      throw new HttpException(
+        'Ordem de Serviço não encontrada!',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (
+      existingOrdemServico.status === EStatus.AGUARDANDO &&
+      status === EStatus.AUTORIZADA
+    ) {
+      await this.amostraRepository.updateStatusByOs(id, EStatus.AUTORIZADA);
+    }
+    return this.ordemServicoRepository.updateStatus(id, status);
+  }
+
+  /*
 
   async update(id: number, dto: UpdateOrdemServicoDto): Promise<IOrdemServico> {
     const existingConfiguracaoAnalise =
@@ -72,7 +108,6 @@ export class OrdemServicoService {
     };
     return this.configuracaoAnaliseRepo.update(id, updateDto);
   }
-
   async delete(id: number) {
     await this.configuracaoAnaliseRepo.delete(id);
     return {

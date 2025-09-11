@@ -13,7 +13,7 @@ async function bootstrap() {
     origin: [
       'http://localhost:4200',
       'http://192.168.1.11:4200',
-      'http://192.168.1.9:4200',
+      'http://192.168.1.5:4200',
     ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,

@@ -1,12 +1,42 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IOrdemServico } from '../interfaces/ordem-servico.interface';
+import { EStatus } from '@prisma/client';
 
 @Injectable()
 export class OrdemServicoRepository {
   constructor(private readonly prisma: PrismaService) {}
+  #returnOptions = {
+    include: {
+      amostras: {
+        include: {
+          ensaiosSolicitados: {
+            omit: {
+              createdAt: true,
+              updatedAt: true,
+            },
+          },
+        },
+        omit: {
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+      solicitante: {
+        omit: {
+          password: true,
+          role: true,
+          passwordResetExpires: true,
+          passwordResetToken: true,
+          authorization: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
+    },
+  };
 
-  async create(_data: IOrdemServico): Promise<IOrdemServico | any> {
+  async create(_data: IOrdemServico): Promise<IOrdemServico> {
     const { amostras, ...ordemServico } = _data;
     return this.prisma.ordemServico.create({
       data: {
@@ -26,55 +56,41 @@ export class OrdemServicoRepository {
           })),
         },
       },
-      include: {
-        amostras: {
-          include: {
-            ensaiosSolicitados: true,
-          },
-        },
-        solicitante: {
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-      },
-      omit: { createdAt: true, updatedAt: true },
-    });
-  }
-  /*
-  
-  async findAll(): Promise<IOrdemServico[] | any> {
-    return this.prisma.configuracaoAnalise.findMany({
-      include: {
-        tipoAnalise: {
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        parametros: {
-          include: {
-            tipoAnalise: {
-              omit: {
-                createdAt: true,
-                updatedAt: true,
-              },
-            },
-          },
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-      },
-      omit: {
-        createdAt: true,
-        updatedAt: true,
-      },
+      ...this.#returnOptions,
     });
   }
 
+  async findAll(): Promise<IOrdemServico[]> {
+    return this.prisma.ordemServico.findMany({
+      ...this.#returnOptions,
+    });
+  }
+
+  async findAllByUser(id: string): Promise<IOrdemServico[]> {
+    return this.prisma.ordemServico.findMany({
+      where: {
+        solicitanteId: id,
+      },
+      ...this.#returnOptions,
+    });
+  }
+
+  async findById(id: string): Promise<IOrdemServico | null> {
+    return this.prisma.ordemServico.findUnique({
+      where: { id },
+      ...this.#returnOptions,
+    });
+  }
+
+  async updateStatus(id: string, status: EStatus): Promise<IOrdemServico> {
+    return this.prisma.ordemServico.update({
+      where: { id },
+      data: { status },
+      ...this.#returnOptions,
+    });
+  }
+
+  /*
   async update(
     id: number,
     _data: UpdateOrdemServicoDto,

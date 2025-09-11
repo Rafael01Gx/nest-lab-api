@@ -3,9 +3,11 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { OrdemServicoController } from './ordem-servico.controller';
 import { OrdemServicoService } from './ordem-servico.service';
 import { OrdemServicoRepository } from './repositories/ordem-servico.repository';
+import { UserModule } from '../user/user.module';
+import { AmostraModule } from '../amostra/amostra.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, UserModule, AmostraModule],
   controllers: [OrdemServicoController],
   providers: [OrdemServicoService, OrdemServicoRepository],
   exports: [OrdemServicoRepository],

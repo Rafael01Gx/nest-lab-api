@@ -8,10 +8,6 @@ import {
 } from 'class-validator';
 
 export class ParametrosAnaliseDto {
-  @IsOptional()
-  @IsNumber()
-  id?: number;
-
   @IsNotEmpty()
   @Transform(({ value }: { value: unknown }) => {
     if (typeof value === 'string') {
@@ -29,11 +25,11 @@ export class ParametrosAnaliseDto {
 
   @IsOptional()
   @IsString()
-  unidadeMedida?: string | null;
+  unidadeMedida?: string;
 
   @IsOptional()
   @IsString()
-  unidadeResultado?: string | null;
+  unidadeResultado?: string;
 
   @IsNotEmpty()
   @Transform(({ value }: { value: unknown }) => {

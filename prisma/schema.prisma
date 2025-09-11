@@ -32,10 +32,10 @@ model User {
   name                 String
   email                String          @unique
   password             String
-  phone                String?         @default("")
-  area                 String?         @default("")
-  funcao               String?         @default("")
-  authorization        Boolean?        @default(false)
+  phone                String          @default("")
+  area                 String          @default("")
+  funcao               String          @default("")
+  authorization        Boolean         @default(false)
   role                 Role            @default(USUARIO)
   passwordResetToken   String?
   passwordResetExpires DateTime?
@@ -73,8 +73,8 @@ model ParametrosAnalise {
   tipoAnaliseId    Int
   tipoAnalise      TipoAnalise           @relation(fields: [tipoAnaliseId], references: [id], onDelete: Cascade)
   descricao        String                @default("")
-  unidadeMedida    String?               @default("")
-  unidadeResultado String?               @default("")
+  unidadeMedida    String                @default("")
+  unidadeResultado String                @default("")
   casasDecimais    Int                   @default(0)
   configuracoes    ConfiguracaoAnalise[]
   createdAt        DateTime              @default(now())
@@ -127,39 +127,39 @@ model OrdemServico {
   status         EStatus   @default(AGUARDANDO)
   dataRecepcao   String    @default("")
   prazoInicioFim String    @default("")
-  progresso      String?   @default("")
-  observacao     String?   @default("")
-  revisorId      String?   @default("")
+  progresso      Int       @default(0)
+  observacao     String    @default("")
+  revisorId      String    @default("")
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
 
 model ElementoQuimico {
-  id                  Int                @id @default(autoincrement())
-  elementName         String             @default("")
-  simbolo             String             @default("")
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
-  AmostraLabExterno   AmostraLabExterno[]
+  id                Int                 @id @default(autoincrement())
+  elementName       String              @default("")
+  simbolo           String              @default("")
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  AmostraLabExterno AmostraLabExterno[]
 }
 
 model LaboratorioExterno {
   id        Int                 @id @default(autoincrement())
   nome      String
   endereco  Json
-  telefone  String?             @default("")
-  email     String?             @default("")
+  telefone  String              @default("")
+  email     String              @default("")
   createdAt DateTime            @default(now())
   updatedAt DateTime            @updatedAt
   Remessa   RemessaLabExterno[]
 }
 
 model AmostraLabExterno {
-  id                     Int               @id @default(autoincrement())
-  amostraName            String
+  id                  Int               @id @default(autoincrement())
+  amostraName         String
   elementosAnalisados ElementoQuimico[]
-  createdAt              DateTime          @default(now())
-  updatedAt              DateTime          @updatedAt
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
 }
 
 model RemessaLabExterno {
@@ -175,7 +175,7 @@ model RemessaLabExterno {
 model AmostraAnaliseExterna {
   id                   Int               @id @default(autoincrement())
   amostraName          String
-  subIdentificacao     String?           @default("")
+  subIdentificacao     String            @default("")
   dataInicio           String
   dataFim              String
   elementosSolicitados Json

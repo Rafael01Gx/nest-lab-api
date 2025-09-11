@@ -28,15 +28,15 @@ export class ParametrosAnaliseService {
         HttpStatus.NOT_FOUND,
       );
     }
-    if (dto.tipoAnaliseId) {
-      await this.verifyAnalysisType(dto.tipoAnaliseId);
-    }
+    if (!dto.tipoAnaliseId) return;
+    await this.verifyAnalysisType(dto.tipoAnaliseId);
+
     const updateDto = {
       tipoAnaliseId: dto.tipoAnaliseId,
-      descricao: dto.descricao,
-      unidadeMedida: dto.unidadeMedida,
-      casasDecimais: dto.casasDecimais,
-      unidadeResultado: dto.unidadeResultado,
+      descricao: dto.descricao ?? '',
+      unidadeMedida: dto.unidadeMedida ?? '',
+      casasDecimais: dto.casasDecimais ?? 0,
+      unidadeResultado: dto.unidadeResultado ?? '',
     };
     return this.paramAnaliseRepo.update(id, updateDto);
   }

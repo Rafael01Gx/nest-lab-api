@@ -39,6 +39,9 @@ export class RemessaLabExternoRepository {
         destino: true,
       },
       omit: { createdAt: true, updatedAt: true },
+      orderBy: {
+        id: 'desc',
+      },
     });
   }
 
