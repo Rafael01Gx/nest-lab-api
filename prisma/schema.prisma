@@ -64,8 +64,7 @@ model TipoAnalise {
   updatedAt           DateTime              @updatedAt
   parametroAnalise    ParametrosAnalise[]
   configuracaoAnalise ConfiguracaoAnalise[]
-  Amostra             Amostra?              @relation(fields: [amostraId], references: [id])
-  amostraId           Int?
+  Amostra             Amostra[]
 }
 
 model ParametrosAnalise {
