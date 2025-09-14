@@ -9,6 +9,8 @@ import { ulid } from 'ulid';
 import { UserRepository } from '../user/repositories/user.repository';
 import { EStatus } from '@prisma/client';
 import { AmostraRepository } from '../amostra/repositories/amostra.repository';
+import { OrdemServicoQueryDto } from './dto/ordem-servico-query.dto';
+import { UpdateOrdemServicoDto } from './dto/update-ordem-servico.dto';
 
 @Injectable()
 export class OrdemServicoService {
@@ -59,7 +61,10 @@ export class OrdemServicoService {
     return this.ordemServicoRepository.findAll();
   }
 
-  async findAllByUser(user: User): Promise<IOrdemServico[]> {
+  async findAllByUser(
+    user: User,
+    query: OrdemServicoQueryDto,
+  ): Promise<IOrdemServico[]> {
     if (!user || !user.id) {
       throw new HttpException('Usuário inválido!', HttpStatus.BAD_REQUEST);
     }
@@ -69,10 +74,13 @@ export class OrdemServicoService {
       throw new HttpException('Usuário não encontrado!', HttpStatus.NOT_FOUND);
     }
 
-    return this.ordemServicoRepository.findAllByUser(user.id);
+    return this.ordemServicoRepository.findAllByUser(user.id, query);
   }
 
-  async updateStatus(id: string, status: EStatus): Promise<IOrdemServico> {
+  async updateStatus(
+    id: string,
+    dto: UpdateOrdemServicoDto,
+  ): Promise<IOrdemServico> {
     const existingOrdemServico = await this.ordemServicoRepository.findById(id);
     if (!existingOrdemServico) {
       throw new HttpException(
@@ -80,13 +88,21 @@ export class OrdemServicoService {
         HttpStatus.NOT_FOUND,
       );
     }
-    if (
-      existingOrdemServico.status === EStatus.AGUARDANDO &&
-      status === EStatus.AUTORIZADA
-    ) {
-      await this.amostraRepository.updateStatusByOs(id, EStatus.AUTORIZADA);
+    if (dto.status) {
+      await this.checkAndUpdateStatus(existingOrdemServico, dto.status);
     }
-    return this.ordemServicoRepository.updateStatus(id, status);
+    return this.ordemServicoRepository.updateStatus(
+      id,
+      dto.status,
+      dto.observacao,
+    );
+  }
+
+  async getEstatisticas() {
+    const total = await this.ordemServicoRepository.countAll();
+    const porStatus = await this.ordemServicoRepository.countByStatus();
+    const porMes = await this.ordemServicoRepository.countByMonth();
+    return { total, porStatus, porMes };
   }
 
   /*
@@ -135,4 +151,65 @@ export class OrdemServicoService {
     });
     return;
   }*/
+
+  async checkAndUpdateStatus(ordem: IOrdemServico, status: EStatus) {
+    switch (status) {
+      case EStatus.AUTORIZADA:
+        if (ordem.status !== EStatus.AGUARDANDO) {
+          throw new HttpException(
+            'Apenas ordens com status AGUARDANDO podem ser autorizadas',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+        await this.amostraRepository.updateStatusByOs(
+          ordem.id,
+          EStatus.AUTORIZADA,
+        );
+        break;
+      case EStatus.CANCELADA:
+        if (
+          ordem.status === EStatus.CANCELADA ||
+          ordem.status === EStatus.FINALIZADA
+        ) {
+          throw new HttpException(
+            'Ordem já está CANCELADA ou CONCLUÍDA',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+        await this.amostraRepository.updateStatusByOs(
+          ordem.id,
+          EStatus.CANCELADA,
+        );
+        break;
+      case EStatus.FINALIZADA:
+        if (
+          ordem.status === EStatus.AGUARDANDO ||
+          ordem.status === EStatus.CANCELADA
+        ) {
+          throw new HttpException(
+            'Apenas ordens com status AUTORIZADA ou em EXECUCAO podem ser concluídas',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+        await this.amostraRepository.updateStatusByOs(
+          ordem.id,
+          EStatus.CANCELADA,
+        );
+        break;
+      case EStatus.EXECUCAO:
+        if (ordem.status !== EStatus.AUTORIZADA) {
+          throw new HttpException(
+            'Apenas ordens com status AUTORIZADA podem entrar em EXECUCAO',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+        await this.amostraRepository.updateStatusByOs(
+          ordem.id,
+          EStatus.EXECUCAO,
+        );
+        break;
+      default:
+        throw new HttpException('Status inválido', HttpStatus.BAD_REQUEST);
+    }
+  }
 }

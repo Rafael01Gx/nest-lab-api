@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IOrdemServico } from '../interfaces/ordem-servico.interface';
 import { EStatus } from '@prisma/client';
+import { OrdemServicoQueryDto } from '../dto/ordem-servico-query.dto';
 
 @Injectable()
 export class OrdemServicoRepository {
@@ -66,11 +67,22 @@ export class OrdemServicoRepository {
     });
   }
 
-  async findAllByUser(id: string): Promise<IOrdemServico[]> {
+  async findAllByUser(
+    id: string,
+    query: OrdemServicoQueryDto,
+  ): Promise<IOrdemServico[]> {
+    const { status } = query;
+    const statusFilter = status
+      ? Array.isArray(status)
+        ? { in: status }
+        : { equals: status }
+      : undefined;
     return this.prisma.ordemServico.findMany({
       where: {
         solicitanteId: id,
+        status: statusFilter,
       },
+      orderBy: { createdAt: 'desc' },
       ...this.#returnOptions,
     });
   }
@@ -82,12 +94,47 @@ export class OrdemServicoRepository {
     });
   }
 
-  async updateStatus(id: string, status: EStatus): Promise<IOrdemServico> {
+  async updateStatus(
+    id: string,
+    status: EStatus,
+    observacao?: string,
+  ): Promise<IOrdemServico> {
     return this.prisma.ordemServico.update({
       where: { id },
-      data: { status },
+      data: { status, observacao },
       ...this.#returnOptions,
     });
+  }
+  async countAll(): Promise<number> {
+    return this.prisma.ordemServico.count();
+  }
+
+  async countByStatus(): Promise<{ status: EStatus; count: number }[]> {
+    const result = await this.prisma.ordemServico.groupBy({
+      by: ['status'],
+      _count: {
+        status: true,
+      },
+    });
+    return result.map((item) => ({
+      status: item.status,
+      count: Number(item._count.status),
+    }));
+  }
+
+  async countByMonth(): Promise<{ month: string; count: number }[]> {
+    const result = await this.prisma.$queryRaw<
+      { month: string; count: number }[]
+    >`
+    SELECT DATE_FORMAT(createdAt, '%Y-%m') AS month, COUNT(*) AS count
+    FROM OrdemServico
+    GROUP BY month
+    ORDER BY month;
+  `;
+    return result.map((item): { month: string; count: number } => ({
+      month: item.month,
+      count: Number(item.count),
+    }));
   }
 
   /*
