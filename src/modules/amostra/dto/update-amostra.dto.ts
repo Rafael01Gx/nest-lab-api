@@ -1,6 +1,7 @@
 import { EStatus, User } from '@prisma/client';
 import { Transform } from 'class-transformer';
 import {
+  ArrayMinSize,
   IsArray,
   IsEnum,
   IsNotEmpty,
@@ -41,7 +42,7 @@ export class UpdateAmostraDto {
 
   @IsArray()
   @IsNotEmpty()
-  @MinLength(1)
+  @ArrayMinSize(1)
   ensaiosSolicitados: ITipoAnalise[] | number[];
 
   @IsOptional()
@@ -86,7 +87,7 @@ export class UpdateAmostraDto {
   @IsOptional()
   @IsString()
   @MinLength(6)
-  dataRecepcao: Date;
+  dataRecepcao: string;
 
   @IsOptional()
   @IsString()

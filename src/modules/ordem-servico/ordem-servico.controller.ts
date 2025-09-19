@@ -17,6 +17,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 import { UpdateOrdemServicoDto } from './dto/update-ordem-servico.dto';
 import { OrdemServicoQueryDto } from './dto/ordem-servico-query.dto';
+import { OrdemServicoAgendamentoDto } from './dto/ordem-servico-agendamento.dto';
 
 @Controller('ordem-servico')
 export class OrdemServicoController {
@@ -29,8 +30,8 @@ export class OrdemServicoController {
 
   @Roles(Role.ADMIN, Role.OPERADOR)
   @Get()
-  findAll() {
-    return this.ordemServicoService.findAll();
+  findAll(@Query() query: OrdemServicoQueryDto) {
+    return this.ordemServicoService.findAll(query);
   }
 
   @Get('user')
@@ -45,6 +46,13 @@ export class OrdemServicoController {
   getEstatisticas() {
     return this.ordemServicoService.getEstatisticas();
   }
+  //--------------------------------
+  @Roles(Role.ADMIN, Role.OPERADOR)
+  @Patch('agendar/:id')
+  agendar(@Param('id') id: string, @Body() dto: OrdemServicoAgendamentoDto) {
+    return this.ordemServicoService.agendarPreparacao(id, dto);
+  }
+
   //--------------------------------
   @Roles(Role.ADMIN)
   @Patch(':id')

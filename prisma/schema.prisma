@@ -112,8 +112,8 @@ model Amostra {
   analistas          Json?
   status             EStatus       @default(AGUARDANDO)
   progresso          Int           @default(0)
-  prazoInicioFim     String        @default("Aguardando")
-  dataRecepcao       String        @default("Aguardando")
+  prazoInicioFim     String        @default("")
+  dataRecepcao       String        @default("")
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
 }

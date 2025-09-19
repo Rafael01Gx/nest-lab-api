@@ -8,6 +8,10 @@ export class OrdemServicoQueryDto {
 
   @IsOptional()
   @IsNumberString()
+  prazoInicioFim: string;
+
+  @IsOptional()
+  @IsNumberString()
   page?: string;
 
   @IsOptional()

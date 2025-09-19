@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAmostraDto } from '../dto/create-amostra.dto';
 import { IAmostra } from '../interfaces/amostra.interface';
 import { EStatus } from '@prisma/client';
+import { UpdateAmostraDto } from '../dto/update-amostra.dto';
 
 @Injectable()
 export class AmostraRepository {
@@ -62,6 +63,20 @@ export class AmostraRepository {
     return this.prisma.amostra.updateMany({
       where: { numeroOs },
       data: { status },
+    });
+  }
+  async updateRecepcaoAgendamento(
+    data: Partial<UpdateAmostraDto>,
+  ): Promise<IAmostra> {
+    const { prazoInicioFim, dataRecepcao, status } = data;
+    return this.prisma.amostra.update({
+      where: { id: data.id },
+      data: {
+        prazoInicioFim,
+        dataRecepcao,
+        status,
+      },
+      ...this.#returnOptions,
     });
   }
   /*

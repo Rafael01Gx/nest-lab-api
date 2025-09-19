@@ -11,6 +11,7 @@ import { EStatus } from '@prisma/client';
 import { AmostraRepository } from '../amostra/repositories/amostra.repository';
 import { OrdemServicoQueryDto } from './dto/ordem-servico-query.dto';
 import { UpdateOrdemServicoDto } from './dto/update-ordem-servico.dto';
+import { OrdemServicoAgendamentoDto } from './dto/ordem-servico-agendamento.dto';
 
 @Injectable()
 export class OrdemServicoService {
@@ -57,8 +58,8 @@ export class OrdemServicoService {
     return this.ordemServicoRepository.create(newOrdemServico as IOrdemServico);
   }
 
-  async findAll(): Promise<IOrdemServico[]> {
-    return this.ordemServicoRepository.findAll();
+  async findAll(query: OrdemServicoQueryDto): Promise<IOrdemServico[]> {
+    return this.ordemServicoRepository.findAll(query);
   }
 
   async findAllByUser(
@@ -96,6 +97,39 @@ export class OrdemServicoService {
       dto.status,
       dto.observacao,
     );
+  }
+
+  async agendarPreparacao(
+    id: string,
+    dto: OrdemServicoAgendamentoDto,
+  ): Promise<any> {
+    const existingOrdemServico = await this.ordemServicoRepository.findById(id);
+    if (!existingOrdemServico) {
+      throw new HttpException(
+        'Ordem de Serviço não encontrada!',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    await Promise.all(
+      dto.amostras.map(async (amostraDto) => {
+        const amostraExists = await this.amostraRepository.findById(
+          amostraDto.id,
+        );
+        if (!amostraExists) {
+          throw new Error(`Amostra com ID ${amostraDto.id} não encontrada.`);
+        }
+        const amostra = {
+          id: amostraExists.id,
+          status: EStatus.AUTORIZADA,
+          dataRecepcao: dto.dataRecepcao,
+          prazoInicioFim: amostraDto.prazoInicioFim,
+        };
+
+        return this.amostraRepository.updateRecepcaoAgendamento(amostra);
+      }),
+    );
+
+    return this.ordemServicoRepository.updateRecepcaoAgendamento(dto);
   }
 
   async getEstatisticas() {

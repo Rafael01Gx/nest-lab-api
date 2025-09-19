@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { IOrdemServico } from '../interfaces/ordem-servico.interface';
 import { EStatus } from '@prisma/client';
 import { OrdemServicoQueryDto } from '../dto/ordem-servico-query.dto';
+import { OrdemServicoAgendamentoDto } from '../dto/ordem-servico-agendamento.dto';
 
 @Injectable()
 export class OrdemServicoRepository {
@@ -61,8 +62,19 @@ export class OrdemServicoRepository {
     });
   }
 
-  async findAll(): Promise<IOrdemServico[]> {
+  async findAll(query: OrdemServicoQueryDto): Promise<IOrdemServico[]> {
+    const { status, prazoInicioFim } = query;
+    const statusFilter = status
+      ? Array.isArray(status)
+        ? { in: status }
+        : { equals: status }
+      : undefined;
+    const prazo = prazoInicioFim?.includes('TRUE') ? { not: '' } : undefined;
     return this.prisma.ordemServico.findMany({
+      where: {
+        status: statusFilter,
+        prazoInicioFim: prazo,
+      },
       ...this.#returnOptions,
     });
   }
@@ -105,6 +117,22 @@ export class OrdemServicoRepository {
       ...this.#returnOptions,
     });
   }
+
+  async updateRecepcaoAgendamento(
+    data: OrdemServicoAgendamentoDto,
+  ): Promise<IOrdemServico> {
+    const { id, dataRecepcao, prazoInicioFim, observacao } = data;
+    return this.prisma.ordemServico.update({
+      where: { id },
+      data: {
+        dataRecepcao,
+        prazoInicioFim,
+        observacao,
+      },
+      ...this.#returnOptions,
+    });
+  }
+
   async countAll(): Promise<number> {
     return this.prisma.ordemServico.count();
   }
