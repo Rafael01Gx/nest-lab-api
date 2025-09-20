@@ -72,7 +72,7 @@ model ParametrosAnalise {
   tipoAnaliseId    Int
   tipoAnalise      TipoAnalise           @relation(fields: [tipoAnaliseId], references: [id], onDelete: Cascade)
   descricao        String                @default("")
-  unidadeMedida    String                @default("")
+  subDescricao    String                @default("")
   unidadeResultado String                @default("")
   casasDecimais    Int                   @default(0)
   configuracoes    ConfiguracaoAnalise[]

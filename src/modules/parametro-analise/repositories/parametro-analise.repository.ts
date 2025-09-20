@@ -11,7 +11,7 @@ export class ParametrosAnaliseRepository {
     const data = {
       tipoAnaliseId: dto.tipoAnaliseId,
       descricao: dto.descricao,
-      unidadeMedida: dto.unidadeMedida ?? '',
+      subDescricao: dto.subDescricao ?? '',
       unidadeResultado: dto.unidadeResultado ?? '',
       casasDecimais: dto.casasDecimais,
     };

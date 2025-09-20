@@ -26,15 +26,15 @@ export class CreateAmostraDto {
   })
   dataAmostra: string;
 
-  @IsArray()
-  @IsNotEmpty()
-  @MinLength(1)
+  @IsArray({ message: 'Ensaios solicitados deve ser um array' })
+  @IsNotEmpty({ message: 'Ensaios solicitados é obrigatório' })
+  @MinLength(1, { message: 'Deve haver no mínimo 1 ensaio solicitado' })
   ensaiosSolicitados: number[];
 
-  @IsOptional()
-  @IsString()
+  @IsOptional({ message: 'Tipo da amostra é opcional' })
+  @IsString({ message: 'O tipo da amostra deve ser uma string' })
   amostraTipo?: string;
 
-  @IsString()
+  @IsString({ message: 'O ID do usuário deve ser uma string' })
   userId: string;
 }

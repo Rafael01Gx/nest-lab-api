@@ -9,17 +9,21 @@ import {
 
 export class MateriaPrimaDto {
   @IsOptional()
-  @IsNumber()
+  @IsNumber({}, { message: 'O ID deve ser um número válido.' })
   id?: number;
 
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(3)
+  @IsNotEmpty({ message: 'O nome ou descrição é obrigatório.' })
+  @IsString({ message: 'O nome ou descrição deve ser um texto.' })
+  @MinLength(3, {
+    message: 'O nome ou descrição deve ter pelo menos 3 caracteres.',
+  })
   nomeDescricao: string;
 
-  @IsNotEmpty()
-  @IsString()
-  @MinLength(3)
+  @IsNotEmpty({ message: 'A classe/tipo é obrigatória.' })
+  @IsString({ message: 'A classe/tipo deve ser um texto.' })
+  @MinLength(3, {
+    message: 'A classe/tipo deve ter pelo menos 3 caracteres.',
+  })
   classeTipo: string;
 
   @IsOptional()

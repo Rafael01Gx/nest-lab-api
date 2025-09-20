@@ -10,14 +10,6 @@ import {
 
 export class UpdateConfigAnaliseDto {
   @IsOptional()
-  @IsNumber()
-  id?: number;
-
-  @IsNotEmpty()
-  @IsString()
-  nomeDescricao: string;
-
-  @IsNotEmpty()
   @Transform(({ value }: { value: unknown }) => {
     if (typeof value === 'string') {
       const parsed = parseInt(value, 10);
@@ -25,12 +17,27 @@ export class UpdateConfigAnaliseDto {
     }
     return value;
   })
-  @IsNumber()
+  @IsNumber({}, { message: 'O ID deve ser um número.' })
+  id?: number;
+
+  @IsNotEmpty({ message: 'O nome da descrição é obrigatório.' })
+  @IsString({ message: 'O nome da descrição deve ser uma string.' })
+  nomeDescricao: string;
+
+  @IsNotEmpty({ message: 'O tipo de análise é obrigatório.' })
+  @Transform(({ value }: { value: unknown }) => {
+    if (typeof value === 'string') {
+      const parsed = parseInt(value, 10);
+      return isNaN(parsed) ? value : parsed;
+    }
+    return value;
+  })
+  @IsNumber({}, { message: 'O tipo de análise deve ser um número.' })
   tipoAnaliseId: number;
 
-  @IsNotEmpty()
-  @IsArray()
-  @IsNumber({}, { each: true })
+  @IsNotEmpty({ message: 'Os parâmetros são obrigatórios.' })
+  @IsArray({ message: 'Os parâmetros devem ser um array de números.' })
+  @IsNumber({}, { each: true, message: 'Cada parâmetro deve ser um número.' })
   parametros: number[];
 
   @IsOptional()

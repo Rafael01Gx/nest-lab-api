@@ -25,6 +25,11 @@ export class ConfiguracaoAnaliseController {
   findAll() {
     return this.configuracaoAnaliseService.findAll();
   }
+  @Get('analise/:id')
+  findByTipoAnaliseId(@Param('id', ParseIntPipe) id: number) {
+    return this.configuracaoAnaliseService.findByTipoAnaliseId(id);
+  }
+
   @Post()
   create(@Body() dto: CreateConfigAnaliseDto) {
     return this.configuracaoAnaliseService.create(dto);

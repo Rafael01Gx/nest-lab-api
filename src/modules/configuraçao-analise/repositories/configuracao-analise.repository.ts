@@ -162,4 +162,31 @@ export class ConfiguracaoAnaliseRepository {
       },
     });
   }
+
+  async findByTipoAnaliseId(
+    tipoAnaliseId: number,
+  ): Promise<Partial<IConfiguracaoAnalise>[] | null> {
+    return this.prisma.configuracaoAnalise.findMany({
+      where: { tipoAnaliseId },
+      include: {
+        tipoAnalise: {
+          omit: {
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        parametros: {
+          omit: {
+            createdAt: true,
+            updatedAt: true,
+            tipoAnaliseId: true,
+          },
+        },
+      },
+      omit: {
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
 }

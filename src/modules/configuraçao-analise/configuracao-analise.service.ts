@@ -25,6 +25,16 @@ export class ConfiguracaoAnaliseService {
     return this.configuracaoAnaliseRepo.findAll();
   }
 
+  async findByTipoAnaliseId(
+    tipoAnaliseId: number,
+  ): Promise<Partial<IConfiguracaoAnalise>[] | null> {
+    const tipoAnalise = await this.tipoAnaliseRepo.findById(tipoAnaliseId);
+    if (!tipoAnalise) {
+      throw new HttpException('Análise inválida!', HttpStatus.NOT_FOUND);
+    }
+    return this.configuracaoAnaliseRepo.findByTipoAnaliseId(tipoAnaliseId);
+  }
+
   async update(
     id: number,
     dto: UpdateConfigAnaliseDto,

@@ -8,11 +8,11 @@ import {
 } from 'class-validator';
 
 export class CreateConfigAnaliseDto {
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'O nome da descrição é obrigatório.' })
+  @IsString({ message: 'O nome da descrição deve ser uma string.' })
   nomeDescricao: string;
 
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'O tipo de análise é obrigatório.' })
   @Transform(({ value }: { value: unknown }) => {
     if (typeof value === 'string') {
       const parsed = parseInt(value, 10);
@@ -20,12 +20,12 @@ export class CreateConfigAnaliseDto {
     }
     return value;
   })
-  @IsNumber()
+  @IsNumber({}, { message: 'O tipo de análise deve ser um número.' })
   tipoAnaliseId: number;
 
-  @IsNotEmpty()
-  @IsArray()
+  @IsNotEmpty({ message: 'Os parâmetros são obrigatórios.' })
+  @IsArray({ message: 'Os parâmetros devem ser um array de números.' })
   @ArrayNotEmpty({ message: 'É necessário informar ao menos um parâmetro.' })
-  @IsNumber({}, { each: true })
+  @IsNumber({}, { each: true, message: 'Cada parâmetro deve ser um número.' })
   parametros: number[];
 }

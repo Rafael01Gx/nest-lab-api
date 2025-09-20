@@ -25,7 +25,7 @@ export class ParametrosAnaliseDto {
 
   @IsOptional()
   @IsString()
-  unidadeMedida?: string;
+  subDescricao?: string;
 
   @IsOptional()
   @IsString()

@@ -34,7 +34,7 @@ export class ParametrosAnaliseService {
     const updateDto = {
       tipoAnaliseId: dto.tipoAnaliseId,
       descricao: dto.descricao ?? '',
-      unidadeMedida: dto.unidadeMedida ?? '',
+      subDescricao: dto.subDescricao ?? '',
       casasDecimais: dto.casasDecimais ?? 0,
       unidadeResultado: dto.unidadeResultado ?? '',
     };
