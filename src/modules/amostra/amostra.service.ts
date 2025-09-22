@@ -4,13 +4,14 @@ import { CreateAmostraDto } from './dto/create-amostra.dto';
 import { AmostraRepository } from './repositories/amostra.repository';
 import { IAmostra } from './interfaces/amostra.interface';
 import { User } from '../user/entities/user.entity';
+import { AmostraQueryDto } from './dto/amostra-servico-query.dto';
 
 @Injectable()
 export class AmostraService {
   constructor(private readonly amostraRepository: AmostraRepository) {}
 
-  findAll(): Promise<IAmostra[]> {
-    return this.amostraRepository.findAll();
+  findAll(query: AmostraQueryDto): Promise<IAmostra[]> {
+    return this.amostraRepository.findAll(query);
   }
 
   findAllByUser(user: User): Promise<IAmostra[]> {

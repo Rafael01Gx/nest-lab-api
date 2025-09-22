@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { AmostraService } from './amostra.service';
 import { UpdateAmostraDto } from './dto/update-amostra.dto';
@@ -15,6 +16,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from '../user/entities/user.entity';
+import { AmostraQueryDto } from './dto/amostra-servico-query.dto';
 
 @Controller('amostra')
 export class AmostraController {
@@ -22,9 +24,10 @@ export class AmostraController {
 
   @Roles(Role.ADMIN, Role.OPERADOR)
   @Get()
-  findAll() {
-    return this.amostraService.findAll();
+  findAll(@Query() query: AmostraQueryDto) {
+    return this.amostraService.findAll(query);
   }
+
   @Get('user')
   findAllByUser(@CurrentUser() user: User) {
     return this.amostraService.findAllByUser(user);

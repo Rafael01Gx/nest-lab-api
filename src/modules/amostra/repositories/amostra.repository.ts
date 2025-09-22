@@ -4,6 +4,7 @@ import { CreateAmostraDto } from '../dto/create-amostra.dto';
 import { IAmostra } from '../interfaces/amostra.interface';
 import { EStatus } from '@prisma/client';
 import { UpdateAmostraDto } from '../dto/update-amostra.dto';
+import { AmostraQueryDto } from '../dto/amostra-servico-query.dto';
 
 @Injectable()
 export class AmostraRepository {
@@ -39,8 +40,16 @@ export class AmostraRepository {
     });
   }
 
-  async findAll(): Promise<IAmostra[]> {
+  async findAll(query: AmostraQueryDto): Promise<IAmostra[]> {
+    const { status, prazoInicioFim } = query;
+    const statusFilter = status
+      ? Array.isArray(status)
+        ? { in: status }
+        : { equals: status }
+      : undefined;
+    const prazo = prazoInicioFim?.includes('TRUE') ? { not: '' } : undefined;
     return this.prisma.amostra.findMany({
+      where: { status: statusFilter, prazoInicioFim: prazo },
       ...this.#returnOptions,
     });
   }
