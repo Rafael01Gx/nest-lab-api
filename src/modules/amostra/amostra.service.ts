@@ -14,6 +14,10 @@ export class AmostraService {
     return this.amostraRepository.findAll(query);
   }
 
+  findById(id: number): Promise<IAmostra | null> {
+    return this.amostraRepository.findById(id);
+  }
+
   findAllByUser(user: User): Promise<IAmostra[]> {
     if (!user || !user.id) {
       throw new HttpException('User ID is required', 400);

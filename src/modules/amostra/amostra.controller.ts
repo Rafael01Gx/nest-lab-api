@@ -28,6 +28,12 @@ export class AmostraController {
     return this.amostraService.findAll(query);
   }
 
+  @Roles(Role.ADMIN, Role.OPERADOR)
+  @Get(':id')
+  findById(@Param('id', ParseIntPipe) id: number) {
+    return this.amostraService.findById(id);
+  }
+
   @Get('user')
   findAllByUser(@CurrentUser() user: User) {
     return this.amostraService.findAllByUser(user);
