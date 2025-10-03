@@ -13,7 +13,7 @@ export interface IAmostra {
   userId: string;
   user?: User;
   resultados?: JsonValue | null | undefined;
-  analistas?: User[] | JsonValue | null | undefined;
+  analistas?: string[] | JsonValue | null | undefined;
   status: EStatus;
   progresso?: number | null;
   prazoInicioFim?: string;

@@ -88,15 +88,20 @@ export class AmostraRepository {
       ...this.#returnOptions,
     });
   }
-  /*
-  async update(id: number, data: Partial<AmostraDto>): Promise<IAmostra> {
+
+  async update(id: number, dto: UpdateAmostraDto): Promise<IAmostra> {
     return this.prisma.amostra.update({
       where: { id },
-      data,
-      omit: { createdAt: true, updatedAt: true },
+      data: {
+        analistas: dto.analistas,
+        progresso: dto.progresso,
+        resultados: dto.resultados,
+        status: dto.status,
+      },
+      ...this.#returnOptions,
     });
   }
-
+  /*
   async delete(id: number): Promise<IAmostra> {
     return this.prisma.amostra.delete({
       where: { id },

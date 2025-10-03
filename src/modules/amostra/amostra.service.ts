@@ -1,10 +1,11 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UpdateAmostraDto } from './dto/update-amostra.dto';
 import { CreateAmostraDto } from './dto/create-amostra.dto';
 import { AmostraRepository } from './repositories/amostra.repository';
 import { IAmostra } from './interfaces/amostra.interface';
 import { User } from '../user/entities/user.entity';
 import { AmostraQueryDto } from './dto/amostra-servico-query.dto';
+import { EStatus } from '@prisma/client';
 
 @Injectable()
 export class AmostraService {
@@ -29,11 +30,38 @@ export class AmostraService {
     return dto;
   }
 
-  update(id: number, dto: UpdateAmostraDto) {
-    return { id, dto };
+  async update(
+    id: number,
+    dto: UpdateAmostraDto,
+    user: User,
+  ): Promise<IAmostra> {
+    const amostraExists = await this.findById(id);
+    if (!amostraExists) {
+      throw new HttpException('Amostra não encontrada', HttpStatus.NOT_FOUND);
+    }
+    if (!dto.analistas) dto.analistas = [];
+    dto.analistas.push(user.id);
+    const analistas = new Set(dto.analistas);
+    const progresso = this.calculaProgresso(dto);
+    const updateAmostra: UpdateAmostraDto = {
+      ...dto,
+      analistas: [...analistas],
+      progresso: progresso,
+      status: progresso === 100 ? EStatus.FINALIZADA : amostraExists.status,
+    };
+
+    return this.amostraRepository.update(id, updateAmostra);
   }
 
   delete(id: number) {
     return id;
+  }
+
+  calculaProgresso(amostra: UpdateAmostraDto): number {
+    const numEnsaios = amostra.ensaiosSolicitados.length;
+    const numResultados = Object.keys(
+      amostra.resultados as Record<string, object>,
+    ).length;
+    return (numResultados * 100) / numEnsaios;
   }
 }

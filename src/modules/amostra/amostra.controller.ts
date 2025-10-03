@@ -47,8 +47,12 @@ export class AmostraController {
 
   @Roles(Role.ADMIN, Role.OPERADOR)
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateAmostraDto) {
-    return this.amostraService.update(id, dto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateAmostraDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.amostraService.update(id, dto, user);
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR)

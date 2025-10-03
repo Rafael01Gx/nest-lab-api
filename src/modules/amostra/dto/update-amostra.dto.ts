@@ -70,7 +70,7 @@ export class UpdateAmostraDto {
 
   @IsOptional()
   @IsArray({ message: 'O campo analistas deve ser um array.' })
-  analistas: User[];
+  analistas: string[];
 
   @IsOptional()
   @IsEnum(EStatus, { message: 'O campo status deve ser um valor válido.' })
