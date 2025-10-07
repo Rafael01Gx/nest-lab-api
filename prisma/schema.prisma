@@ -110,6 +110,7 @@ model Amostra {
   user               User          @relation(fields: [userId], references: [id])
   resultados         Json?
   analistas          Json?
+  revisor            String?       @default("")
   status             EStatus       @default(AGUARDANDO)
   progresso          Int           @default(0)
   prazoInicioFim     String        @default("")

@@ -9,20 +9,23 @@ import { AmostraQueryDto } from '../dto/amostra-servico-query.dto';
 @Injectable()
 export class AmostraRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  #userSelectSafe = {
+    omit: {
+      password: true,
+      role: true,
+      passwordResetExpires: true,
+      passwordResetToken: true,
+      authorization: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  };
+
   #returnOptions = {
     include: {
       ensaiosSolicitados: true,
-      user: {
-        omit: {
-          password: true,
-          role: true,
-          passwordResetExpires: true,
-          passwordResetToken: true,
-          authorization: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      },
+      user: this.#userSelectSafe,
     },
     omit: { createdAt: true, updatedAt: true },
   };
@@ -74,6 +77,7 @@ export class AmostraRepository {
       data: { status },
     });
   }
+
   async updateRecepcaoAgendamento(
     data: Partial<UpdateAmostraDto>,
   ): Promise<IAmostra> {
@@ -90,18 +94,49 @@ export class AmostraRepository {
   }
 
   async update(id: number, dto: UpdateAmostraDto): Promise<IAmostra> {
+    const allowedFields: (keyof UpdateAmostraDto)[] = [
+      'analistas',
+      'progresso',
+      'resultados',
+      'status',
+    ];
+    const dataToUpdate = Object.fromEntries(
+      Object.entries(dto).filter(
+        ([key, value]) =>
+          allowedFields.includes(key as keyof UpdateAmostraDto) &&
+          value !== undefined,
+      ),
+    );
+
     return this.prisma.amostra.update({
       where: { id },
-      data: {
-        analistas: dto.analistas,
-        progresso: dto.progresso,
-        resultados: dto.resultados,
-        status: dto.status,
-      },
+      data: dataToUpdate,
       ...this.#returnOptions,
     });
   }
+
   /*
+  async findAllByUser(userId: string): Promise<IAmostra[]> {
+    const amostras = await this.prisma.amostra.findMany({
+      where: { userId },
+      ...this.#returnOptions,
+    });
+
+    return Promise.all(amostras.map((a) => this.#attachRevisor(a)));
+  }
+
+  async #attachRevisor(amostra: IAmostra): Promise<IAmostra> {
+    if (!amostra.revisor || amostra.revisor === '')
+      return { ...amostra, revisor: null };
+
+    const revisor = await this.prisma.user.findUnique({
+      where: { id: amostra.revisor },
+      ...this.#userSelectSafe,
+    });
+
+    return { ...amostra, revisor };
+  }
+  
   async delete(id: number): Promise<IAmostra> {
     return this.prisma.amostra.delete({
       where: { id },
