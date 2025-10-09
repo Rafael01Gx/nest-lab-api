@@ -1,3 +1,13 @@
 node_modules
-.env
 dist
+npm-debug.log
+.env*
+!.env.production
+.git
+.gitignore
+README.md
+.vscode
+.idea
+coverage
+*.log
+.DS_Store

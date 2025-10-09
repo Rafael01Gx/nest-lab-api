@@ -9,12 +9,26 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const reflector = app.get(Reflector);
+  const allowedOrigins = (
+    process.env.CORS_ORIGINS ||
+    'http://localhost:4200,http://localhost:4000,http://localhost'
+  )
+    .split(',')
+    .map((origin) => origin.trim());
+
   app.enableCors({
-    origin: [
-      'http://localhost:4200',
-      'http://192.168.1.17:4200',
-      'http://192.168.1.5:4200',
-    ],
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'), false);
+      }
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -28,6 +42,7 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  await app.listen(port, '0.0.0.0');
 }
 bootstrap().catch(console.error);
