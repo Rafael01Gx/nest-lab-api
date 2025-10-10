@@ -12,6 +12,8 @@ import { AmostraRepository } from '../amostra/repositories/amostra.repository';
 import { OrdemServicoQueryDto } from './dto/ordem-servico-query.dto';
 import { UpdateOrdemServicoDto } from './dto/update-ordem-servico.dto';
 import { OrdemServicoAgendamentoDto } from './dto/ordem-servico-agendamento.dto';
+import { MailService } from 'src/mail/mail.service';
+import { newOrderTemplate } from 'src/mail/templates/new-order.template';
 
 @Injectable()
 export class OrdemServicoService {
@@ -19,6 +21,7 @@ export class OrdemServicoService {
     private readonly ordemServicoRepository: OrdemServicoRepository,
     private readonly userRepository: UserRepository,
     private readonly amostraRepository: AmostraRepository,
+    private readonly mailService: MailService,
   ) {}
 
   async create(dto: CreateOrdemServicoDto, user: User): Promise<IOrdemServico> {
@@ -55,7 +58,23 @@ export class OrdemServicoService {
       solicitanteId: user.id,
       amostras,
     };
-    return this.ordemServicoRepository.create(newOrdemServico as IOrdemServico);
+    const ordemCriada = await this.ordemServicoRepository.create(
+      newOrdemServico as IOrdemServico,
+    );
+    const adminEmail = (await this.userRepository.getAllAdmin())
+      .map((u) => u.email)
+      .toString();
+    try {
+      await this.mailService.sendMailWithHtml({
+        to: adminEmail,
+        subject: 'Nova Ordem de Serviço',
+        data: ordemCriada,
+        htmlFunction: newOrderTemplate,
+      });
+    } catch (err) {
+      console.log('Erro ão enviar email :', err);
+    }
+    return ordemCriada;
   }
 
   async findAll(query: OrdemServicoQueryDto): Promise<IOrdemServico[]> {

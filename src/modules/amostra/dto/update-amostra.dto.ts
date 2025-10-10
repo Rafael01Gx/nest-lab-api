@@ -100,11 +100,7 @@ export class UpdateAmostraDto {
   prazoInicioFim?: string;
 
   @IsOptional()
-  @IsString()
-  @MinLength(6, {
-    message:
-      'O campo dataRecepcao deve ter no mínimo 6 caracteres ex. dd-MM-YYYY',
-  })
+  @IsString({ message: 'O campo dataRecepcao deve ser uma string.' })
   dataRecepcao: string;
 
   @IsOptional()

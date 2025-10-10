@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { SignUpDto } from '../../auth/dto/signup.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../entities/user.entity';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class UserRepository {
@@ -18,8 +19,18 @@ export class UserRepository {
     });
   }
 
-  getAll() {
+  async getAll() {
     return this.prismaService.user.findMany({
+      omit: {
+        password: true,
+        passwordResetToken: true,
+        passwordResetExpires: true,
+      },
+    });
+  }
+  async getAllAdmin(): Promise<User[]> {
+    return this.prismaService.user.findMany({
+      where: { role: Role.ADMIN },
       omit: {
         password: true,
         passwordResetToken: true,
