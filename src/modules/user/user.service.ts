@@ -23,6 +23,7 @@ export class UserService {
       await this.userRepository.create(user);
       return { message: 'Usuário criado com sucesso.' };
     } catch (err) {
+      console.log(err);
       throw new HttpException(
         'Ocorreu um erro inesperado ao criar o usuário.',
         HttpStatus.INTERNAL_SERVER_ERROR,

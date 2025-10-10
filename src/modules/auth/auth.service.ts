@@ -8,6 +8,7 @@ import jwtConfig from './config/jwt.config';
 import { ConfigType } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { Response } from 'express';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,8 @@ export class AuthService {
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
     private readonly jwtService: JwtService,
-    private userRepository: UserRepository,
+    private readonly userRepository: UserRepository,
+    private readonly mailService: MailService,
   ) {}
 
   async signIn(user: SignInDto, res: Response) {
@@ -63,7 +65,11 @@ export class AuthService {
     }
 
     user.password = await this.hashingService.hash(user.password);
-    await this.userRepository.create(user);
+    await this.userRepository.create(user).then((res) => {
+      if (res) {
+        void this.mailService.sendUserAccessEmail(user);
+      }
+    });
     return { message: 'Usuário criado com sucesso!' };
   }
 

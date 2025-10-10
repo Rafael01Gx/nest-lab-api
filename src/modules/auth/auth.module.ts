@@ -10,6 +10,7 @@ import { BcryptService } from './hash/bcrypt.service';
 import { UserModule } from '../user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { MailModule } from 'src/mail/mail.module';
 
 @Global()
 @Module({
@@ -26,6 +27,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     JwtModule.registerAsync(jwtConfig.asProvider()),
     UserModule,
     PassportModule,
+    MailModule,
   ],
 })
 export class AuthModule {}
