@@ -1,5 +1,6 @@
 import { EStatus } from '@prisma/client';
-import { IsEnum, IsNumberString, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEnum, IsInt, IsNumberString, IsOptional } from 'class-validator';
 
 export class AmostraQueryDto {
   @IsOptional()
@@ -11,10 +12,12 @@ export class AmostraQueryDto {
   prazoInicioFim: string;
 
   @IsOptional()
-  @IsNumberString()
-  page?: string;
+  @Type(() => Number)
+  @IsInt()
+  page?: number;
 
   @IsOptional()
-  @IsNumberString()
-  limit?: string;
+  @Type(() => Number)
+  @IsInt()
+  limit?: number;
 }

@@ -73,6 +73,10 @@ export class UpdateAmostraDto {
   analistas: string[];
 
   @IsOptional()
+  @IsString({ message: 'O campo revisor deve ser uma string válida.' })
+  revisor: string;
+
+  @IsOptional()
   @IsArray({ message: 'O campo revisor deve ser uma string válida.' })
   analrevisoristas: string;
 

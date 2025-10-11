@@ -27,7 +27,7 @@ export class AmostraRepository {
       ensaiosSolicitados: true,
       user: this.#userSelectSafe,
     },
-    omit: { createdAt: true, updatedAt: true },
+    omit: { createdAt: true },
   };
 
   async create(_data: CreateAmostraDto): Promise<any> {
@@ -113,6 +113,66 @@ export class AmostraRepository {
       data: dataToUpdate,
       ...this.#returnOptions,
     });
+  }
+
+  async findAllWithUsers(query: AmostraQueryDto) {
+    const { page = 1, limit = 10 } = query;
+    const skip = (page - 1) * limit;
+
+    const [amostras, total] = await this.prisma.$transaction([
+      this.prisma.amostra.findMany({
+        where: { status: EStatus.FINALIZADA },
+        skip,
+        take: limit,
+        orderBy: { id: 'desc' },
+        include: { ensaiosSolicitados: true, user: this.#userSelectSafe },
+      }),
+      this.prisma.amostra.count({
+        where: { status: EStatus.FINALIZADA },
+      }),
+    ]);
+
+    if (!amostras.length) {
+      return {
+        data: [],
+        meta: { total: 0, totalPages: 0, currentPage: page, perPage: limit },
+      };
+    }
+
+    const revisorIds = amostras
+      .map((a) => a.revisor)
+      .filter((id): id is string => !!id);
+
+    const analistasIds = amostras
+      .flatMap((a) => (Array.isArray(a.analistas) ? a.analistas : []))
+      .filter((id): id is string => !!id);
+
+    const allUserIds = Array.from(new Set([...revisorIds, ...analistasIds]));
+
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: allUserIds } },
+      ...this.#userSelectSafe,
+    });
+    const userMap = new Map(users.map((u) => [u.id, u]));
+
+    const enriched = amostras.map((a) => ({
+      ...a,
+      revisor: a.revisor ? (userMap.get(a.revisor) ?? null) : null,
+      analistas: Array.isArray(a.analistas)
+        ? a.analistas
+            .map((id) => userMap.get(id as string) ?? null)
+            .filter(Boolean)
+        : [],
+    }));
+    return {
+      data: enriched,
+      meta: {
+        total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        perPage: limit,
+      },
+    };
   }
 
   /*

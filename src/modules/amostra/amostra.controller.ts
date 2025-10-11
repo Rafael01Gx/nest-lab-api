@@ -29,6 +29,12 @@ export class AmostraController {
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR)
+  @Get('concluidas')
+  findAllWithUsers(@Query() query: AmostraQueryDto) {
+    return this.amostraService.findAllWithUsers(query);
+  }
+
+  @Roles(Role.ADMIN, Role.OPERADOR)
   @Get(':id')
   findById(@Param('id', ParseIntPipe) id: number) {
     return this.amostraService.findById(id);

@@ -5,7 +5,6 @@ import { AmostraRepository } from './repositories/amostra.repository';
 import { IAmostra } from './interfaces/amostra.interface';
 import { User } from '../user/entities/user.entity';
 import { AmostraQueryDto } from './dto/amostra-servico-query.dto';
-import { EStatus } from '@prisma/client';
 
 @Injectable()
 export class AmostraService {
@@ -47,10 +46,14 @@ export class AmostraService {
       ...dto,
       analistas: [...analistas],
       progresso: progresso,
-      status: progresso === 100 ? EStatus.FINALIZADA : amostraExists.status,
+      status: dto.status,
     };
 
     return this.amostraRepository.update(id, updateAmostra);
+  }
+
+  async findAllWithUsers(query: AmostraQueryDto) {
+    return this.amostraRepository.findAllWithUsers(query);
   }
 
   delete(id: number) {
