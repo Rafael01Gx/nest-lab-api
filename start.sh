@@ -10,8 +10,8 @@ done
 
 echo "✅ Banco de dados disponível, aplicando migrações..."
 
-npx prisma migrate deploy
-#npx prisma db push
+#npx prisma migrate deploy
+npx prisma db push
 npx prisma db seed
 
 echo "🚀 Iniciando aplicação NestJS..."
