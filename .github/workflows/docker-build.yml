@@ -29,8 +29,6 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api
           tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
             type=raw,value=developer,enable=${{ github.ref_name == 'docker-build' }}
             type=raw,value=latest,enable={{is_default_branch}}
 
