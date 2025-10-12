@@ -42,5 +42,18 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api:buildcache,mode=max
+          secrets: |
+            "NODE_ENV=production"
+            "PORT=${{ secrets.PORT }}"
+            "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}"
+            "DATABASE_URL=${{ secrets.DATABASE_URL }}"
+            "JWT_SECRET=${{ secrets.JWT_SECRET }}"
+            "JWT_TOKEN_ISSUER=${{ secrets.JWT_TOKEN_ISSUER }}"
+            "JWT_TTL=${{ secrets.JWT_TTL }}"
+            "MAIL_HOST=${{ secrets.MAIL_HOST }}"
+            "MAIL_PORT=${{ secrets.MAIL_PORT }}"
+            "MAIL_USER=${{ secrets.MAIL_USER }}"
+            "MAIL_PASS=${{ secrets.MAIL_PASS }}"
+            "MAIL_FROM=${{ secrets.MAIL_FROM }}"
+          #cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api:buildcache
+          #cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api:buildcache,mode=max
