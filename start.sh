@@ -8,8 +8,8 @@ do
   sleep 3
 done
 
-echo "✅ Banco de dados disponível, aplicando migrações..."
-
+#echo "✅ Banco de dados disponível, aplicando migrações...migrate deploy"
+echo "✅ Banco de dados disponível, aplicando migrações...db push"
 #npx prisma migrate deploy
 npx prisma db push
 npx prisma db seed
