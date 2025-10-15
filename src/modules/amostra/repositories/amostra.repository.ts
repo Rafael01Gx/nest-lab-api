@@ -174,41 +174,63 @@ export class AmostraRepository {
       },
     };
   }
+  async findAllWithUsersByUsers(query: AmostraQueryDto, userId: string) {
+    const { page = 1, limit = 10 } = query;
+    const skip = (page - 1) * limit;
 
-  /*
-  async findAllByUser(userId: string): Promise<IAmostra[]> {
-    const amostras = await this.prisma.amostra.findMany({
-      where: { userId },
-      ...this.#returnOptions,
-    });
+    const [amostras, total] = await this.prisma.$transaction([
+      this.prisma.amostra.findMany({
+        where: { userId, status: EStatus.FINALIZADA },
+        skip,
+        take: limit,
+        orderBy: { id: 'desc' },
+        include: { ensaiosSolicitados: true, user: this.#userSelectSafe },
+      }),
+      this.prisma.amostra.count({
+        where: { status: EStatus.FINALIZADA },
+      }),
+    ]);
 
-    return Promise.all(amostras.map((a) => this.#attachRevisor(a)));
-  }
+    if (!amostras.length) {
+      return {
+        data: [],
+        meta: { total: 0, totalPages: 0, currentPage: page, perPage: limit },
+      };
+    }
 
-  async #attachRevisor(amostra: IAmostra): Promise<IAmostra> {
-    if (!amostra.revisor || amostra.revisor === '')
-      return { ...amostra, revisor: null };
+    const revisorIds = amostras
+      .map((a) => a.revisor)
+      .filter((id): id is string => !!id);
 
-    const revisor = await this.prisma.user.findUnique({
-      where: { id: amostra.revisor },
+    const analistasIds = amostras
+      .flatMap((a) => (Array.isArray(a.analistas) ? a.analistas : []))
+      .filter((id): id is string => !!id);
+
+    const allUserIds = Array.from(new Set([...revisorIds, ...analistasIds]));
+
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: allUserIds } },
       ...this.#userSelectSafe,
     });
+    const userMap = new Map(users.map((u) => [u.id, u]));
 
-    return { ...amostra, revisor };
+    const enriched = amostras.map((a) => ({
+      ...a,
+      revisor: a.revisor ? (userMap.get(a.revisor) ?? null) : null,
+      analistas: Array.isArray(a.analistas)
+        ? a.analistas
+            .map((id) => userMap.get(id as string) ?? null)
+            .filter(Boolean)
+        : [],
+    }));
+    return {
+      data: enriched,
+      meta: {
+        total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        perPage: limit,
+      },
+    };
   }
-  
-  async delete(id: number): Promise<IAmostra> {
-    return this.prisma.amostra.delete({
-      where: { id },
-    });
-  }
-
-  async findById(id: number): Promise<IAmostra | null> {
-    return this.prisma.amostra.findUnique({
-      where: { id },
-      include: {},
-      omit: { createdAt: true, updatedAt: true },
-    });
-  }
-    */
 }
