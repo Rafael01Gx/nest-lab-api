@@ -21,7 +21,7 @@ COPY --from=builder /usr/src/api/dist ./dist
 COPY --from=builder /usr/src/api/package*.json ./
 COPY --from=builder /usr/src/api/node_modules ./node_modules
 COPY --from=builder /usr/src/api/prisma ./prisma
-COPY --from=builder /usr/src/api/.env.production ./.env
+#COPY --from=builder /usr/src/api/.env.production ./.env
 COPY --from=builder /usr/src/api/start.sh ./start.sh
 
 RUN chmod +x ./start.sh

@@ -1,0 +1,150 @@
+name: Construir e enviar imagem do Docker de backend
+
+on:
+  push:
+    branches:
+      - master
+      - docker-build
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Código de check-out
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Extrair metadados
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api
+          tags: |
+            type=raw,value=developer,enable=${{ github.ref_name == 'docker-build' }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Cria e envia a imagem do Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          secrets: |
+            "NODE_ENV=production"
+            "PORT=${{ secrets.PORT }}"
+            "CORS_ORIGINS=${{ secrets.CORS_ORIGINS }}"
+            "DATABASE_URL=${{ secrets.DATABASE_URL }}"
+            "JWT_SECRET=${{ secrets.JWT_SECRET }}"
+            "JWT_TOKEN_ISSUER=${{ secrets.JWT_TOKEN_ISSUER }}"
+            "JWT_TTL=${{ secrets.JWT_TTL }}"
+            "MAIL_HOST=${{ secrets.MAIL_HOST }}"
+            "MAIL_PORT=${{ secrets.MAIL_PORT }}"
+            "MAIL_USER=${{ secrets.MAIL_USER }}"
+            "MAIL_PASS=${{ secrets.MAIL_PASS }}"
+            "MAIL_FROM=${{ secrets.MAIL_FROM }}"
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api:buildcache,mode=max
+
+      - name: Deploy no EC2 via Docker Compose
+        if: github.ref_name == 'master'
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ec2-52-67-220-103.sa-east-1.compute.amazonaws.com
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/lab-web-infraestrutura
+            
+            # Define qual tag usar baseado no branch
+            if [ "${{ github.ref_name }}" == "docker-build" ]; then
+              IMAGE_TAG="developer"
+              echo "🔧 Deploy do ambiente de DESENVOLVIMENTO"
+            else
+              IMAGE_TAG="latest"
+              echo "🚀 Deploy do ambiente de PRODUÇÃO"
+            fi
+            
+            echo "📦 Atualizando backend com a tag: $IMAGE_TAG"
+            
+            # Puxa a nova imagem
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api:$IMAGE_TAG
+            
+            # Para o container da API (mantém o DB rodando)
+            echo "⏸️  Parando container da API..."
+            docker compose stop api
+            docker compose rm -f api
+            
+            # Recria e inicia o container da API com a nova imagem
+            echo "🔄 Iniciando nova versão da API..."
+            docker compose up -d api
+            
+            # Aguarda o healthcheck da API
+            echo "⏳ Aguardando a API ficar saudável..."
+            COUNTER=0
+            MAX_ATTEMPTS=30
+            until docker compose ps api | grep -q "healthy" || [ $COUNTER -eq $MAX_ATTEMPTS ]; do
+              sleep 3
+              COUNTER=$((COUNTER+1))
+              echo "Tentativa $COUNTER de $MAX_ATTEMPTS..."
+            done
+            
+            if [ $COUNTER -eq $MAX_ATTEMPTS ]; then
+              echo "❌ ERRO: API não ficou saudável após $((MAX_ATTEMPTS*3)) segundos"
+              echo "Últimas 50 linhas do log da API:"
+              docker compose logs --tail=50 api
+              exit 1
+            fi
+            
+            echo "✅ API está saudável!"
+            
+            # Verifica se o frontend precisa ser reiniciado (depende da API)
+            echo "🔄 Reiniciando frontend para reconectar com a API..."
+            docker compose restart frontend
+            
+            # Aguarda o frontend
+            echo "⏳ Aguardando frontend..."
+            timeout 60 bash -c 'until docker compose ps frontend | grep -q "healthy"; do sleep 2; done' || echo "⚠️  Timeout esperando healthcheck do frontend"
+            
+            # Reinicia nginx para garantir conexão
+            echo "🔄 Reiniciando nginx..."
+            docker compose restart nginx
+            
+            # Limpeza de imagens antigas
+            echo "🧹 Limpando imagens antigas..."
+            docker image prune -af
+            
+            # Status final
+            echo ""
+            echo "=== 📊 STATUS DOS CONTAINERS ==="
+            docker compose ps
+            
+            echo ""
+            echo "=== 📝 ÚLTIMAS 20 LINHAS DO LOG DA API ==="
+            docker compose logs --tail=20 api
+            
+            echo ""
+            echo "✅ Deploy concluído com sucesso!"
+      
+      - name: Notificar sucesso
+        if: success()
+        run: |
+          echo "✅ Deploy do backend concluído com sucesso!"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+      
+      - name: Notificar falha
+        if: failure()
+        run: |
+          echo "❌ Deploy do backend falhou!"
+          echo "Verifique os logs acima para detalhes"
