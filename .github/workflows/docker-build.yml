@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - master
-      - docker-build
+      - development
 
 jobs:
   build-and-push:
@@ -29,7 +29,7 @@ jobs:
         with:
           images: ${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api
           tags: |
-            type=raw,value=developer,enable=${{ github.ref_name == 'docker-build' }}
+            type=raw,value=developer,enable=${{ github.ref_name == 'development' }}
             type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Cria e envia a imagem do Docker
