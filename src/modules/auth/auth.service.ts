@@ -63,11 +63,11 @@ export class AuthService {
     if (userExist) {
       throw new HttpException('Email já está em uso', HttpStatus.CONFLICT);
     }
-
+    const pass = user.password;
     user.password = await this.hashingService.hash(user.password);
     await this.userRepository.create(user).then((res) => {
       if (res) {
-        void this.mailService.sendUserAccessEmail(user);
+        void this.mailService.sendUserAccessEmail({ ...user, password: pass });
       }
     });
     return { message: 'Usuário criado com sucesso!' };

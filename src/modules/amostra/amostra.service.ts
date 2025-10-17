@@ -52,8 +52,8 @@ export class AmostraService {
     return this.amostraRepository.update(id, updateAmostra);
   }
 
-  async findAllWithUsers(query: AmostraQueryDto) {
-    return this.amostraRepository.findAllWithUsers(query);
+  async findAllWithUsers(query: AmostraQueryDto, user: User) {
+    return this.amostraRepository.findAllWithUsers(query, user.id);
   }
 
   delete(id: number) {

@@ -28,10 +28,10 @@ export class AmostraController {
     return this.amostraService.findAll(query);
   }
 
-  @Roles(Role.ADMIN, Role.OPERADOR)
+  @Roles(Role.ADMIN, Role.OPERADOR, Role.USUARIO)
   @Get('concluidas')
-  findAllWithUsers(@Query() query: AmostraQueryDto) {
-    return this.amostraService.findAllWithUsers(query);
+  findAllWithUsers(@Query() query: AmostraQueryDto, @CurrentUser() user: User) {
+    return this.amostraService.findAllWithUsers(query,user);
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR)
