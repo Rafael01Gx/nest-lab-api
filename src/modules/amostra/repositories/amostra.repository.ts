@@ -115,20 +115,43 @@ export class AmostraRepository {
     });
   }
 
-  async findAllWithUsers(query: AmostraQueryDto) {
-    const { page = 1, limit = 10 } = query;
+  async findAllWithUsers(query: AmostraQueryDto, userId: string) {
+    const { page = 1, limit = 10, status, dataInicio, dataFim } = query;
     const skip = (page - 1) * limit;
+    const where: any = {
+      userId,
+      ...(status && { status }),
+      ...(dataInicio &&
+        dataFim && {
+          createdAt: {
+            gte: new Date(dataInicio),
+            lte: new Date(dataFim),
+          },
+        }),
+      ...(dataInicio &&
+        !dataFim && {
+          createdAt: {
+            gte: new Date(dataInicio),
+          },
+        }),
+      ...(dataFim &&
+        !dataInicio && {
+          createdAt: {
+            lte: new Date(dataFim),
+          },
+        }),
+    };
 
     const [amostras, total] = await this.prisma.$transaction([
       this.prisma.amostra.findMany({
-        where: { status: EStatus.FINALIZADA },
+        where,
         skip,
         take: limit,
         orderBy: { id: 'desc' },
         include: { ensaiosSolicitados: true, user: this.#userSelectSafe },
       }),
       this.prisma.amostra.count({
-        where: { status: EStatus.FINALIZADA },
+        where,
       }),
     ]);
 

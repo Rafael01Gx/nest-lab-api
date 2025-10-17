@@ -23,6 +23,7 @@ import { OrdemServicoAgendamentoDto } from './dto/ordem-servico-agendamento.dto'
 export class OrdemServicoController {
   constructor(private readonly ordemServicoService: OrdemServicoService) {}
 
+  @Roles(Role.ADMIN, Role.USUARIO)
   @Post()
   create(@Body() dto: CreateOrdemServicoDto, @CurrentUser() user: User) {
     return this.ordemServicoService.create(dto, user);

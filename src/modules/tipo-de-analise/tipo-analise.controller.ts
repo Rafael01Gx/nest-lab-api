@@ -12,8 +12,6 @@ import { TipoAnaliseService } from './tipo-analise.service';
 import { TipoAnaliseDto } from './dto/tipo-analise.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
-
-@Roles(Role.ADMIN, Role.OPERADOR)
 @Controller('tipo-de-analise')
 export class TipoAnaliseController {
   constructor(private readonly tipoAnaliseService: TipoAnaliseService) {}
@@ -23,16 +21,19 @@ export class TipoAnaliseController {
     return this.tipoAnaliseService.findAll();
   }
 
+  @Roles(Role.ADMIN, Role.OPERADOR)
   @Post()
   create(@Body() dto: TipoAnaliseDto) {
     return this.tipoAnaliseService.create(dto);
   }
 
+  @Roles(Role.ADMIN, Role.OPERADOR)
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: TipoAnaliseDto) {
     return this.tipoAnaliseService.update(id, dto);
   }
 
+  @Roles(Role.ADMIN, Role.OPERADOR)
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.tipoAnaliseService.delete(id);
