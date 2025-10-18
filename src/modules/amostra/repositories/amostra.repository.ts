@@ -116,7 +116,7 @@ export class AmostraRepository {
   }
 
   async findAllWithUsers(query: AmostraQueryDto, userId: string) {
-    const { page = 1, limit = 10, status, dataInicio, dataFim } = query;
+    const { page = 1, limit = 10, status, dataInicio, dataFim ,concluidas } = query;
     const skip = (page - 1) * limit;
     const where: any = {
       userId,
@@ -127,7 +127,8 @@ export class AmostraRepository {
             gte: new Date(dataInicio),
             lte: new Date(dataFim),
           },
-        }),
+        }), 
+      ...(concluidas && { progresso: 100 }),
       ...(dataInicio &&
         !dataFim && {
           createdAt: {

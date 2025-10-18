@@ -5,10 +5,12 @@ import { AmostraRepository } from './repositories/amostra.repository';
 import { IAmostra } from './interfaces/amostra.interface';
 import { User } from '../user/entities/user.entity';
 import { AmostraQueryDto } from './dto/amostra-servico-query.dto';
+import { OrdemServicoRepository } from '../ordem-servico/repositories/ordem-servico.repository';
 
 @Injectable()
 export class AmostraService {
-  constructor(private readonly amostraRepository: AmostraRepository) {}
+  constructor(private readonly amostraRepository: AmostraRepository,
+              private readonly ordemServicoRepository: OrdemServicoRepository) {}
 
   findAll(query: AmostraQueryDto): Promise<IAmostra[]> {
     return this.amostraRepository.findAll(query);
@@ -38,6 +40,15 @@ export class AmostraService {
     if (!amostraExists) {
       throw new HttpException('Amostra não encontrada', HttpStatus.NOT_FOUND);
     }
+    if (amostraExists.status === 'AUTORIZADA' && dto.status == 'EXECUCAO') {
+      const os = await this.ordemServicoRepository.findById(amostraExists.numeroOs);
+      if (!os) {
+        throw new HttpException('Ordem de Serviço não encontrada', HttpStatus.NOT_FOUND);
+      }
+     const os_status = 'EXECUCAO';
+      await this.ordemServicoRepository.updateStatus(os.id, os_status);
+    }
+
     if (!dto.analistas) dto.analistas = [];
     dto.analistas.push(user.id);
     const analistas = new Set(dto.analistas);

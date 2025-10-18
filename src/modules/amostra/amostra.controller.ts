@@ -29,7 +29,7 @@ export class AmostraController {
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR, Role.USUARIO)
-  @Get('concluidas')
+  @Get('amostras')
   findAllWithUsers(@Query() query: AmostraQueryDto, @CurrentUser() user: User) {
     return this.amostraService.findAllWithUsers(query,user);
   }
