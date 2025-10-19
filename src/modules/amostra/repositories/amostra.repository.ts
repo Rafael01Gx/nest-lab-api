@@ -71,6 +71,13 @@ export class AmostraRepository {
     });
   }
 
+    async findByOs(numeroOs: string): Promise<IAmostra[]> {
+    return this.prisma.amostra.findMany({
+      where: { numeroOs },
+      ...this.#returnOptions,
+    });
+  }
+
   async updateStatusByOs(numeroOs: string, status: EStatus): Promise<any> {
     return this.prisma.amostra.updateMany({
       where: { numeroOs },
@@ -114,10 +121,23 @@ export class AmostraRepository {
       ...this.#returnOptions,
     });
   }
+  async assinar(id: number, revisor: string): Promise<IAmostra> {
+    return this.prisma.amostra.update({
+      where: { id },
+      data: {revisor,
+        status: 'FINALIZADA',
+      },
+      ...this.#returnOptions,
+    });
+  }
 
   async findAllWithUsers(query: AmostraQueryDto, userId: string) {
-    const { page = 1, limit = 10, status, dataInicio, dataFim ,concluidas } = query;
+    const { page = 1, limit = 10, status, dataInicio, dataFim ,concluidas,progresso } = query;
     const skip = (page - 1) * limit;
+    const createdAtFilter = {
+    ...(dataInicio && { gte: new Date(dataInicio) }), 
+    ...(dataFim && { lte: new Date(dataFim) }),
+};
     const where: any = {
       userId,
       ...(status && { status }),
@@ -128,19 +148,15 @@ export class AmostraRepository {
             lte: new Date(dataFim),
           },
         }), 
-      ...(concluidas && { progresso: 100 }),
-      ...(dataInicio &&
-        !dataFim && {
-          createdAt: {
-            gte: new Date(dataInicio),
-          },
-        }),
-      ...(dataFim &&
-        !dataInicio && {
-          createdAt: {
-            lte: new Date(dataFim),
-          },
-        }),
+        ...(progresso && {progresso, status:{
+          not: "FINALIZADA"
+        }}),
+      ...(concluidas &&  { progresso: 100 , revisor:{
+        not: ""
+      }}),
+     ...(Object.keys(createdAtFilter).length > 0 && {
+        createdAt: createdAtFilter
+    }),
     };
 
     const [amostras, total] = await this.prisma.$transaction([

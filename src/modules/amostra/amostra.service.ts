@@ -6,6 +6,7 @@ import { IAmostra } from './interfaces/amostra.interface';
 import { User } from '../user/entities/user.entity';
 import { AmostraQueryDto } from './dto/amostra-servico-query.dto';
 import { OrdemServicoRepository } from '../ordem-servico/repositories/ordem-servico.repository';
+import { EStatus } from '@prisma/client';
 
 @Injectable()
 export class AmostraService {
@@ -40,6 +41,9 @@ export class AmostraService {
     if (!amostraExists) {
       throw new HttpException('Amostra não encontrada', HttpStatus.NOT_FOUND);
     }
+    if (amostraExists.status === 'FINALIZADA') {
+      throw new HttpException("Não é possível alterar esta amostra. O registro já foi finalizadoAmostra Bloqueada. Após a assinatura/validação, as modificações são impedidas para garantir a integridade do laudo.", HttpStatus.FORBIDDEN)
+    }
     if (amostraExists.status === 'AUTORIZADA' && dto.status == 'EXECUCAO') {
       const os = await this.ordemServicoRepository.findById(amostraExists.numeroOs);
       if (!os) {
@@ -63,6 +67,34 @@ export class AmostraService {
     return this.amostraRepository.update(id, updateAmostra);
   }
 
+  async assinar(
+    id: number,
+    user: User
+  ): Promise<IAmostra> {
+    const amostraExists = await this.findById(id);
+    const userId = user.id;
+    if (!amostraExists) {
+      throw new HttpException('Amostra não encontrada', HttpStatus.NOT_FOUND);
+    }
+        if (amostraExists.status === 'FINALIZADA') {
+      throw new HttpException("Não é possível alterar esta amostra. O registro já foi finalizadoAmostra Bloqueada. Após a assinatura/validação, as modificações são impedidas para garantir a integridade do laudo.", HttpStatus.FORBIDDEN)
+    }
+    if (!(amostraExists.status === 'EXECUCAO' && amostraExists.progresso === 100)) {
+      throw new HttpException('Amostra não possui requisitos para ser assinada.', HttpStatus.NOT_ACCEPTABLE)
+    }
+   const os = await this.ordemServicoRepository.findById(amostraExists.numeroOs);
+    if (!os) {
+        throw new HttpException('Ordem de Serviço não encontrada', HttpStatus.NOT_FOUND);
+    }
+    const amostras = await this.amostraRepository.findByOs(amostraExists.numeroOs);
+    const progresso = this.calcularMediaProgresso(amostras);
+    if (progresso > 0){
+      const status =( progresso == 100 ? 'FINALIZADA' : os.status) as EStatus ;
+      this.ordemServicoRepository.updateStatus(os.id,status,'',progresso);
+    }
+    return this.amostraRepository.assinar(id,userId);
+  }
+
   async findAllWithUsers(query: AmostraQueryDto, user: User) {
     return this.amostraRepository.findAllWithUsers(query, user.id);
   }
@@ -78,4 +110,15 @@ export class AmostraService {
     ).length;
     return (numResultados * 100) / numEnsaios;
   }
+
+  calcularMediaProgresso(amostras: IAmostra[]): number {
+    if (!amostras || amostras.length === 0) {
+        return 0;
+    }
+    const somaTotal = amostras.reduce((acumulador, amostraAtual) => {
+        return acumulador + amostraAtual.progresso!;
+    }, 0);
+    const media = somaTotal / amostras.length;
+    return media;
+}
 }

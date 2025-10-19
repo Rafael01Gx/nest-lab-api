@@ -12,6 +12,11 @@ export class AmostraQueryDto {
   concluidas?: boolean;
 
   @IsOptional()
+  @Type(() => Number)
+  progresso?:number;
+
+
+  @IsOptional()
   @IsNumberString()
   prazoInicioFim?: string;
 

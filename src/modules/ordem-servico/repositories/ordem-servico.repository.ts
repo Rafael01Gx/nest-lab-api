@@ -110,10 +110,16 @@ export class OrdemServicoRepository {
     id: string,
     status: EStatus,
     observacao?: string,
+    progresso?:number,
   ): Promise<IOrdemServico> {
+    const data = {
+      ...(status && {status}),
+      ...(observacao && {observacao}),
+      ...(progresso && {progresso}),
+    }
     return this.prisma.ordemServico.update({
       where: { id },
-      data: { status, observacao },
+      data,
       ...this.#returnOptions,
     });
   }

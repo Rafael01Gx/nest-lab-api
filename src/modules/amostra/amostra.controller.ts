@@ -61,6 +61,15 @@ export class AmostraController {
     return this.amostraService.update(id, dto, user);
   }
 
+  @Roles(Role.ADMIN)
+  @Patch('assinar/:id')
+  assinar(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ) {
+    return this.amostraService.assinar(id,user);
+  }
+
   @Roles(Role.ADMIN, Role.OPERADOR)
   @Delete(':id')
   delete(@Param('id', ParseIntPipe) id: number) {
