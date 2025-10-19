@@ -148,9 +148,7 @@ export class AmostraRepository {
             lte: new Date(dataFim),
           },
         }), 
-        ...(progresso && {progresso, status:{
-          not: "FINALIZADA"
-        }}),
+        ...(progresso && {progresso}),
       ...(concluidas &&  { progresso: 100 , revisor:{
         not: ""
       }}),
