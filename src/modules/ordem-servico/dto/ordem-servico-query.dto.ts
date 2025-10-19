@@ -1,5 +1,6 @@
 import { EStatus } from '@prisma/client';
-import { IsEnum, IsNumberString, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEnum, IsInt, IsNumberString, IsOptional, IsString } from 'class-validator';
 
 export class OrdemServicoQueryDto {
   @IsOptional()
@@ -7,14 +8,36 @@ export class OrdemServicoQueryDto {
   status?: EStatus[];
 
   @IsOptional()
-  @IsNumberString()
-  prazoInicioFim: string;
+  @Type(() => Boolean)
+  concluidas?: boolean;
 
   @IsOptional()
-  @IsNumberString()
-  page?: string;
+  @Type(() => Number)
+  progresso?:number;
 
   @IsOptional()
-  @IsNumberString()
-  limit?: string;
+  @IsString()
+  solicitante?:string;
+
+  @IsOptional()
+  @Type(() => Boolean)
+  prazoInicioFim?: boolean;
+
+  @IsOptional()
+  @IsString()
+  dataInicio?: string;
+
+  @IsOptional()
+  @IsString()
+  dataFim?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  page?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  limit?: number;
 }

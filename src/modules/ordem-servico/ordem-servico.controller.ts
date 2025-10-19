@@ -34,6 +34,12 @@ export class OrdemServicoController {
   findAll(@Query() query: OrdemServicoQueryDto) {
     return this.ordemServicoService.findAll(query);
   }
+  
+  @Roles(Role.ADMIN, Role.OPERADOR)
+  @Get('filter')
+  findByFilters(@Query() query: OrdemServicoQueryDto) {
+    return this.ordemServicoService.findByFilters(query);
+  }
 
   @Get('user')
   findAllByUser(

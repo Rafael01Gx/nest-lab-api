@@ -7,7 +7,7 @@ import { OrdemServicoAgendamentoDto } from '../dto/ordem-servico-agendamento.dto
 
 @Injectable()
 export class OrdemServicoRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
   #returnOptions = {
     include: {
       amostras: {
@@ -69,7 +69,7 @@ export class OrdemServicoRepository {
         ? { in: status }
         : { equals: status }
       : undefined;
-    const prazo = prazoInicioFim?.includes('TRUE') ? { not: '' } : undefined;
+    const prazo = prazoInicioFim ? { not: '' } : undefined;
     return this.prisma.ordemServico.findMany({
       where: {
         status: statusFilter,
@@ -77,6 +77,72 @@ export class OrdemServicoRepository {
       },
       ...this.#returnOptions,
     });
+  }
+
+  async findByFilters(query: OrdemServicoQueryDto): Promise<any> {
+    const { page = 1, limit = 10, status, dataInicio, dataFim, concluidas, progresso, solicitante } = query;
+    const skip = (page - 1) * limit;
+    const solicitanteResult = solicitante
+      ? await this.prisma.user.findFirst({
+        where: { name: solicitante },
+        select: { id: true }
+      })
+      : null;
+    const solicitanteId = solicitanteResult ? solicitanteResult.id : null;
+    const createdAtFilter = {
+      ...(dataInicio && { gte: new Date(dataInicio) }),
+      ...(dataFim && { lte: new Date(dataFim) }),
+    };
+    const where: any = {
+      ...(solicitanteId && { solicitanteId }),
+      ...(status && { status }),
+      ...(dataInicio &&
+        dataFim && {
+        createdAt: {
+          gte: new Date(dataInicio),
+          lte: new Date(dataFim),
+        },
+      }),
+      ...(progresso && { progresso }),
+      ...(concluidas && {
+        progresso: 100, revisor: {
+          not: ""
+        }
+      }),
+      ...(Object.keys(createdAtFilter).length > 0 && {
+        createdAt: createdAtFilter
+      }),
+    };
+
+      const [ordens, total] = await this.prisma.$transaction([
+      this.prisma.ordemServico.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { id: 'desc' },
+      ...this.#returnOptions,
+    }),
+      this.prisma.ordemServico.count({
+        where,
+      }),
+    ]);
+
+    if (!ordens.length) {
+      return {
+        data: [],
+        meta: { total: 0, totalPages: 0, currentPage: page, perPage: limit },
+      };
+    }
+return {
+      data:ordens,
+      meta: {
+        total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        perPage: limit,
+      },
+    };
+
   }
 
   async findAllByUser(
@@ -110,12 +176,12 @@ export class OrdemServicoRepository {
     id: string,
     status: EStatus,
     observacao?: string,
-    progresso?:number,
+    progresso?: number,
   ): Promise<IOrdemServico> {
     const data = {
-      ...(status && {status}),
-      ...(observacao && {observacao}),
-      ...(progresso && {progresso}),
+      ...(status && { status }),
+      ...(observacao && { observacao }),
+      ...(progresso && { progresso }),
     }
     return this.prisma.ordemServico.update({
       where: { id },
@@ -171,91 +237,4 @@ export class OrdemServicoRepository {
     }));
   }
 
-  /*
-  async update(
-    id: number,
-    _data: UpdateOrdemServicoDto,
-    // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-  ): Promise<IOrdemServico | any> {
-    const { parametros, ...configAnalise } = _data;
-    return this.prisma.configuracaoAnalise.update({
-      where: { id },
-      data: {
-        nomeDescricao: configAnalise.nomeDescricao,
-        tipoAnaliseId: configAnalise.tipoAnaliseId,
-        parametros: {
-          connect: parametros.map((id) => ({ id })),
-        },
-      },
-      include: {
-        tipoAnalise: {
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        parametros: {
-          include: {
-            tipoAnalise: {
-              omit: {
-                createdAt: true,
-                updatedAt: true,
-              },
-            },
-          },
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-      },
-      omit: {
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-  }
-
-  async delete(id: number): Promise<void> {
-    await this.prisma.configuracaoAnalise.delete({
-      where: { id },
-    });
-    return;
-  }
-
- 
-  async findById(id: number): Promise<IOrdemServico | any> {
-    return this.prisma.configuracaoAnalise.findUnique({
-      where: { id },
-      include: {
-        tipoAnalise: {
-          omit: {
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-        parametros: {
-          include: {
-            tipoAnalise: {
-              omit: {
-                createdAt: true,
-                updatedAt: true,
-              },
-            },
-          },
-          omit: {
-            tipoAnaliseId: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-        },
-      },
-      omit: {
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-  }
-
-  */
 }

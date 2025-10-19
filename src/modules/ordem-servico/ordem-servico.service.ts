@@ -72,6 +72,9 @@ export class OrdemServicoService {
   async findAll(query: OrdemServicoQueryDto): Promise<IOrdemServico[]> {
     return this.ordemServicoRepository.findAll(query);
   }
+  async findByFilters(query: OrdemServicoQueryDto): Promise<IOrdemServico[]> {
+    return this.ordemServicoRepository.findByFilters(query);
+  }
 
   async findAllByUser(
     user: User,
