@@ -29,7 +29,7 @@ export class AmostraController {
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR, Role.USUARIO)
-  @Get('concluidas')
+  @Get('amostras')
   findAllWithUsers(@Query() query: AmostraQueryDto, @CurrentUser() user: User) {
     return this.amostraService.findAllWithUsers(query,user);
   }
@@ -59,6 +59,15 @@ export class AmostraController {
     @CurrentUser() user: User,
   ) {
     return this.amostraService.update(id, dto, user);
+  }
+
+  @Roles(Role.ADMIN)
+  @Patch('assinar/:id')
+  assinar(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ) {
+    return this.amostraService.assinar(id,user);
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR)
