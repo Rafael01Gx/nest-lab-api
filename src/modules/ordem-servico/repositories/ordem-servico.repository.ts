@@ -145,6 +145,66 @@ return {
 
   }
 
+  async findByUserAndFilters(userId:string ,query: OrdemServicoQueryDto): Promise<any> {
+    const { page = 1, limit = 10, status, dataInicio, dataFim, concluidas, progresso } = query;
+    const skip = (page - 1) * limit;
+    const solicitanteId = userId;
+    const createdAtFilter = {
+      ...(dataInicio && { gte: new Date(dataInicio) }),
+      ...(dataFim && { lte: new Date(dataFim) }),
+    };
+    const where: any = {
+      solicitanteId,
+      ...(status && { status }),
+      ...(dataInicio &&
+        dataFim && {
+        createdAt: {
+          gte: new Date(dataInicio),
+          lte: new Date(dataFim),
+        },
+      }),
+      ...(progresso && { progresso }),
+      ...(concluidas && {
+        progresso: 100, revisor: {
+          not: ""
+        }
+      }),
+      ...(Object.keys(createdAtFilter).length > 0 && {
+        createdAt: createdAtFilter
+      }),
+    };
+
+      const [ordens, total] = await this.prisma.$transaction([
+      this.prisma.ordemServico.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { id: 'desc' },
+      ...this.#returnOptions,
+    }),
+      this.prisma.ordemServico.count({
+        where,
+      }),
+    ]);
+
+    if (!ordens.length) {
+      return {
+        data: [],
+        meta: { total: 0, totalPages: 0, currentPage: page, perPage: limit },
+      };
+    }
+return {
+      data:ordens,
+      meta: {
+        total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        perPage: limit,
+      },
+    };
+
+  }
+
   async findAllByUser(
     id: string,
     query: OrdemServicoQueryDto,

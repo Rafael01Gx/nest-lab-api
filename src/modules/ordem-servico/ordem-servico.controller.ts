@@ -21,7 +21,7 @@ import { OrdemServicoAgendamentoDto } from './dto/ordem-servico-agendamento.dto'
 
 @Controller('ordem-servico')
 export class OrdemServicoController {
-  constructor(private readonly ordemServicoService: OrdemServicoService) {}
+  constructor(private readonly ordemServicoService: OrdemServicoService) { }
 
   @Roles(Role.ADMIN, Role.USUARIO)
   @Post()
@@ -34,11 +34,15 @@ export class OrdemServicoController {
   findAll(@Query() query: OrdemServicoQueryDto) {
     return this.ordemServicoService.findAll(query);
   }
-  
+
   @Roles(Role.ADMIN, Role.OPERADOR)
   @Get('filter')
   findByFilters(@Query() query: OrdemServicoQueryDto) {
     return this.ordemServicoService.findByFilters(query);
+  }
+  @Get('all')
+  findByUserAndFilters(@Query() query: OrdemServicoQueryDto, @CurrentUser() user: User) {
+    return this.ordemServicoService.findByUserAndFilters(user, query);
   }
 
   @Get('user')
