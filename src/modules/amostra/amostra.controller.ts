@@ -17,6 +17,7 @@ import { Role } from '@prisma/client';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from '../user/entities/user.entity';
 import { AmostraQueryDto } from './dto/amostra-servico-query.dto';
+import { AgendaQueryDto } from './dto/agenda-query.dto';
 
 @Controller('amostra')
 export class AmostraController {
@@ -34,11 +35,6 @@ export class AmostraController {
     return this.amostraService.findAllWithUsers(query,user);
   }
 
-  @Roles(Role.ADMIN, Role.OPERADOR)
-  @Get(':id')
-  findById(@Param('id', ParseIntPipe) id: number) {
-    return this.amostraService.findById(id);
-  }
 
   @Get('user')
   findAllByUser(@CurrentUser() user: User) {
@@ -51,14 +47,23 @@ export class AmostraController {
     return this.amostraService.create(dto);
   }
 
-  @Roles(Role.ADMIN, Role.OPERADOR)
-  @Patch(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateAmostraDto,
-    @CurrentUser() user: User,
-  ) {
-    return this.amostraService.update(id, dto, user);
+  @Roles(Role.ADMIN)
+  @Get('agenda-semanal')
+  getAgendamentoSemanal(@Query() query:AgendaQueryDto) {
+    console.log("chegou no controller amostra")
+    return this.amostraService.getAgendamentoSemanal(query);
+  }
+
+  @Roles(Role.ADMIN)
+  @Get('estatisticas')
+  async getEstatisticas() {
+    return this.amostraService.getEstatisticas();
+  }
+
+    @Roles(Role.ADMIN)
+  @Get('detalhes/:id')
+  async getAmostraDetalhes(@Param('id', ParseIntPipe) id: number) {
+    return this.amostraService.getAmostraDetalhes(id);
   }
 
   @Roles(Role.ADMIN)
@@ -68,6 +73,22 @@ export class AmostraController {
     @CurrentUser() user: User,
   ) {
     return this.amostraService.assinar(id,user);
+  }
+
+  @Roles(Role.ADMIN, Role.OPERADOR)
+  @Get(':id')
+  findById(@Param('id', ParseIntPipe) id: number) {
+    return this.amostraService.findById(id);
+  }
+
+  @Roles(Role.ADMIN, Role.OPERADOR)
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateAmostraDto,
+    @CurrentUser() user: User,
+  ) {
+    return this.amostraService.update(id, dto, user);
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR)

@@ -7,30 +7,42 @@ import { User } from '../user/entities/user.entity';
 import { AmostraQueryDto } from './dto/amostra-servico-query.dto';
 import { OrdemServicoRepository } from '../ordem-servico/repositories/ordem-servico.repository';
 import { EStatus } from '@prisma/client';
+import { AgendaQueryDto } from './dto/agenda-query.dto';
 
 @Injectable()
 export class AmostraService {
   constructor(private readonly amostraRepository: AmostraRepository,
               private readonly ordemServicoRepository: OrdemServicoRepository) {}
 
-  findAll(query: AmostraQueryDto): Promise<IAmostra[]> {
+  async findAll(query: AmostraQueryDto): Promise<IAmostra[]> {
     return this.amostraRepository.findAll(query);
   }
 
-  findById(id: number): Promise<IAmostra | null> {
+  async findById(id: number): Promise<IAmostra | null> {
     return this.amostraRepository.findById(id);
   }
 
-  findAllByUser(user: User): Promise<IAmostra[]> {
+  async findAllByUser(user: User): Promise<IAmostra[]> {
     if (!user || !user.id) {
       throw new HttpException('User ID is required', 400);
     }
     return this.amostraRepository.findAllByUser(user.id);
   }
 
-  create(dto: CreateAmostraDto) {
+  async create(dto: CreateAmostraDto) {
     return dto;
   }
+  async getAgendamentoSemanal(query:AgendaQueryDto) {
+    return this.amostraRepository.getAgendamentoSemanal(query);
+  }
+
+  async getEstatisticas() {
+      return this.amostraRepository.getEstatisticas();
+    }
+  
+  async getAmostraDetalhes(id: number) {
+      return this.amostraRepository.getAmostraDetalhes(id);
+    }
 
   async update(
     id: number,
@@ -99,7 +111,7 @@ export class AmostraService {
     return this.amostraRepository.findAllWithUsers(query, user.id);
   }
 
-  delete(id: number) {
+  async delete(id: number) {
     return id;
   }
 
