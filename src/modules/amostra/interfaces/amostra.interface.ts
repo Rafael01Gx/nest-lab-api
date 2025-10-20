@@ -22,3 +22,22 @@ export interface IAmostra {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+export interface AgendamentoSemanal {
+  semana: string;
+  dataInicio: string;
+  dataFim: string;
+  tiposAnalise: {
+    tipo: string;
+    classe: string;
+    quantidade: number;
+    amostras: {
+      id: number;
+      nomeAmostra: string;
+      numeroOs: string;
+      prazoInicioFim: string;
+      status: string;
+    }[];
+  }[];
+  totalAmostras: number;
+}
