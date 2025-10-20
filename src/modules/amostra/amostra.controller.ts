@@ -50,7 +50,6 @@ export class AmostraController {
   @Roles(Role.ADMIN)
   @Get('agenda-semanal')
   getAgendamentoSemanal(@Query() query:AgendaQueryDto) {
-    console.log("chegou no controller amostra")
     return this.amostraService.getAgendamentoSemanal(query);
   }
 
