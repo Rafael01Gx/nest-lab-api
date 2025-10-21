@@ -26,13 +26,10 @@ export class NotificationsController {
     return this.notificationsService.listByUser(user);
   }
 
-  @Patch(':id/read')
-  @HttpCode(HttpStatus.OK)
-  async markAsRead(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: User,
-  ) {
-    return this.notificationsService.markAsRead(id, user.id);
+  @Get('unread/count')
+  async getUnreadCount(@CurrentUser() user: User) {
+    const count = await this.notificationsService.getUnreadCount(user.id);
+    return { count };
   }
 
   @Patch('read-all')
@@ -44,15 +41,6 @@ export class NotificationsController {
     return this.notificationsService.markMultipleAsRead(dto.ids, user.id);
   }
 
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteNotification(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: User,
-  ) {
-    await this.notificationsService.deleteNotification(id, user.id);
-  }
-
   @Delete('clear-read')
   @HttpCode(HttpStatus.NO_CONTENT)
   async clearReadNotifications(
@@ -62,21 +50,17 @@ export class NotificationsController {
     await this.notificationsService.deleteMultiple(dto.ids, user.id);
   }
 
-  @Get('unread/count')
-  async getUnreadCount(@CurrentUser() user: User) {
-    const count = await this.notificationsService.getUnreadCount(user.id);
-    return { count };
+  @Get('admin/all')
+  @Roles(Role.ADMIN)
+  async getAllNotifications() {
+    return this.notificationsService.findAll();
   }
 
-  @Get(':id')
-  async getNotificationById(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: User,
-  ) {
-    return this.notificationsService.findById(id, user.id);
+  @Get('admin/stats')
+  @Roles(Role.ADMIN)
+  async getNotificationStats() {
+    return this.notificationsService.getStats();
   }
-
-  // ============= ROTAS ADMIN =============
 
   @Post('admin/broadcast')
   @Roles(Role.ADMIN)
@@ -138,15 +122,29 @@ export class NotificationsController {
     return { message: 'Notificação enviada para todos os usuários' };
   }
 
-  @Get('admin/all')
-  @Roles(Role.ADMIN)
-  async getAllNotifications() {
-    return this.notificationsService.findAll();
+  @Get(':id')
+  async getNotificationById(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ) {
+    return this.notificationsService.findById(id, user.id);
   }
 
-  @Get('admin/stats')
-  @Roles(Role.ADMIN)
-  async getNotificationStats() {
-    return this.notificationsService.getStats();
+  @Patch(':id/read')
+  @HttpCode(HttpStatus.OK)
+  async markAsRead(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ) {
+    return this.notificationsService.markAsRead(id, user.id);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteNotification(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ) {
+    await this.notificationsService.deleteNotification(id, user.id);
   }
 }
