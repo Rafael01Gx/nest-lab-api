@@ -13,6 +13,7 @@ import { OrdemServicoQueryDto } from './dto/ordem-servico-query.dto';
 import { UpdateOrdemServicoDto } from './dto/update-ordem-servico.dto';
 import { OrdemServicoAgendamentoDto } from './dto/ordem-servico-agendamento.dto';
 import { MailService } from 'src/mail/mail.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class OrdemServicoService {
@@ -20,6 +21,7 @@ export class OrdemServicoService {
     private readonly ordemServicoRepository: OrdemServicoRepository,
     private readonly userRepository: UserRepository,
     private readonly amostraRepository: AmostraRepository,
+    private readonly notificationsService: NotificationsService,
     private readonly mailService: MailService,
   ) {}
 
@@ -65,6 +67,14 @@ export class OrdemServicoService {
       .toString();
 
     void this.mailService.sendNewOrderEmail(adminEmail, ordemCriada);
+   try {
+    await this.notificationsService.createForAdmins(
+      'Nova Ordem de Serviço Criada',
+      `Uma nova ordem de serviço foi criada pelo usuário ${user.name}.`
+    );
+   } catch (error) {
+    console.log(error);
+   }
 
     return ordemCriada;
   }

@@ -6,9 +6,10 @@ import { OrdemServicoRepository } from './repositories/ordem-servico.repository'
 import { UserModule } from '../user/user.module';
 import { AmostraModule } from '../amostra/amostra.module';
 import { MailModule } from 'src/mail/mail.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [PrismaModule, UserModule, forwardRef(()=>AmostraModule), MailModule],
+  imports: [PrismaModule, UserModule, forwardRef(()=>AmostraModule), MailModule,NotificationsModule],
   controllers: [OrdemServicoController],
   providers: [OrdemServicoService, OrdemServicoRepository],
   exports: [OrdemServicoRepository],
