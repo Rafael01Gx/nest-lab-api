@@ -15,6 +15,7 @@ import { LaboratorioModule } from 'src/modules/laboratorios-externos/laboratorio
 import { RemessaLabExternoModule } from 'src/modules/laboratorios-externos/remessa/remessa-lab-externo.module';
 import { AmostraLabExternoModule } from 'src/modules/laboratorios-externos/amostra-lab-externo/amostra-lab-externo.module';
 import { MailModule } from 'src/mail/mail.module';
+import { NotificationsModule } from 'src/modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { MailModule } from 'src/mail/mail.module';
     RemessaLabExternoModule,
     AmostraLabExternoModule,
     MailModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -47,13 +47,13 @@ model User {
 }
 
 model Notifications {
-  id      Int     @id @default(autoincrement())
-  title   String  @default("")
-  message String  @default("")
-  data    String  @default("")
-  read    Boolean @default(false)
+  id      Int      @id @default(autoincrement())
+  title   String   @default("")
+  message String   @default("")
+  data    DateTime @default(now())
+  read    Boolean  @default(false)
   userId  String
-  user    User    @relation(fields: [userId], references: [id])
+  user    User     @relation(fields: [userId], references: [id])
 }
 
 model TipoAnalise {
@@ -72,7 +72,7 @@ model ParametrosAnalise {
   tipoAnaliseId    Int
   tipoAnalise      TipoAnalise           @relation(fields: [tipoAnaliseId], references: [id], onDelete: Cascade)
   descricao        String                @default("")
-  subDescricao    String                @default("")
+  subDescricao     String                @default("")
   unidadeResultado String                @default("")
   casasDecimais    Int                   @default(0)
   configuracoes    ConfiguracaoAnalise[]
