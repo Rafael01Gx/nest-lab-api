@@ -8,10 +8,9 @@ import {
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticatedSocket } from './interfaces/authenticated-socket.interface';
-
-
-
-@WebSocketGateway()
+@WebSocketGateway({
+  transports: ['websocket', 'polling'],
+})
 export class NotificationsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
@@ -27,7 +26,9 @@ export class NotificationsGateway
       const token = this.extractTokenFromCookie(socket);
 
       if (!token) {
-        socket.emit('error', { message: 'Token de autenticação não encontrado' });
+        socket.emit('error', {
+          message: 'Token de autenticação não encontrado',
+        });
         socket.disconnect();
         return;
       }
@@ -80,15 +81,15 @@ export class NotificationsGateway
 
   private extractTokenFromCookie(socket: Socket): string | null {
     const cookieHeader = socket.handshake.headers.cookie;
-    
+
     if (!cookieHeader) {
       return null;
     }
     const cookieName = 'access_token';
-    
-    const cookies = cookieHeader.split(';').map(c => c.trim());
-    const tokenCookie = cookies.find(cookie => 
-      cookie.startsWith(`${cookieName}=`)
+
+    const cookies = cookieHeader.split(';').map((c) => c.trim());
+    const tokenCookie = cookies.find((cookie) =>
+      cookie.startsWith(`${cookieName}=`),
     );
 
     if (tokenCookie) {
@@ -107,7 +108,7 @@ export class NotificationsGateway
   }
 
   notifyUsers(userIds: string[], notification: any) {
-    userIds.forEach(userId => {
+    userIds.forEach((userId) => {
       this.server.to(`user:${userId}`).emit('new-notification', notification);
     });
   }
@@ -116,8 +117,7 @@ export class NotificationsGateway
     this.server.emit('new-notification', notification);
   }
 
-
-// ============= MÉTODOS DE VERIFICAÇÃO =============
+  // ============= MÉTODOS DE VERIFICAÇÃO =============
 
   isUserOnline(userId: string): boolean {
     return this.connectedUsers.has(userId);
@@ -132,10 +132,12 @@ export class NotificationsGateway
   }
 
   getConnectionStats() {
-    const users = Array.from(this.connectedUsers.entries()).map(([userId, sockets]) => ({
-      userId,
-      connections: sockets.size,
-    }));
+    const users = Array.from(this.connectedUsers.entries()).map(
+      ([userId, sockets]) => ({
+        userId,
+        connections: sockets.size,
+      }),
+    );
 
     const totalSockets = users.reduce((sum, user) => sum + user.connections, 0);
 
@@ -149,7 +151,7 @@ export class NotificationsGateway
 
   getUserDetails(userId: string) {
     const sockets = this.connectedUsers.get(userId);
-    
+
     if (!sockets) {
       return null;
     }
@@ -164,15 +166,17 @@ export class NotificationsGateway
 
   disconnectUser(userId: string) {
     const sockets = this.connectedUsers.get(userId);
-    
+
     if (!sockets) {
       return false;
     }
 
-    sockets.forEach(socketId => {
+    sockets.forEach((socketId) => {
       const socket = this.server.sockets.sockets.get(socketId);
       if (socket) {
-        socket.emit('force-disconnect', { reason: 'Sessão encerrada pelo servidor' });
+        socket.emit('force-disconnect', {
+          reason: 'Sessão encerrada pelo servidor',
+        });
         socket.disconnect(true);
       }
     });
