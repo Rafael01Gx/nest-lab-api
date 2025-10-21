@@ -67,14 +67,14 @@ export class OrdemServicoService {
       .toString();
 
     void this.mailService.sendNewOrderEmail(adminEmail, ordemCriada);
-   try {
-    await this.notificationsService.createForAdmins(
-      'Nova Ordem de Serviço Criada',
-      `Uma nova ordem de serviço foi criada pelo usuário ${user.name}.`
-    );
-   } catch (error) {
-    console.log(error);
-   }
+    try {
+      await this.notificationsService.createForAdmins(
+        'Nova Ordem de Serviço Criada',
+        `Uma nova ordem de serviço foi criada pelo usuário ${user.name}.`,
+      );
+    } catch (error) {
+      console.log(error);
+    }
 
     return ordemCriada;
   }
@@ -85,8 +85,11 @@ export class OrdemServicoService {
   async findByFilters(query: OrdemServicoQueryDto): Promise<IOrdemServico[]> {
     return this.ordemServicoRepository.findByFilters(query);
   }
-  async findByUserAndFilters(user:User,query: OrdemServicoQueryDto): Promise<IOrdemServico[]> {
-    return this.ordemServicoRepository.findByUserAndFilters(user.id,query);
+  async findByUserAndFilters(
+    user: User,
+    query: OrdemServicoQueryDto,
+  ): Promise<IOrdemServico[]> {
+    return this.ordemServicoRepository.findByUserAndFilters(user.id, query);
   }
 
   async findAllByUser(

@@ -8,11 +8,17 @@ import { AmostraQueryDto } from './dto/amostra-servico-query.dto';
 import { OrdemServicoRepository } from '../ordem-servico/repositories/ordem-servico.repository';
 import { EStatus } from '@prisma/client';
 import { AgendaQueryDto } from './dto/agenda-query.dto';
+import { MailService } from 'src/mail/mail.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class AmostraService {
-  constructor(private readonly amostraRepository: AmostraRepository,
-              private readonly ordemServicoRepository: OrdemServicoRepository) {}
+  constructor(
+    private readonly amostraRepository: AmostraRepository,
+    private readonly ordemServicoRepository: OrdemServicoRepository,
+    private readonly mailService: MailService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   async findAll(query: AmostraQueryDto): Promise<IAmostra[]> {
     return this.amostraRepository.findAll(query);
@@ -32,17 +38,17 @@ export class AmostraService {
   async create(dto: CreateAmostraDto) {
     return dto;
   }
-  async getAgendamentoSemanal(query:AgendaQueryDto) {
+  async getAgendamentoSemanal(query: AgendaQueryDto) {
     return this.amostraRepository.getAgendamentoSemanal(query);
   }
 
   async getEstatisticas() {
-      return this.amostraRepository.getEstatisticas();
-    }
-  
+    return this.amostraRepository.getEstatisticas();
+  }
+
   async getAmostraDetalhes(id: number) {
-      return this.amostraRepository.getAmostraDetalhes(id);
-    }
+    return this.amostraRepository.getAmostraDetalhes(id);
+  }
 
   async update(
     id: number,
@@ -54,14 +60,22 @@ export class AmostraService {
       throw new HttpException('Amostra não encontrada', HttpStatus.NOT_FOUND);
     }
     if (amostraExists.status === 'FINALIZADA') {
-      throw new HttpException("Não é possível alterar esta amostra. O registro já foi finalizadoAmostra Bloqueada. Após a assinatura/validação, as modificações são impedidas para garantir a integridade do laudo.", HttpStatus.FORBIDDEN)
+      throw new HttpException(
+        'Não é possível alterar esta amostra. O registro já foi finalizadoAmostra Bloqueada. Após a assinatura/validação, as modificações são impedidas para garantir a integridade do laudo.',
+        HttpStatus.FORBIDDEN,
+      );
     }
     if (amostraExists.status === 'AUTORIZADA' && dto.status == 'EXECUCAO') {
-      const os = await this.ordemServicoRepository.findById(amostraExists.numeroOs);
+      const os = await this.ordemServicoRepository.findById(
+        amostraExists.numeroOs,
+      );
       if (!os) {
-        throw new HttpException('Ordem de Serviço não encontrada', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          'Ordem de Serviço não encontrada',
+          HttpStatus.NOT_FOUND,
+        );
       }
-     const os_status = 'EXECUCAO';
+      const os_status = 'EXECUCAO';
       await this.ordemServicoRepository.updateStatus(os.id, os_status);
     }
 
@@ -79,36 +93,77 @@ export class AmostraService {
     return this.amostraRepository.update(id, updateAmostra);
   }
 
-  async assinar(
-    id: number,
-    user: User
-  ): Promise<IAmostra> {
+  async assinar(id: number, user: User): Promise<IAmostra> {
     const amostraExists = await this.findById(id);
     const userId = user.id;
     if (!amostraExists) {
       throw new HttpException('Amostra não encontrada', HttpStatus.NOT_FOUND);
     }
-        if (amostraExists.status === 'FINALIZADA') {
-      throw new HttpException("Não é possível alterar esta amostra. O registro já foi finalizadoAmostra Bloqueada. Após a assinatura/validação, as modificações são impedidas para garantir a integridade do laudo.", HttpStatus.FORBIDDEN)
+    if (amostraExists.status === 'FINALIZADA') {
+      throw new HttpException(
+        'Não é possível alterar esta amostra. O registro já foi finalizadoAmostra Bloqueada. Após a assinatura/validação, as modificações são impedidas para garantir a integridade do laudo.',
+        HttpStatus.FORBIDDEN,
+      );
     }
-    if (!(amostraExists.status === 'EXECUCAO' && amostraExists.progresso === 100)) {
-      throw new HttpException('Amostra não possui requisitos para ser assinada.', HttpStatus.NOT_ACCEPTABLE)
+    if (
+      !(amostraExists.status === 'EXECUCAO' && amostraExists.progresso === 100)
+    ) {
+      throw new HttpException(
+        'Amostra não possui requisitos para ser assinada.',
+        HttpStatus.NOT_ACCEPTABLE,
+      );
     }
-   const os = await this.ordemServicoRepository.findById(amostraExists.numeroOs);
+    const os = await this.ordemServicoRepository.findById(
+      amostraExists.numeroOs,
+    );
     if (!os) {
-        throw new HttpException('Ordem de Serviço não encontrada', HttpStatus.NOT_FOUND);
+      throw new HttpException(
+        'Ordem de Serviço não encontrada',
+        HttpStatus.NOT_FOUND,
+      );
     }
-    const amostras = await this.amostraRepository.findByOs(amostraExists.numeroOs);
+    const amostras = await this.amostraRepository.findByOs(
+      amostraExists.numeroOs,
+    );
     const progresso = this.calcularMediaProgresso(amostras);
-    if (progresso > 0){
-      const status =( progresso == 100 ? 'FINALIZADA' : os.status) as EStatus ;
-      this.ordemServicoRepository.updateStatus(os.id,status,'',progresso);
+    if (progresso > 0) {
+      const status = (progresso == 100 ? 'FINALIZADA' : os.status) as EStatus;
+      const ordemFinalizada = await this.ordemServicoRepository.updateStatus(
+        os.id,
+        status,
+        '',
+        progresso,
+      );
+      if (progresso === 100) {
+        await this.mailService.sendOrdemConcluidaEmail(ordemFinalizada);
+      }
     }
-    return this.amostraRepository.assinar(id,userId);
+
+    try {
+      const amostraCompleta = await this.amostraRepository.assinar(id, userId);
+      await this.notificationsService.createForUser(
+        amostraCompleta.userId,
+        '✅ Ensaio Finalizado',
+        `Os resultados da amostra ${amostraCompleta.nomeAmostra.toUpperCase()} e estão prontos para visualização.`,
+      );
+      return amostraCompleta;
+    } catch (error) {
+      throw new HttpException(
+        'Erro ao assinar a amostra.',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   async findAllWithUsers(query: AmostraQueryDto, user: User) {
+    if (!user) {
+      throw new HttpException('Erro ao obter Usuário!', HttpStatus.NOT_FOUND);
+    }
     return this.amostraRepository.findAllWithUsers(query, user.id);
+  }
+
+  async findAllWithUsersAdmin(query: AmostraQueryDto) {
+    return this.amostraRepository.findAllWithUsers(query);
   }
 
   async delete(id: number) {
@@ -125,12 +180,12 @@ export class AmostraService {
 
   calcularMediaProgresso(amostras: IAmostra[]): number {
     if (!amostras || amostras.length === 0) {
-        return 0;
+      return 0;
     }
     const somaTotal = amostras.reduce((acumulador, amostraAtual) => {
-        return acumulador + amostraAtual.progresso!;
+      return acumulador + amostraAtual.progresso!;
     }, 0);
     const media = somaTotal / amostras.length;
     return media;
-}
+  }
 }
