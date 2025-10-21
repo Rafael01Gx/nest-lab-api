@@ -21,7 +21,7 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
-  @Get()
+  @Get('all')
   async getMyNotifications(@CurrentUser() user: User) {
     return this.notificationsService.listByUser(user);
   }

@@ -139,20 +139,17 @@ export class AmostraService {
       }
     }
 
+    const amostraCompleta = await this.amostraRepository.assinar(id, userId);
     try {
-      const amostraCompleta = await this.amostraRepository.assinar(id, userId);
       await this.notificationsService.createForUser(
         amostraCompleta.userId,
         '✅ Ensaio Finalizado',
         `Os resultados da amostra ${amostraCompleta.nomeAmostra.toUpperCase()} e estão prontos para visualização.`,
       );
-      return amostraCompleta;
     } catch (error) {
-      throw new HttpException(
-        'Erro ao assinar a amostra.',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      console.log(error);
     }
+    return amostraCompleta;
   }
 
   async findAllWithUsers(query: AmostraQueryDto, user: User) {
