@@ -9,7 +9,6 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
-  UseGuards,
 } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -20,19 +19,11 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 
 @Controller('notificacoes')
 export class NotificationsController {
-  constructor(private readonly notificationsService: NotificationsService) { }
+  constructor(private readonly notificationsService: NotificationsService) {}
 
   @Get()
   async getMyNotifications(@CurrentUser() user: User) {
-    return this.notificationsService.listByUser(user.id);
-  }
-
-  @Get(':id')
-  async getNotificationById(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: User,
-  ) {
-    return this.notificationsService.findById(id, user.id);
+    return this.notificationsService.listByUser(user);
   }
 
   @Patch(':id/read')
@@ -77,6 +68,14 @@ export class NotificationsController {
     return { count };
   }
 
+  @Get(':id')
+  async getNotificationById(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: User,
+  ) {
+    return this.notificationsService.findById(id, user.id);
+  }
+
   // ============= ROTAS ADMIN =============
 
   @Post('admin/broadcast')
@@ -108,7 +107,13 @@ export class NotificationsController {
   @Roles(Role.ADMIN)
   @HttpCode(HttpStatus.CREATED)
   async notifyMultipleUsers(
-    @Body() dto: { userIds: string[]; title: string; message: string; data?: string },
+    @Body()
+    dto: {
+      userIds: string[];
+      title: string;
+      message: string;
+      data?: string;
+    },
   ) {
     await this.notificationsService.createForMultipleUsers(
       dto.userIds,
@@ -116,7 +121,9 @@ export class NotificationsController {
       dto.message,
       dto.data,
     );
-    return { message: `Notificação enviada para ${dto.userIds.length} usuários` };
+    return {
+      message: `Notificação enviada para ${dto.userIds.length} usuários`,
+    };
   }
 
   @Post('admin/broadcast-all')
@@ -137,11 +144,6 @@ export class NotificationsController {
     return this.notificationsService.findAll();
   }
 
-  /**
-   * Estatísticas de notificações (admin)
-   * GET /notificacoes/admin/stats
-   * Apenas ADMIN pode acessar
-   */
   @Get('admin/stats')
   @Roles(Role.ADMIN)
   async getNotificationStats() {

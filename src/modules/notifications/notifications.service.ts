@@ -3,6 +3,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { NotificationsGateway } from './notifications.gateway';
 import { NotificationsRepository } from './repositories/notifications.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { User } from '@prisma/client';
 
 
 @Injectable()
@@ -98,8 +99,8 @@ export class NotificationsService {
     this.gateway.notifyAll({ title, message, data });
   }
 
-  async listByUser(userId: string) {
-    return this.repo.findAllByUser(userId);
+  async listByUser(user: User) {
+    return this.repo.findAllByUser(user.id);
   }
 
   async findById(id: number, userId: string) {
