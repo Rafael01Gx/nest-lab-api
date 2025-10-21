@@ -8,9 +8,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticatedSocket } from './interfaces/authenticated-socket.interface';
-@WebSocketGateway({
-  transports: ['websocket', 'polling'],
-})
+@WebSocketGateway()
 export class NotificationsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
