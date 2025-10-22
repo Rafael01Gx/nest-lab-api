@@ -23,7 +23,6 @@ export class NotificationsGateway
   constructor(private jwtService: JwtService) {}
 
   async handleConnection(@ConnectedSocket() socket: AuthenticatedSocket) {
-    console.log('Nova conexão de socket:', socket.id);
     try {
       const token = this.extractTokenFromCookie(socket);
 

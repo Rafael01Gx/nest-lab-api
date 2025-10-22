@@ -16,10 +16,12 @@ import { RemessaLabExternoModule } from 'src/modules/laboratorios-externos/remes
 import { AmostraLabExternoModule } from 'src/modules/laboratorios-externos/amostra-lab-externo/amostra-lab-externo.module';
 import { MailModule } from 'src/mail/mail.module';
 import { NotificationsModule } from 'src/modules/notifications/notifications.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    ScheduleModule.forRoot(),
     UserModule,
     AuthModule,
     AmostraModule,
