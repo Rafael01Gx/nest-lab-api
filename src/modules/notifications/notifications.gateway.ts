@@ -9,7 +9,7 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticatedSocket } from './interfaces/authenticated-socket.interface';
 @WebSocketGateway({
-  namespace: '/',
+  namespace: '/stream',
   transports: ['websocket', 'polling'],
 })
 export class NotificationsGateway
