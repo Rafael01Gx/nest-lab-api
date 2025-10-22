@@ -32,7 +32,7 @@ export class AmostraController {
   @Roles(Role.ADMIN, Role.OPERADOR, Role.USUARIO)
   @Get('amostras')
   findAllWithUsers(@Query() query: AmostraQueryDto, @CurrentUser() user: User) {
-    return this.amostraService.findAllWithUsers(query,user);
+    return this.amostraService.findAllWithUsers(query, user);
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR)
@@ -40,7 +40,6 @@ export class AmostraController {
   findAllWithUsersAdmin(@Query() query: AmostraQueryDto) {
     return this.amostraService.findAllWithUsersAdmin(query);
   }
-
 
   @Get('user')
   findAllByUser(@CurrentUser() user: User) {
@@ -55,7 +54,7 @@ export class AmostraController {
 
   @Roles(Role.ADMIN)
   @Get('agenda-semanal')
-  getAgendamentoSemanal(@Query() query:AgendaQueryDto) {
+  getAgendamentoSemanal(@Query() query: AgendaQueryDto) {
     return this.amostraService.getAgendamentoSemanal(query);
   }
 
@@ -65,7 +64,15 @@ export class AmostraController {
     return this.amostraService.getEstatisticas();
   }
 
-    @Roles(Role.ADMIN)
+  @Get('ordem-servico/id:')
+  findAllWithUsersByOs(
+    @Param('id') numeroOs: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.amostraService.findAllWithUsersByOs(numeroOs, user);
+  }
+
+  @Roles(Role.ADMIN)
   @Get('detalhes/:id')
   async getAmostraDetalhes(@Param('id', ParseIntPipe) id: number) {
     return this.amostraService.getAmostraDetalhes(id);
@@ -73,11 +80,8 @@ export class AmostraController {
 
   @Roles(Role.ADMIN)
   @Patch('assinar/:id')
-  assinar(
-    @Param('id', ParseIntPipe) id: number,
-    @CurrentUser() user: User,
-  ) {
-    return this.amostraService.assinar(id,user);
+  assinar(@Param('id', ParseIntPipe) id: number, @CurrentUser() user: User) {
+    return this.amostraService.assinar(id, user);
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR)

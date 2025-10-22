@@ -8,7 +8,12 @@ import { AmostraQueryDto } from '../dto/amostra-servico-query.dto';
 import { startOfWeek, parseISO, format, getWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { AgendaQueryDto } from '../dto/agenda-query.dto';
-import { AgendamentoSemanalDto, AmostraDetalhesDto, EstatisticasDto, TipoAnaliseDto } from '../dto/agenda-response.dto';
+import {
+  AgendamentoSemanalDto,
+  AmostraDetalhesDto,
+  EstatisticasDto,
+  TipoAnaliseDto,
+} from '../dto/agenda-response.dto';
 
 @Injectable()
 export class AmostraRepository {
@@ -76,7 +81,7 @@ export class AmostraRepository {
     });
   }
 
-    async findByOs(numeroOs: string): Promise<IAmostra[]> {
+  async findByOs(numeroOs: string): Promise<IAmostra[]> {
     return this.prisma.amostra.findMany({
       where: { numeroOs },
       ...this.#returnOptions,
@@ -130,20 +135,26 @@ export class AmostraRepository {
   async assinar(id: number, revisor: string): Promise<IAmostra> {
     return this.prisma.amostra.update({
       where: { id },
-      data: {revisor,
-        status: 'FINALIZADA',
-      },
+      data: { revisor, status: 'FINALIZADA' },
       ...this.#returnOptions,
     });
   }
 
   async findAllWithUsers(query: AmostraQueryDto, userId?: string) {
-    const { page = 1, limit = 10, status, dataInicio, dataFim ,concluidas,progresso } = query;
+    const {
+      page = 1,
+      limit = 10,
+      status,
+      dataInicio,
+      dataFim,
+      concluidas,
+      progresso,
+    } = query;
     const skip = (page - 1) * limit;
     const createdAtFilter = {
-    ...(dataInicio && { gte: new Date(dataInicio) }), 
-    ...(dataFim && { lte: new Date(dataFim) }),
-};
+      ...(dataInicio && { gte: new Date(dataInicio) }),
+      ...(dataFim && { lte: new Date(dataFim) }),
+    };
     const where: any = {
       ...(userId && { userId }),
       ...(status && { status }),
@@ -153,14 +164,17 @@ export class AmostraRepository {
             gte: new Date(dataInicio),
             lte: new Date(dataFim),
           },
-        }), 
-        ...(progresso && {progresso}),
-      ...(concluidas &&  { progresso: 100 , revisor:{
-        not: ""
-      }}),
-     ...(Object.keys(createdAtFilter).length > 0 && {
-        createdAt: createdAtFilter
-    }),
+        }),
+      ...(progresso && { progresso }),
+      ...(concluidas && {
+        progresso: 100,
+        revisor: {
+          not: '',
+        },
+      }),
+      ...(Object.keys(createdAtFilter).length > 0 && {
+        createdAt: createdAtFilter,
+      }),
     };
 
     const [amostras, total] = await this.prisma.$transaction([
@@ -217,6 +231,44 @@ export class AmostraRepository {
         perPage: limit,
       },
     };
+  }
+
+  async findAllWithUsersByOs(numeroOs: string): Promise<any> {
+    const amostras = await this.prisma.amostra.findMany({
+      where: { numeroOs },
+      include: { ensaiosSolicitados: true, user: this.#userSelectSafe },
+    });
+
+    if (!amostras.length) {
+      return [];
+    }
+
+    const revisorIds = amostras
+      .map((a) => a.revisor)
+      .filter((id): id is string => !!id);
+
+    const analistasIds = amostras
+      .flatMap((a) => (Array.isArray(a.analistas) ? a.analistas : []))
+      .filter((id): id is string => !!id);
+
+    const allUserIds = Array.from(new Set([...revisorIds, ...analistasIds]));
+
+    const users = await this.prisma.user.findMany({
+      where: { id: { in: allUserIds } },
+      ...this.#userSelectSafe,
+    });
+    const userMap = new Map(users.map((u) => [u.id, u]));
+
+    const enriched = amostras.map((a) => ({
+      ...a,
+      revisor: a.revisor ? (userMap.get(a.revisor) ?? null) : null,
+      analistas: Array.isArray(a.analistas)
+        ? a.analistas
+            .map((id) => userMap.get(id as string) ?? null)
+            .filter(Boolean)
+        : [],
+    }));
+    return enriched;
   }
 
   async findAllWithUsersByUsers(query: AmostraQueryDto, userId: string) {
@@ -279,13 +331,12 @@ export class AmostraRepository {
     };
   }
 
- async getAgendamentoSemanal(
-    query?: AgendaQueryDto
+  async getAgendamentoSemanal(
+    query?: AgendaQueryDto,
   ): Promise<AgendamentoSemanalDto[]> {
     try {
       this.logger.log('Buscando agendamentos semanais...');
 
-      // Construir where clause dinamicamente
       const whereClause: any = {
         status: {
           in: query?.status || ['EXECUCAO', 'AUTORIZADA'],
@@ -341,12 +392,12 @@ export class AmostraRepository {
         let ensaiosFiltrados = amostra.ensaiosSolicitados;
         if (query?.tipo) {
           ensaiosFiltrados = ensaiosFiltrados.filter((e) =>
-            e.tipo.toLowerCase().includes(query.tipo!.toLowerCase())
+            e.tipo.toLowerCase().includes(query.tipo!.toLowerCase()),
           );
         }
         if (query?.classe) {
           ensaiosFiltrados = ensaiosFiltrados.filter((e) =>
-            e.classe.toLowerCase().includes(query.classe!.toLowerCase())
+            e.classe.toLowerCase().includes(query.classe!.toLowerCase()),
           );
         }
 
@@ -385,12 +436,12 @@ export class AmostraRepository {
           dataFim.setDate(dataFim.getDate() + 6);
 
           const tiposAnalise = Array.from(tiposMap.values()).sort(
-            (a, b) => b.quantidade - a.quantidade
+            (a, b) => b.quantidade - a.quantidade,
           );
 
           const totalAmostras = tiposAnalise.reduce(
             (acc, tipo) => acc + tipo.amostras.length,
-            0
+            0,
           );
 
           const numeroSemana = getWeek(dataInicio, {
@@ -421,7 +472,7 @@ export class AmostraRepository {
 
     const totalAmostras = agendamentos.reduce(
       (acc, sem) => acc + sem.totalAmostras,
-      0
+      0,
     );
 
     const tiposSet = new Set<string>();
