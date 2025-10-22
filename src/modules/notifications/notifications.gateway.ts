@@ -8,10 +8,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticatedSocket } from './interfaces/authenticated-socket.interface';
-@WebSocketGateway({
-  namespace:'/stream',
-  transports: ['websocket'],
-})
+@WebSocketGateway()
 export class NotificationsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
@@ -23,6 +20,7 @@ export class NotificationsGateway
   constructor(private jwtService: JwtService) {}
 
   async handleConnection(@ConnectedSocket() socket: AuthenticatedSocket) {
+    console.log('Nova conexão de socket:', socket.id);
     try {
       const token = this.extractTokenFromCookie(socket);
 
