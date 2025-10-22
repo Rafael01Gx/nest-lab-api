@@ -35,8 +35,8 @@ export class AmostraController {
     return this.amostraService.findAllWithUsers(query,user);
   }
 
-  @Roles(Role.ADMIN)
-  @Get('aguardando-aprovacao')
+  @Roles(Role.ADMIN, Role.OPERADOR)
+  @Get('completas')
   findAllWithUsersAdmin(@Query() query: AmostraQueryDto) {
     return this.amostraService.findAllWithUsersAdmin(query);
   }
