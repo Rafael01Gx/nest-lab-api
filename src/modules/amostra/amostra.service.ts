@@ -162,11 +162,14 @@ export class AmostraService {
   async findAllWithUsersAdmin(query: AmostraQueryDto) {
     return this.amostraRepository.findAllWithUsers(query);
   }
-  async findAllWithUsersByOs(numeroOs: string,user:User) {
-    if(user.role == 'USUARIO'){
+  async findAllWithUsersByOs(numeroOs: string, user: User) {
+    if (user.role == 'USUARIO') {
       const ordem = await this.ordemServicoRepository.findById(numeroOs);
-      if(ordem?.solicitanteId !== user.id){
-        throw new HttpException('Você não tem permissão para acesso ao conteúdo.', HttpStatus.FORBIDDEN)
+      if (ordem?.solicitanteId !== user.id) {
+        throw new HttpException(
+          'Você não tem permissão para acesso ao conteúdo.',
+          HttpStatus.FORBIDDEN,
+        );
       }
     }
     return this.amostraRepository.findAllWithUsersByOs(numeroOs);

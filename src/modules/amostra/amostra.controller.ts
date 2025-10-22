@@ -64,7 +64,7 @@ export class AmostraController {
     return this.amostraService.getEstatisticas();
   }
 
-  @Get('ordem-servico/id:')
+  @Get('ordem-servico/:id')
   findAllWithUsersByOs(
     @Param('id') numeroOs: string,
     @CurrentUser() user: User,
