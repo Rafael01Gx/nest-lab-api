@@ -9,8 +9,7 @@ import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
 import { AuthenticatedSocket } from './interfaces/authenticated-socket.interface';
 @WebSocketGateway({
-  namespace: '/stream',
-  transports: ['websocket', 'polling'],
+  transports: ['websocket'],
 })
 export class NotificationsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
