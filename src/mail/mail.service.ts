@@ -6,7 +6,7 @@ import mailConfig from './config/mail.config';
 import { ISendMail } from './interfaces/ISendMail';
 import { accessEmailTemplate } from './templates/access-email.template';
 import { newOrderTemplate } from './templates/new-order.template';
-import { IOrdemServico } from 'src/modules/ordem-servico/interfaces/ordem-servico.interface';
+import { IOrdemServico } from 'src/modules/ordens-de-servico/interfaces/ordem-servico.interface';
 import { SignUpDto } from 'src/modules/auth/dto/signup.dto';
 import { ordemConcluidaTemplate } from './templates/ordem-concluida.template.ts';
 

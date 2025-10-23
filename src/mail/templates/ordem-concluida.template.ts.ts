@@ -1,5 +1,5 @@
-import { IOrdemServico } from 'src/modules/ordem-servico/interfaces/ordem-servico.interface';
-import { ITipoAnalise } from 'src/modules/tipo-de-analise/interfaces/tipo-analise.interface';
+import { IOrdemServico } from 'src/modules/ordens-de-servico/interfaces/ordem-servico.interface';
+import { ITipoAnalise } from 'src/modules/tipos-de-analises/interfaces/tipo-analise.interface';
 
 export function ordemConcluidaTemplate(ordem: IOrdemServico): string {
   const amostrasHtml = ordem.amostras

@@ -43,14 +43,14 @@ export class CreateRemessaLabExternoDto {
 
   @IsNotEmpty({
     message:
-      'Você precisa adicionar pelo menos uma amostra para criar a remessa.',
+      'Você precisa adicionar pelo menos uma amostras para criar a remessa.',
   })
   @IsArray({
     message: 'As amostras devem ser uma lista.',
   })
   @ArrayMinSize(1, {
     message:
-      'Você precisa adicionar pelo menos uma amostra para criar a remessa.',
+      'Você precisa adicionar pelo menos uma amostras para criar a remessa.',
   })
   @ValidateNested({
     each: true,
@@ -64,13 +64,13 @@ export class CreateRemessaLabExternoDto {
 class AmostraRemessaDto {
   @IsNotEmpty({
     message:
-      'O nome da amostra é obrigatório. Como devemos identificar esta amostra?',
+      'O nome da amostras é obrigatório. Como devemos identificar esta amostras?',
   })
   @IsString({
-    message: 'O nome da amostra deve ser um texto.',
+    message: 'O nome da amostras deve ser um texto.',
   })
   @MinLength(3, {
-    message: 'O nome da amostra deve ter pelo menos 3 caracteres.',
+    message: 'O nome da amostras deve ter pelo menos 3 caracteres.',
   })
   amostraName: string;
 
@@ -85,7 +85,7 @@ class AmostraRemessaDto {
   })
   @IsNotEmpty({
     message:
-      'A data de início do processo da amostra é obrigatória. Qual a data?',
+      'A data de início do processo da amostras é obrigatória. Qual a data?',
   })
   @MinLength(4, {
     message:
@@ -98,7 +98,7 @@ class AmostraRemessaDto {
   })
   @IsNotEmpty({
     message:
-      'A data de conclusão do processo da amostra é obrigatória. Quando terminou?',
+      'A data de conclusão do processo da amostras é obrigatória. Quando terminou?',
   })
   @MinLength(4, {
     message:
@@ -107,13 +107,13 @@ class AmostraRemessaDto {
   dataFim: string;
 
   @IsNotEmpty({
-    message: 'Você precisa solicitar pelo menos um elemento para esta amostra.',
+    message: 'Você precisa solicitar pelo menos um elemento para esta amostras.',
   })
   @IsArray({
     message: 'Os elementos solicitados devem ser uma lista.',
   })
   @ArrayMinSize(1, {
-    message: 'Você precisa solicitar pelo menos um elemento para esta amostra.',
+    message: 'Você precisa solicitar pelo menos um elemento para esta amostras.',
   })
   @IsString({
     each: true,
