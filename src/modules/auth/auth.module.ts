@@ -7,7 +7,7 @@ import jwtConfig from './config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
 import { HashingServiceProtocol } from './hash/hashing.service';
 import { BcryptService } from './hash/bcrypt.service';
-import { UserModule } from '../user/user.module';
+import { UserModule } from '../users/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { MailModule } from 'src/mail/mail.module';

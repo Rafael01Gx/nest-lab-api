@@ -1,4 +1,4 @@
-import { UserRepository } from './../user/repositories/user.repository';
+import { UserRepository } from '../users/repositories/user.repository';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { SignInDto } from './dto/signin.dto';
 import { HashingServiceProtocol } from './hash/hashing.service';

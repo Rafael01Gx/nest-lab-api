@@ -13,25 +13,28 @@ import { Role } from '@prisma/client';
 import { AmostraLabExternoService } from './amostra-lab-externo.service';
 import { CreateAmostraLabExternoDto } from './dto/create-amostra-lab-externo.dto';
 import { UpdateAmostraLabExternoDto } from './dto/update-amostra-lab-externo.dto';
+import { ROUTES } from '../../../common/constants/routes.constant';
+
+const { AMOSTRAS_LAB_EXTERNO } = ROUTES;
 
 @Roles(Role.ADMIN, Role.OPERADOR)
-@Controller('amostra-lab-externo')
+@Controller(AMOSTRAS_LAB_EXTERNO.BASE)
 export class AmostraLabExternoController {
   constructor(
     private readonly amostraLabExternoService: AmostraLabExternoService,
   ) {}
 
-  @Get()
+  @Get(AMOSTRAS_LAB_EXTERNO.GET.FIND_ALL)
   findAll() {
     return this.amostraLabExternoService.findAll();
   }
 
-  @Post()
+  @Post(AMOSTRAS_LAB_EXTERNO.POST.CREATE)
   create(@Body() dto: CreateAmostraLabExternoDto) {
     return this.amostraLabExternoService.create(dto);
   }
 
-  @Patch(':id')
+  @Patch(AMOSTRAS_LAB_EXTERNO.PATCH.UPDATE)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateAmostraLabExternoDto,
@@ -39,7 +42,7 @@ export class AmostraLabExternoController {
     return this.amostraLabExternoService.update(id, dto);
   }
 
-  @Delete(':id')
+  @Delete(AMOSTRAS_LAB_EXTERNO.DELETE.DELETE)
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.amostraLabExternoService.delete(id);
   }
