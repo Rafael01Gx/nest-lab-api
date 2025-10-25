@@ -10,7 +10,7 @@ import { Role } from '@prisma/client';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { ROUTES } from '../../common/constants/routes.constant';
 
-const {AUTH} = ROUTES;
+const { AUTH } = ROUTES;
 
 @Controller(AUTH.BASE)
 export class AuthController {

@@ -41,6 +41,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       phone: user.phone,
       area: user.area,
       funcao: user.funcao,
+      receives_email: user.receives_email,
       authorization: user.authorization,
       role: user.role,
     };

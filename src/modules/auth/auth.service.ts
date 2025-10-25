@@ -53,6 +53,7 @@ export class AuthService {
       phone: userExists.phone,
       area: userExists.area,
       funcao: userExists.funcao,
+      receives_email: userExists.receives_email,
     };
 
     return { user: resUser };
@@ -82,6 +83,7 @@ export class AuthService {
         phone: user.phone,
         area: user.area,
         funcao: user.funcao,
+        receives_email: user.receives_email,
         authorization: user.authorization,
         role: user.role,
       },

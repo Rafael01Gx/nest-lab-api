@@ -208,6 +208,7 @@ async function main() {
         area: 'GAPSI',
         funcao: 'Laboratorista',
         authorization: true,
+        receives_email:true,
         role: 'ADMIN',
       },
     });

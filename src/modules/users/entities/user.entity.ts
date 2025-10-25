@@ -9,6 +9,7 @@ export class User {
   area?: string | null;
   funcao?: string | null;
   authorization?: boolean | null;
+  receives_email?:boolean;
   role?: Role;
   passwordResetToken?: string | null;
   passwordResetExpires?: Date | null;

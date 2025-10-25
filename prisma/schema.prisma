@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,20 +5,6 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
-}
-
-enum Role {
-  USUARIO  @map("Usuário")
-  OPERADOR @map("Operador")
-  ADMIN    @map("Administrador")
-}
-
-enum EStatus {
-  AGUARDANDO @map("Aguardando Autorização")
-  AUTORIZADA @map("Autorizada")
-  EXECUCAO   @map("Em Execução")
-  FINALIZADA @map("Finalizada")
-  CANCELADA  @map("Cancelada")
 }
 
 model User {
@@ -37,12 +17,13 @@ model User {
   funcao               String          @default("")
   authorization        Boolean         @default(false)
   role                 Role            @default(USUARIO)
+  receives_email       Boolean         @default(true)
   passwordResetToken   String?
   passwordResetExpires DateTime?
-  notifications        Notifications[]
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
   amostra              Amostra[]
+  notifications        Notifications[]
   OrdemServico         OrdemServico[]
 }
 
@@ -54,6 +35,8 @@ model Notifications {
   read    Boolean  @default(false)
   userId  String
   user    User     @relation(fields: [userId], references: [id])
+
+  @@index([userId], map: "Notifications_userId_fkey")
 }
 
 model TipoAnalise {
@@ -62,32 +45,36 @@ model TipoAnalise {
   classe              String                @default("")
   createdAt           DateTime              @default(now())
   updatedAt           DateTime              @updatedAt
-  parametroAnalise    ParametrosAnalise[]
   configuracaoAnalise ConfiguracaoAnalise[]
-  Amostra             Amostra[]
+  parametroAnalise    ParametrosAnalise[]
+  Amostra             Amostra[]             @relation("AmostraToTipoAnalise")
 }
 
 model ParametrosAnalise {
   id               Int                   @id @default(autoincrement())
   tipoAnaliseId    Int
-  tipoAnalise      TipoAnalise           @relation(fields: [tipoAnaliseId], references: [id], onDelete: Cascade)
   descricao        String                @default("")
   subDescricao     String                @default("")
   unidadeResultado String                @default("")
   casasDecimais    Int                   @default(0)
-  configuracoes    ConfiguracaoAnalise[]
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
+  tipoAnalise      TipoAnalise           @relation(fields: [tipoAnaliseId], references: [id], onDelete: Cascade)
+  configuracoes    ConfiguracaoAnalise[] @relation("ConfiguracaoAnaliseToParametrosAnalise")
+
+  @@index([tipoAnaliseId], map: "ParametrosAnalise_tipoAnaliseId_fkey")
 }
 
 model ConfiguracaoAnalise {
   id            Int                 @id @default(autoincrement())
   nomeDescricao String
-  tipoAnalise   TipoAnalise         @relation(fields: [tipoAnaliseId], references: [id], onDelete: Cascade)
   tipoAnaliseId Int
-  parametros    ParametrosAnalise[]
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
+  tipoAnalise   TipoAnalise         @relation(fields: [tipoAnaliseId], references: [id], onDelete: Cascade)
+  parametros    ParametrosAnalise[] @relation("ConfiguracaoAnaliseToParametrosAnalise")
+
+  @@index([tipoAnaliseId], map: "ConfiguracaoAnalise_tipoAnaliseId_fkey")
 }
 
 model MateriaPrima {
@@ -101,13 +88,10 @@ model MateriaPrima {
 model Amostra {
   id                 Int           @id @default(autoincrement())
   numeroOs           String
-  ordemServico       OrdemServico  @relation(fields: [numeroOs], references: [id], onDelete: Cascade)
   nomeAmostra        String
   dataAmostra        String
-  ensaiosSolicitados TipoAnalise[]
   amostraTipo        String        @default("Não definido")
   userId             String
-  user               User          @relation(fields: [userId], references: [id])
   resultados         Json?
   analistas          Json?
   revisor            String?       @default("")
@@ -117,13 +101,17 @@ model Amostra {
   dataRecepcao       String        @default("")
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
+  ordemServico       OrdemServico  @relation(fields: [numeroOs], references: [id], onDelete: Cascade)
+  user               User          @relation(fields: [userId], references: [id])
+  ensaiosSolicitados TipoAnalise[] @relation("AmostraToTipoAnalise")
+
+  @@index([numeroOs], map: "Amostra_numeroOs_fkey")
+  @@index([userId], map: "Amostra_userId_fkey")
 }
 
 model OrdemServico {
   id             String    @id
   solicitanteId  String
-  solicitante    User      @relation(fields: [solicitanteId], references: [id])
-  amostras       Amostra[]
   status         EStatus   @default(AGUARDANDO)
   dataRecepcao   String    @default("")
   prazoInicioFim String    @default("")
@@ -132,6 +120,10 @@ model OrdemServico {
   revisorId      String    @default("")
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+  amostras       Amostra[]
+  solicitante    User      @relation(fields: [solicitanteId], references: [id])
+
+  @@index([solicitanteId], map: "OrdemServico_solicitanteId_fkey")
 }
 
 model ElementoQuimico {
@@ -140,7 +132,7 @@ model ElementoQuimico {
   simbolo           String              @default("")
   createdAt         DateTime            @default(now())
   updatedAt         DateTime            @updatedAt
-  AmostraLabExterno AmostraLabExterno[]
+  AmostraLabExterno AmostraLabExterno[] @relation("AmostraLabExternoToElementoQuimico")
 }
 
 model LaboratorioExterno {
@@ -157,19 +149,21 @@ model LaboratorioExterno {
 model AmostraLabExterno {
   id                  Int               @id @default(autoincrement())
   amostraName         String
-  elementosAnalisados ElementoQuimico[]
   createdAt           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
+  elementosAnalisados ElementoQuimico[] @relation("AmostraLabExternoToElementoQuimico")
 }
 
 model RemessaLabExterno {
   id        Int                     @id @default(autoincrement())
   data      String
   destinoId Int
-  destino   LaboratorioExterno      @relation(fields: [destinoId], references: [id])
-  amostras  AmostraAnaliseExterna[]
   createdAt DateTime                @default(now())
   updatedAt DateTime                @updatedAt
+  amostras  AmostraAnaliseExterna[]
+  destino   LaboratorioExterno      @relation(fields: [destinoId], references: [id])
+
+  @@index([destinoId], map: "RemessaLabExterno_destinoId_fkey")
 }
 
 model AmostraAnaliseExterna {
@@ -183,6 +177,22 @@ model AmostraAnaliseExterna {
   analiseConcluida     Boolean           @default(false)
   createdAt            DateTime          @default(now())
   updatedAt            DateTime          @updatedAt
-  RemessaLabExterno    RemessaLabExterno @relation(fields: [remessaLabExternoId], references: [id], onDelete: Cascade)
   remessaLabExternoId  Int
+  RemessaLabExterno    RemessaLabExterno @relation(fields: [remessaLabExternoId], references: [id], onDelete: Cascade)
+
+  @@index([remessaLabExternoId], map: "AmostraAnaliseExterna_remessaLabExternoId_fkey")
+}
+
+enum Role {
+  USUARIO  @map("Usuário")
+  OPERADOR @map("Operador")
+  ADMIN    @map("Administrador")
+}
+
+enum EStatus {
+  AGUARDANDO @map("Aguardando Autorização")
+  AUTORIZADA @map("Autorizada")
+  EXECUCAO   @map("Em Execução")
+  FINALIZADA @map("Finalizada")
+  CANCELADA  @map("Cancelada")
 }
