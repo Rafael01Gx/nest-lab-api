@@ -14,7 +14,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
 @Roles(Role.ADMIN, Role.OPERADOR)
-@Controller('materias-primas')
+@Controller('materia-prima')
 export class MateriaPrimaController {
   constructor(private readonly materiaPrimaService: MateriaPrimaService) {}
 

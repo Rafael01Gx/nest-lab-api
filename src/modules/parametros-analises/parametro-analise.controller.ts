@@ -14,7 +14,7 @@ import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
 
 @Roles(Role.ADMIN, Role.OPERADOR)
-@Controller('parametros-analises')
+@Controller('parametro-analise')
 export class ParametrosAnaliseController {
   constructor(private readonly paramAnaliseService: ParametrosAnaliseService) {}
 

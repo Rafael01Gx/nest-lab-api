@@ -37,7 +37,7 @@ export const ROUTES = {
   },
 
   AMOSTRAS_LAB_EXTERNO: {
-    BASE: 'amostras-lab-externo',
+    BASE: 'amostra-lab-externo',
     GET: {
       FIND_ALL: '',
     },
@@ -102,7 +102,7 @@ export const ROUTES = {
   },
 
   MATERIAS_PRIMAS: {
-    BASE: 'materias-primas',
+    BASE: 'materia-prima',
     GET: {
       FIND_ALL: '',
     },
@@ -164,7 +164,7 @@ export const ROUTES = {
   },
 
   PARAMETROS_ANALISES: {
-    BASE: 'parametros-analises',
+    BASE: 'parametro-analise',
     GET: {
       FIND_ALL: '',
     },
@@ -196,7 +196,7 @@ export const ROUTES = {
   },
 
   TIPOS_DE_ANALISES: {
-    BASE: 'tipos-de-analises',
+    BASE: 'tipo-de-analise',
     GET: {
       FIND_ALL: '',
     },

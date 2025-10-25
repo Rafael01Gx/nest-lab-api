@@ -19,7 +19,7 @@ import { UpdateOrdemServicoDto } from './dto/update-ordem-servico.dto';
 import { OrdemServicoQueryDto } from './dto/ordem-servico-query.dto';
 import { OrdemServicoAgendamentoDto } from './dto/ordem-servico-agendamento.dto';
 
-@Controller('ordens-de-servico')
+@Controller('ordem-servico')
 export class OrdemServicoController {
   constructor(private readonly ordemServicoService: OrdemServicoService) { }
 

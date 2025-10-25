@@ -12,7 +12,7 @@ import { TipoAnaliseService } from './tipo-analise.service';
 import { TipoAnaliseDto } from './dto/tipo-analise.dto';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
-@Controller('tipos-de-analises')
+@Controller('tipo-de-analise')
 export class TipoAnaliseController {
   constructor(private readonly tipoAnaliseService: TipoAnaliseService) {}
 
