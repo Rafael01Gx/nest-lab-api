@@ -14,23 +14,26 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { Role } from '@prisma/client';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { User } from './entities/user.entity';
+import { ROUTES } from '../../common/constants/routes.constant';
 
-@Controller('user')
+const { USER } = ROUTES;
+
+@Controller(USER.BASE)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Roles(Role.ADMIN)
-  @Get()
+  @Get(USER.GET.GET_ALL)
   getAll() {
     return this.userService.getAll();
   }
 
-  @Get(':id')
+  @Get(USER.GET.GET_BY_ID)
   getById(@Param('id') id: string) {
     return this.userService.getById(id);
   }
 
-  @Patch(':id')
+  @Patch(USER.PATCH.UPDATE)
   update(
     @Param('id') id: string,
     @CurrentUser() user: User,
@@ -40,25 +43,25 @@ export class UserController {
   }
 
   @Roles(Role.ADMIN)
-  @Patch('status/:id')
+  @Patch(USER.PATCH.UPDATE_STATUS)
   updateStatus(@Param('id') id: string, @Body() body: UpdateUserDto) {
     return this.userService.updateStatusAndRole(id, body);
   }
 
   @Roles(Role.ADMIN)
-  @Delete(':id')
+  @Delete(USER.DELETE.DELETE)
   delete(@Param('id') id: string) {
     return this.userService.delete(id);
   }
 
   @Public()
-  @Post('forgot-password')
+  @Post(USER.POST.FORGOT_PASSWORD)
   forgotPassword() {
     return 'forgotPassword';
   }
 
   @Public()
-  @Post('reset-password')
+  @Post(USER.POST.RESET_PASSWORD)
   resetPassword() {
     return 'resetPassword';
   }

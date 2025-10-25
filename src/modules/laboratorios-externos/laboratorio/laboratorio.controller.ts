@@ -13,23 +13,26 @@ import { Role } from '@prisma/client';
 import { LaboratorioService } from './laboratorio.service';
 import { CreateLaboratorioDto } from './dto/create-laboratorio.dto';
 import { UpdateLaboratorioDto } from './dto/update-laboratorio.dto';
+import { ROUTES } from '../../../common/constants/routes.constant';
+
+const{ LABORATORIO_EXTERNO } = ROUTES;
 
 @Roles(Role.ADMIN, Role.OPERADOR)
-@Controller('laboratorio-externo')
+@Controller(LABORATORIO_EXTERNO.BASE)
 export class LaboratorioController {
   constructor(private readonly laboratorioService: LaboratorioService) {}
 
-  @Get()
+  @Get(LABORATORIO_EXTERNO.GET.FIND_ALL)
   findAll() {
     return this.laboratorioService.findAll();
   }
 
-  @Post()
+  @Post(LABORATORIO_EXTERNO.POST.CREATE)
   create(@Body() dto: CreateLaboratorioDto) {
     return this.laboratorioService.create(dto);
   }
 
-  @Patch(':id')
+  @Patch(LABORATORIO_EXTERNO.PATCH.UPDATE)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateLaboratorioDto,
@@ -37,7 +40,7 @@ export class LaboratorioController {
     return this.laboratorioService.update(id, dto);
   }
 
-  @Delete(':id')
+  @Delete(LABORATORIO_EXTERNO.DELETE.DELETE)
   delete(@Param('id', ParseIntPipe) id: number) {
     return this.laboratorioService.delete(id);
   }

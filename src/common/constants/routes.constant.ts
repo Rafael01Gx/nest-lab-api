@@ -83,7 +83,7 @@ export const ROUTES = {
     DELETE: {
       DELETE: ':id',
     },
-  }, // PareiAki
+  },
 
   LABORATORIO_EXTERNO: {
     BASE: 'laboratorio-externo',
@@ -128,13 +128,13 @@ export const ROUTES = {
     },
     POST: {
       NOTIFY_ALL_ADMINS: 'admin/broadcast',
-      NOTIFY_USER_ADMIN: 'admin/users',
+      NOTIFY_USER_ADMIN: 'admin/user',
       NOTIFY_MULTIPLE_USERS_ADMIN: 'admin/users',
       NOTIFY_ALL_USERS_ADMIN: 'admin/broadcast-all',
     },
     PATCH: {
       MARK_ALL_AS_READ: 'read-all',
-      MARK_AS_READ: ':id/read',
+      MARK_AS_READ: 'read/:id',
     },
     DELETE: {
       CLEAR_READ_NOTIFICATIONS: 'clear-read',
@@ -143,7 +143,7 @@ export const ROUTES = {
   },
 
   ORDENS_DE_SERVICO: {
-    BASE: 'ordens-de-servico',
+    BASE: 'ordem-servico',
     POST: {
       CREATE: '',
     },

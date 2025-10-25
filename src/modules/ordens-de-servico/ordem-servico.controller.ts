@@ -18,34 +18,37 @@ import { Role } from '@prisma/client';
 import { UpdateOrdemServicoDto } from './dto/update-ordem-servico.dto';
 import { OrdemServicoQueryDto } from './dto/ordem-servico-query.dto';
 import { OrdemServicoAgendamentoDto } from './dto/ordem-servico-agendamento.dto';
+import { ROUTES } from '../../common/constants/routes.constant';
 
-@Controller('ordem-servico')
+const { ORDENS_DE_SERVICO } = ROUTES;
+
+@Controller(ORDENS_DE_SERVICO.BASE)
 export class OrdemServicoController {
   constructor(private readonly ordemServicoService: OrdemServicoService) { }
 
   @Roles(Role.ADMIN, Role.USUARIO)
-  @Post()
+  @Post(ORDENS_DE_SERVICO.POST.CREATE)
   create(@Body() dto: CreateOrdemServicoDto, @CurrentUser() user: User) {
     return this.ordemServicoService.create(dto, user);
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR)
-  @Get()
+  @Get(ORDENS_DE_SERVICO.GET.FIND_ALL)
   findAll(@Query() query: OrdemServicoQueryDto) {
     return this.ordemServicoService.findAll(query);
   }
 
   @Roles(Role.ADMIN, Role.OPERADOR)
-  @Get('filter')
+  @Get(ORDENS_DE_SERVICO.GET.FIND_BY_FILTERS)
   findByFilters(@Query() query: OrdemServicoQueryDto) {
     return this.ordemServicoService.findByFilters(query);
   }
-  @Get('all')
+  @Get(ORDENS_DE_SERVICO.GET.FIND_BY_USER_AND_FILTERS)
   findByUserAndFilters(@Query() query: OrdemServicoQueryDto, @CurrentUser() user: User) {
     return this.ordemServicoService.findByUserAndFilters(user, query);
   }
 
-  @Get('user')
+  @Get(ORDENS_DE_SERVICO.GET.FIND_ALL_BY_USER)
   findAllByUser(
     @CurrentUser() user: User,
     @Query() query: OrdemServicoQueryDto,
@@ -53,25 +56,25 @@ export class OrdemServicoController {
     return this.ordemServicoService.findAllByUser(user, query);
   }
 
-  @Get('estatisticas')
+  @Get(ORDENS_DE_SERVICO.GET.GET_ESTATISTICAS)
   getEstatisticas() {
     return this.ordemServicoService.getEstatisticas();
   }
   //--------------------------------
   @Roles(Role.ADMIN, Role.OPERADOR)
-  @Patch('agendar/:id')
+  @Patch(ORDENS_DE_SERVICO.PATCH.AGENDAR)
   agendar(@Param('id') id: string, @Body() dto: OrdemServicoAgendamentoDto) {
     return this.ordemServicoService.agendarPreparacao(id, dto);
   }
 
   //--------------------------------
   @Roles(Role.ADMIN)
-  @Patch(':id')
+  @Patch(ORDENS_DE_SERVICO.PATCH.UPDATE)
   update(@Param('id') id: string, @Body() dto: UpdateOrdemServicoDto) {
     return this.ordemServicoService.updateStatus(id, dto);
   }
 
-  @Delete(':id')
+  @Delete(ORDENS_DE_SERVICO.DELETE.DELETE)
   delete(@Param('id', ParseIntPipe) id: number) {
     return id;
   }
