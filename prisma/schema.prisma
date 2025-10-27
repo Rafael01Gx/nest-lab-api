@@ -135,6 +135,14 @@ model ElementoQuimico {
   AmostraLabExterno AmostraLabExterno[] @relation("AmostraLabExternoToElementoQuimico")
 }
 
+model AmostraLabExterno {
+  id                  Int               @id @default(autoincrement())
+  amostraName         String
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  elementosAnalisados ElementoQuimico[] @relation("AmostraLabExternoToElementoQuimico")
+}
+
 model LaboratorioExterno {
   id        Int                 @id @default(autoincrement())
   nome      String
@@ -144,25 +152,22 @@ model LaboratorioExterno {
   createdAt DateTime            @default(now())
   updatedAt DateTime            @updatedAt
   Remessa   RemessaLabExterno[]
-}
 
-model AmostraLabExterno {
-  id                  Int               @id @default(autoincrement())
-  amostraName         String
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
-  elementosAnalisados ElementoQuimico[] @relation("AmostraLabExternoToElementoQuimico")
+  @@index([nome])
 }
 
 model RemessaLabExterno {
   id        Int                     @id @default(autoincrement())
-  data      String
+  data      DateTime                @default(now())
   destinoId Int
   createdAt DateTime                @default(now())
   updatedAt DateTime                @updatedAt
   amostras  AmostraAnaliseExterna[]
   destino   LaboratorioExterno      @relation(fields: [destinoId], references: [id])
 
+  @@index([destinoId])
+  @@index([data])
+  @@index([destinoId, data])
   @@index([destinoId], map: "RemessaLabExterno_destinoId_fkey")
 }
 
@@ -180,6 +185,10 @@ model AmostraAnaliseExterna {
   remessaLabExternoId  Int
   RemessaLabExterno    RemessaLabExterno @relation(fields: [remessaLabExternoId], references: [id], onDelete: Cascade)
 
+  @@index([remessaLabExternoId])
+  @@index([analiseConcluida])
+  @@index([createdAt])
+  @@index([remessaLabExternoId, analiseConcluida])
   @@index([remessaLabExternoId], map: "AmostraAnaliseExterna_remessaLabExternoId_fkey")
 }
 

@@ -14,7 +14,7 @@ async function main() {
     create: {
       id: 1,
       nome: 'SENAI / FIEMG',
-      endereco: JSON.stringify({
+      endereco: {
         cep: '31035536',
         logradouro: 'Rua Sete',
         numero: '2001',
@@ -23,7 +23,7 @@ async function main() {
         cidade: 'Belo Horizonte',
         estado: 'MG',
         pais: 'Brasil',
-      }),
+      },
       telefone: '3134892000',
       email: '',
     },
@@ -35,7 +35,7 @@ async function main() {
     create: {
       id: 2,
       nome: 'SGS DO BRASIL',
-      endereco: JSON.stringify({
+      endereco: {
         cep: '33206369',
         logradouro: 'Avenida Mário Fonseca Viana',
         numero: '120-B',
@@ -44,7 +44,7 @@ async function main() {
         cidade: 'Vespasiano',
         estado: 'MG',
         pais: 'Brasil',
-      }),
+      },
       telefone: '3130450261',
       email: '',
     },

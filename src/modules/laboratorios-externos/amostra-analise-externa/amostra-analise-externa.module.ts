@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from 'src/prisma/prisma.module';
-import { AmostraLabExternoRepository } from './repositories/amostra-lab-externo.repository';
-import { AmostraLabExternoController } from './amostra-lab-externo.controller';
-import { AmostraLabExternoService } from './amostra-lab-externo.service';
+import { AmostraAnaliseExternaRepository } from './repositories/amostra-analise-externa.repository';
+import { AmostraAnaliseExternaController } from './amostra-analise-externa.controller';
+import { AmostraAnaliseExternaService } from './amostra-analise-externa.service';
 
 @Module({
-  providers: [AmostraLabExternoService, AmostraLabExternoRepository],
-  controllers: [AmostraLabExternoController],
+  providers: [AmostraAnaliseExternaService, AmostraAnaliseExternaRepository],
+  controllers: [AmostraAnaliseExternaController],
   imports: [PrismaModule],
-  exports: [AmostraLabExternoRepository],
+  exports: [AmostraAnaliseExternaRepository],
 })
-export class AmostraLabExternoModule {}
+export class AmostraAnaliseExternaModule {}

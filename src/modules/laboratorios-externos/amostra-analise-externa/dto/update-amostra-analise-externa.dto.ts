@@ -1,6 +1,11 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateAmostraLabExternoDto } from './create-amostra-lab-externo.dto';
+import { IsBoolean, IsOptional } from 'class-validator';
 
-export class UpdateAmostraLabExternoDto extends PartialType(
-  CreateAmostraLabExternoDto,
-) {}
+export class UpdateAmostraAnaliseExternaDto {
+
+  @IsOptional()
+  elementosAnalisados? : [];
+
+  @IsOptional()
+  @IsBoolean()
+  analiseConcluida : boolean;
+}

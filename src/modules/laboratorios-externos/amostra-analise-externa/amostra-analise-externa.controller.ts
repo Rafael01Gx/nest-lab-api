@@ -1,49 +1,57 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
   ParseIntPipe,
   Patch,
-  Post,
+  Query, UseInterceptors,
 } from '@nestjs/common';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
-import { AmostraLabExternoService } from './amostra-lab-externo.service';
-import { CreateAmostraLabExternoDto } from './dto/create-amostra-lab-externo.dto';
-import { UpdateAmostraLabExternoDto } from './dto/update-amostra-lab-externo.dto';
+import { AmostraAnaliseExternaService } from './amostra-analise-externa.service';
 import { ROUTES } from '../../../common/constants/routes.constant';
+import { UpdateAmostraAnaliseExternaDto } from './dto/update-amostra-analise-externa.dto';
+import { AmostraAnaliseExternaQueryDto } from './dto/amostra-analise-externa-query.dto';
+import { CacheInterceptor } from '../../../common/interceptors/cache.interceptor';
 
-const { AMOSTRAS_LAB_EXTERNO } = ROUTES;
+const { AMOSTRAS_ANALISE_EXTERNA } = ROUTES;
 
 @Roles(Role.ADMIN, Role.OPERADOR)
-@Controller(AMOSTRAS_LAB_EXTERNO.BASE)
-export class AmostraLabExternoController {
+@Controller(AMOSTRAS_ANALISE_EXTERNA.BASE)
+export class AmostraAnaliseExternaController {
   constructor(
-    private readonly amostraLabExternoService: AmostraLabExternoService,
+    private readonly amostraLabExternoService: AmostraAnaliseExternaService,
   ) {}
 
-  @Get(AMOSTRAS_LAB_EXTERNO.GET.FIND_ALL)
-  findAll() {
-    return this.amostraLabExternoService.findAll();
+  @Get(AMOSTRAS_ANALISE_EXTERNA.GET.FIND_ALL)
+  findAll(@Query() query: AmostraAnaliseExternaQueryDto) {
+    return this.amostraLabExternoService.findAll(query);
   }
 
-  @Post(AMOSTRAS_LAB_EXTERNO.POST.CREATE)
-  create(@Body() dto: CreateAmostraLabExternoDto) {
-    return this.amostraLabExternoService.create(dto);
+
+  @UseInterceptors(CacheInterceptor)
+  @Get(AMOSTRAS_ANALISE_EXTERNA.GET.DASHBOARD_COMPLETO)
+  async getDashboardCompleto(
+    @Query('laboratorioId', new ParseIntPipe({ optional: true })) laboratorioId?: number,
+    @Query('dataInicio') dataInicio?: string,
+    @Query('dataFim') dataFim?: string,
+  ) {
+    const filtros = {
+      laboratorioId,
+      dataInicio,
+      dataFim,
+    };
+    return this.amostraLabExternoService.getDashboardCompleto(filtros);
   }
 
-  @Patch(AMOSTRAS_LAB_EXTERNO.PATCH.UPDATE)
+  @Patch(AMOSTRAS_ANALISE_EXTERNA.PATCH.UPDATE)
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateAmostraLabExternoDto,
+    @Body() dto: UpdateAmostraAnaliseExternaDto,
   ) {
     return this.amostraLabExternoService.update(id, dto);
   }
 
-  @Delete(AMOSTRAS_LAB_EXTERNO.DELETE.DELETE)
-  delete(@Param('id', ParseIntPipe) id: number) {
-    return this.amostraLabExternoService.delete(id);
-  }
+
 }

@@ -1,43 +1,62 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { AmostraLabExternoRepository } from './repositories/amostra-lab-externo.repository';
-import { IAmostraLabExterno } from './interfaces/amostra-lab-externo.interface';
-import { CreateAmostraLabExternoDto } from './dto/create-amostra-lab-externo.dto';
-import { UpdateAmostraLabExternoDto } from './dto/update-amostra-lab-externo.dto';
+import { AmostraAnaliseExternaRepository } from './repositories/amostra-analise-externa.repository';
+import { UpdateAmostraAnaliseExternaDto } from './dto/update-amostra-analise-externa.dto';
+import {
+  FiltrosAnalytics,
+  IAmostraAnaliseExterna,
+} from './interfaces/amostra-analise-externa.interface';
+import { AmostraAnaliseExternaQueryDto } from './dto/amostra-analise-externa-query.dto';
 
 @Injectable()
-export class AmostraLabExternoService {
+export class AmostraAnaliseExternaService {
   constructor(
-    private readonly amostraLabExternoRepository: AmostraLabExternoRepository,
+    private readonly amostraAnaliseExternaRepository: AmostraAnaliseExternaRepository,
   ) {}
 
-  async create(dto: CreateAmostraLabExternoDto): Promise<IAmostraLabExterno> {
-    return this.amostraLabExternoRepository.create(dto);
-  }
-
-  async findAll(): Promise<IAmostraLabExterno[]> {
-    return this.amostraLabExternoRepository.findAll();
+  async findAll(query: AmostraAnaliseExternaQueryDto): Promise<IAmostraAnaliseExterna[]> {
+    return this.amostraAnaliseExternaRepository.findAll(query);
   }
 
   async update(
     id: number,
-    dto: UpdateAmostraLabExternoDto,
-  ): Promise<IAmostraLabExterno> {
+    dto: UpdateAmostraAnaliseExternaDto,
+  ): Promise<IAmostraAnaliseExterna> {
     await this.amostraExists(id);
-    return this.amostraLabExternoRepository.update(id, dto);
-  }
-
-  async delete(id: number): Promise<any> {
-    await this.amostraExists(id);
-    return this.amostraLabExternoRepository.delete(id);
+    return this.amostraAnaliseExternaRepository.update(id, dto);
   }
 
   async amostraExists(id: number): Promise<void> {
-    const amostraExists = await this.amostraLabExternoRepository.findById(id);
+    const amostraExists = await this.amostraAnaliseExternaRepository.findById(id);
     if (!amostraExists) {
       throw new HttpException(
-        'Elemento químico não encontrado',
+        'Amostra não encontrada',
         HttpStatus.NOT_FOUND,
       );
     }
+  }
+
+
+  async findAllForDashboard(filtros?: FiltrosAnalytics) {
+    return this.amostraAnaliseExternaRepository.findAllForAnalytics(filtros);
+  }
+
+  async getEstatisticasGerais(filtros?: FiltrosAnalytics) {
+    return this.amostraAnaliseExternaRepository.getEstatisticasGerais(filtros);
+  }
+
+  async getEstatisticasPorLaboratorio(filtros?: FiltrosAnalytics) {
+    return this.amostraAnaliseExternaRepository.getEstatisticasPorLaboratorio(filtros);
+  }
+
+  async getEstatisticasPorRemessa(filtros?: FiltrosAnalytics) {
+    return this.amostraAnaliseExternaRepository.getEstatisticasPorRemessa(filtros);
+  }
+
+  async getEstatisticasElementos(filtros?: FiltrosAnalytics) {
+    return this.amostraAnaliseExternaRepository.getEstatisticasElementos(filtros);
+  }
+
+  async getDashboardCompleto(filtros?: FiltrosAnalytics) {
+    return this.amostraAnaliseExternaRepository.getDashboardCompleto(filtros);
   }
 }

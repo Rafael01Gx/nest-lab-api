@@ -15,7 +15,7 @@ export interface IAmostraAnaliseExterna {
 
 export interface IRemessaLabExterno {
   id: number;
-  data: string;
+  data: Date;
   destinoId: number;
   destino: ILaboratorio;
   amostras: IAmostraAnaliseExterna[];
