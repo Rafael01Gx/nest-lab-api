@@ -11,11 +11,9 @@ import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AmostraAnaliseExternaRepository {
-  constructor(private readonly prisma: PrismaService) { }
+  constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(
-    query: AmostraAnaliseExternaQueryDto,
-  ): Promise<any> {
+  async findAll(query: AmostraAnaliseExternaQueryDto): Promise<any> {
     const {
       amostraName,
       labExternoId,
@@ -32,11 +30,11 @@ export class AmostraAnaliseExternaRepository {
       ...(labExternoId && { remessaLabExternoId: labExternoId }),
       ...(dataInicio &&
         dataFim && {
-        createdAt: {
-          gte: new Date(dataInicio),
-          lte: new Date(dataFim),
-        },
-      }),
+          createdAt: {
+            gte: new Date(dataInicio),
+            lte: new Date(dataFim),
+          },
+        }),
       ...(analiseConcluida && { analiseConcluida }),
     };
 
@@ -48,8 +46,8 @@ export class AmostraAnaliseExternaRepository {
             select: {
               data: true,
               destino: true,
-            }
-          }
+            },
+          },
         },
         skip,
         take: limit,
@@ -57,8 +55,8 @@ export class AmostraAnaliseExternaRepository {
       }),
       this.prisma.amostraAnaliseExterna.count({
         where,
-      })
-    ])
+      }),
+    ]);
 
     return {
       data: amostras,
@@ -71,6 +69,19 @@ export class AmostraAnaliseExternaRepository {
     };
   }
 
+  async findFirstQuery(query: AmostraAnaliseExternaQueryDto): Promise<any> {
+    const { amostraName, dataInicio, dataFim } = query;
+    const nomeCompleto = amostraName?.trim();
+
+    const result = await this.prisma.$queryRaw<any[]>`SELECT *
+      FROM AmostraAnaliseExterna
+      WHERE dataInicio >= ${dataInicio}
+        AND dataFim <= ${dataFim}
+        AND TRIM(CONCAT(amostraName, ' ', subIdentificacao)) = ${nomeCompleto} LIMIT 1;`;
+
+    return result.length ? result[0] : null;
+  }
+
   async findById(id: number): Promise<IAmostraAnaliseExterna | null> {
     return this.prisma.amostraAnaliseExterna.findFirst({
       where: { id },
@@ -79,25 +90,21 @@ export class AmostraAnaliseExternaRepository {
           select: {
             data: true,
             destino: true,
-          }
-        }
+          },
+        },
       },
     });
   }
 
-  async update(
-    id: number,
-    dto: UpdateAmostraAnaliseExternaDto,
-  ): Promise<any> {
+  async update(id: number, dto: UpdateAmostraAnaliseExternaDto): Promise<any> {
     return this.prisma.amostraAnaliseExterna.update({
       where: { id },
       data: {
         analiseConcluida: dto.analiseConcluida,
         elementosAnalisados: dto.elementosAnalisados,
-      }
-    })
+      },
+    });
   }
-
 
   async findAllForAnalytics(filtros?: FiltrosAnalytics): Promise<any> {
     const where: any = {};
@@ -153,16 +160,14 @@ export class AmostraAnaliseExternaRepository {
           },
         },
       },
-      orderBy: [
-        { RemessaLabExterno: { data: 'desc' } },
-        { createdAt: 'desc' },
-      ],
+      orderBy: [{ RemessaLabExterno: { data: 'desc' } }, { createdAt: 'desc' }],
     });
     return amostras;
   }
 
-
-  async getEstatisticasGerais(filtros?: FiltrosAnalytics): Promise<EstatisticasGerais> {
+  async getEstatisticasGerais(
+    filtros?: FiltrosAnalytics,
+  ): Promise<EstatisticasGerais> {
     const where: any = {};
 
     // Aplicar os mesmos filtros
@@ -234,7 +239,9 @@ export class AmostraAnaliseExternaRepository {
 
     const amostrasIncompletas = totalAmostras - amostrasCompletas;
     const percentualConclusao =
-      totalAmostras > 0 ? Math.round((amostrasCompletas / totalAmostras) * 100) : 0;
+      totalAmostras > 0
+        ? Math.round((amostrasCompletas / totalAmostras) * 100)
+        : 0;
 
     // Calcular média de elementos
     const totalElementos = amostrasParaMedia.reduce((acc, amostra) => {
@@ -243,7 +250,9 @@ export class AmostraAnaliseExternaRepository {
     }, 0);
 
     const mediaElementosPorAmostra =
-      totalAmostras > 0 ? Number((totalElementos / totalAmostras).toFixed(2)) : 0;
+      totalAmostras > 0
+        ? Number((totalElementos / totalAmostras).toFixed(2))
+        : 0;
 
     // Contar laboratórios únicos
     const laboratoriosUnicos = new Set(
@@ -405,7 +414,9 @@ export class AmostraAnaliseExternaRepository {
       ...remessa,
       taxaConclusao:
         remessa.totalAmostras > 0
-          ? Math.round((remessa.amostrasCompletas / remessa.totalAmostras) * 100)
+          ? Math.round(
+              (remessa.amostrasCompletas / remessa.totalAmostras) * 100,
+            )
           : 0,
     }));
 
@@ -415,7 +426,6 @@ export class AmostraAnaliseExternaRepository {
       return dateB - dateA;
     });
   }
-
 
   async getEstatisticasElementos(filtros?: FiltrosAnalytics) {
     const where: any = {};
@@ -475,7 +485,11 @@ export class AmostraAnaliseExternaRepository {
           // Verificar se foi analisado
           if (amostra.analiseConcluida && Array.isArray(analisados)) {
             const encontrado = analisados.find((a) => a.elemento === elemento);
-            if (encontrado && encontrado.valor && encontrado.valor.trim() !== '') {
+            if (
+              encontrado &&
+              encontrado.valor &&
+              encontrado.valor.trim() !== ''
+            ) {
               elem.analisados++;
             } else {
               elem.pendentes++;
@@ -486,7 +500,6 @@ export class AmostraAnaliseExternaRepository {
         });
       }
     });
-
 
     const resultado = Array.from(elementosMap.values()).map((elem) => ({
       ...elem,
@@ -499,53 +512,58 @@ export class AmostraAnaliseExternaRepository {
     return resultado.sort((a, b) => b.solicitacoes - a.solicitacoes);
   }
 
-
   async getDashboardCompleto(filtros?: FiltrosAnalytics) {
+    const calcularDataInicioPadrao = (): Date => {
+      const hoje = new Date();
+      hoje.setFullYear(hoje.getFullYear() - 1);
+      return hoje;
+    };
+    const filtrosReais = filtros || {};
+    const dataInicioPadrao = calcularDataInicioPadrao();
 
-    
-  const calcularDataInicioPadrao = (): Date => {
-  const hoje = new Date();
-  hoje.setFullYear(hoje.getFullYear() - 1);
-  return hoje;
-  };
-  const filtrosReais = filtros || {};
-  const dataInicioPadrao = calcularDataInicioPadrao();
+    const {
+      laboratorioId,
+      dataInicio = dataInicioPadrao,
+      dataFim,
+      analiseConcluida,
+    } = filtrosReais;
 
-  const {
-    laboratorioId,
-    dataInicio = dataInicioPadrao,
-    dataFim,
-    analiseConcluida,
-  } = filtrosReais;
-  
-  const filtrosComPadrao: FiltrosAnalytics = {
-    laboratorioId,
-    dataInicio,
-    dataFim,
-    analiseConcluida,
-  };
+    const filtrosComPadrao: FiltrosAnalytics = {
+      laboratorioId,
+      dataInicio,
+      dataFim,
+      analiseConcluida,
+    };
 
-  const [
-    amostras,
-    estatisticasGerais,
-    estatisticasLaboratorio,
-    estatisticasRemessa,
-  ] = await Promise.all([
-    this.findAllForAnalytics(filtrosComPadrao),
-    this.getEstatisticasGerais(filtrosComPadrao),
-    this.getEstatisticasPorLaboratorio(filtrosComPadrao),
-    this.getEstatisticasPorRemessa(filtrosComPadrao),
-  ]);
+    const [
+      amostras,
+      estatisticasGerais,
+      estatisticasLaboratorio,
+      estatisticasRemessa,
+    ] = await Promise.all([
+      this.findAllForAnalytics(filtrosComPadrao),
+      this.getEstatisticasGerais(filtrosComPadrao),
+      this.getEstatisticasPorLaboratorio(filtrosComPadrao),
+      this.getEstatisticasPorRemessa(filtrosComPadrao),
+    ]);
 
-  return {
-    amostras,
-    estatisticas: {
-      geral: estatisticasGerais,
-      porLaboratorio: estatisticasLaboratorio,
-      porRemessa: estatisticasRemessa,
-    },
-  };
+    return {
+      amostras,
+      estatisticas: {
+        geral: estatisticasGerais,
+        porLaboratorio: estatisticasLaboratorio,
+        porRemessa: estatisticasRemessa,
+      },
+    };
   }
 }
 
 
+// `SELECT *
+//    FROM AmostraAnaliseExterna
+//    WHERE
+//      dataInicio >= ${dataInicio}
+//      AND dataFim <= ${dataFim}
+//      AND REPLACE(REPLACE(TRIM(CONCAT(amostraName, ' ', subIdentificacao)), '.', ''), '-', '')
+//          = REPLACE(REPLACE(${nomeCompleto}, '.', ''), '-', '')
+//    LIMIT 1;`;

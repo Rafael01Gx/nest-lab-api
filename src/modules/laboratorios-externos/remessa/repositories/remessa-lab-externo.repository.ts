@@ -11,7 +11,7 @@ export class RemessaLabExternoRepository {
   async create(dto: CreateRemessaLabExternoDto): Promise<IRemessaLabExterno> {
     const remessa = await this.prisma.remessaLabExterno.create({
       data: {
-        data: new Date(dto.data),
+        data: dto.data,
         destinoId: dto.destinoId,
         amostras: {
           create: dto.amostras.map((amostra) => ({
