@@ -1,7 +1,7 @@
 import { Transform, Type } from 'class-transformer';
 import {
   ArrayMinSize,
-  IsArray,
+  IsArray, IsDate,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -11,16 +11,12 @@ import {
 } from 'class-validator';
 
 export class CreateRemessaLabExternoDto {
-  @IsString({
-    message: 'A data deve ser um texto.',
-  })
   @IsNotEmpty({
     message: 'A data de envio não pode ficar em branco.',
   })
-  @MinLength(6, {
-    message: 'A data parece incompleta. Por favor, use o formato "AAAA-MM-DD".',
-  })
-  data: string;
+  @IsDate()
+  @Type(() => Date)
+  data: Date;
 
   @IsNotEmpty({
     message:

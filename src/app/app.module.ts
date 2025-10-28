@@ -20,6 +20,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import {
   AmostraAnaliseExternaModule
 } from '../modules/laboratorios-externos/amostra-analise-externa/amostra-analise-externa.module';
+import { UploadModule } from '../modules/upload/upload.module';
 
 @Module({
   imports: [
@@ -39,7 +40,8 @@ import {
     AmostraLabExternoModule,
     MailModule,
     NotificationsModule,
-    AmostraAnaliseExternaModule
+    AmostraAnaliseExternaModule,
+    UploadModule
   ],
   controllers: [AppController],
   providers: [AppService],
