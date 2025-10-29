@@ -8,6 +8,7 @@ import {
 } from '../interfaces/amostra-analise-externa.interface';
 import { AmostraAnaliseExternaQueryDto } from '../dto/amostra-analise-externa-query.dto';
 import { Prisma } from '@prisma/client';
+import { InputJsonValue, JsonValue } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AmostraAnaliseExternaRepository {
@@ -557,7 +558,6 @@ export class AmostraAnaliseExternaRepository {
     };
   }
 }
-
 
 // `SELECT *
 //    FROM AmostraAnaliseExterna

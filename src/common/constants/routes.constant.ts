@@ -62,6 +62,7 @@ export const ROUTES = {
       CREATE: '',
     },
     PATCH: {
+      UPDATE_MANY: '',
       UPDATE: ':id',
     },
     DELETE: {

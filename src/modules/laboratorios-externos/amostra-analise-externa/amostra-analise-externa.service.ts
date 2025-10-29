@@ -6,6 +6,7 @@ import {
   IAmostraAnaliseExterna,
 } from './interfaces/amostra-analise-externa.interface';
 import { AmostraAnaliseExternaQueryDto } from './dto/amostra-analise-externa-query.dto';
+import { UpdateManyDto } from './dto/update-many.dto';
 
 @Injectable()
 export class AmostraAnaliseExternaService {
@@ -13,7 +14,9 @@ export class AmostraAnaliseExternaService {
     private readonly amostraAnaliseExternaRepository: AmostraAnaliseExternaRepository,
   ) {}
 
-  async findAll(query: AmostraAnaliseExternaQueryDto): Promise<IAmostraAnaliseExterna[]> {
+  async findAll(
+    query: AmostraAnaliseExternaQueryDto,
+  ): Promise<IAmostraAnaliseExterna[]> {
     return this.amostraAnaliseExternaRepository.findAll(query);
   }
 
@@ -24,17 +27,31 @@ export class AmostraAnaliseExternaService {
     await this.amostraExists(id);
     return this.amostraAnaliseExternaRepository.update(id, dto);
   }
+  async updateMany(dto: UpdateManyDto): Promise<IAmostraAnaliseExterna[]> {
+    const allPromisse = dto.amostras.map(async (amostra) => {
+      if (!amostra.id) {
+        throw new HttpException(`Amostra não encontrada`, HttpStatus.NOT_FOUND);
+      }
+      await this.amostraExists(amostra.id);
+      return this.amostraAnaliseExternaRepository.update(amostra.id, {
+        ...amostra,
+      });
+    });
 
-  async amostraExists(id: number): Promise<void> {
-    const amostraExists = await this.amostraAnaliseExternaRepository.findById(id);
-    if (!amostraExists) {
-      throw new HttpException(
-        'Amostra não encontrada',
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    const amostrasUpdated = (await Promise.all(
+      allPromisse,
+    )) as IAmostraAnaliseExterna[];
+
+    return amostrasUpdated;
   }
 
+  async amostraExists(id: number): Promise<void> {
+    const amostraExists =
+      await this.amostraAnaliseExternaRepository.findById(id);
+    if (!amostraExists) {
+      throw new HttpException('Amostra não encontrada', HttpStatus.NOT_FOUND);
+    }
+  }
 
   async findAllForDashboard(filtros?: FiltrosAnalytics) {
     return this.amostraAnaliseExternaRepository.findAllForAnalytics(filtros);
@@ -45,15 +62,21 @@ export class AmostraAnaliseExternaService {
   }
 
   async getEstatisticasPorLaboratorio(filtros?: FiltrosAnalytics) {
-    return this.amostraAnaliseExternaRepository.getEstatisticasPorLaboratorio(filtros);
+    return this.amostraAnaliseExternaRepository.getEstatisticasPorLaboratorio(
+      filtros,
+    );
   }
 
   async getEstatisticasPorRemessa(filtros?: FiltrosAnalytics) {
-    return this.amostraAnaliseExternaRepository.getEstatisticasPorRemessa(filtros);
+    return this.amostraAnaliseExternaRepository.getEstatisticasPorRemessa(
+      filtros,
+    );
   }
 
   async getEstatisticasElementos(filtros?: FiltrosAnalytics) {
-    return this.amostraAnaliseExternaRepository.getEstatisticasElementos(filtros);
+    return this.amostraAnaliseExternaRepository.getEstatisticasElementos(
+      filtros,
+    );
   }
 
   async getDashboardCompleto(filtros?: FiltrosAnalytics) {

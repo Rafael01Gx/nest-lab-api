@@ -178,7 +178,8 @@ export class UploadService {
   async adicionaResultado(buffer: Buffer, config?: UploadConfig) {
     const formatData = (data: string): string => {
       const fData = data.trim().replaceAll('/', '-');
-      const [dia, mes, ano] = fData.split('-');
+      let [dia, mes, ano] = fData.split('-');
+      if(ano.length == 2) ano =`20${ano}`;
       return `${ano}-${mes}-${dia}`;
     };
 

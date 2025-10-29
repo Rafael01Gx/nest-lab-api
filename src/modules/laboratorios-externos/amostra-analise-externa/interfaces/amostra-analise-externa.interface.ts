@@ -2,27 +2,26 @@ import { ILaboratorio } from '../../laboratorio/interfaces/laboratorio.interface
 import { JsonValue } from '@prisma/client/runtime/library';
 
 export interface IAmostraAnaliseExterna {
-  id : number;
-  amostraName : string;
-  subIdentificacao? : string;
-  dataInicio : string;
-  dataFim : string;
-  elementosSolicitados : string[] | JsonValue ;
-  elementosAnalisados? : null | Record<string, {}> | JsonValue ;
-  analiseConcluida : boolean;
-  createdAt? : Date;
-  updatedAt? : Date;
-  remessaLabExternoId : number;
+  id: number;
+  amostraName: string;
+  subIdentificacao?: string;
+  dataInicio: string;
+  dataFim: string;
+  elementosSolicitados: string[] | JsonValue;
+  elementosAnalisados?: null | Record<string, {}> | JsonValue;
+  analiseConcluida: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+  remessaLabExternoId: number;
   remessaLabExterno?: {
-    id? : number;
-    data? : Date;
-    destinoId? : number;
-    createdAt? : Date;
-    updatedAt? : Date;
-    destino? : ILaboratorio;
+    id?: number;
+    data?: Date;
+    destinoId?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+    destino?: ILaboratorio;
   };
 }
-
 
 export interface AmostrasAnalyticsDto {
   amostras: AmostrasComRelacoes[];
@@ -71,3 +70,4 @@ export interface FiltrosAnalytics {
   dataFim?: Date | string;
   analiseConcluida?: boolean;
 }
+

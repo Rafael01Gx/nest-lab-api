@@ -5,7 +5,8 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Query, UseInterceptors,
+  Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
@@ -14,6 +15,7 @@ import { ROUTES } from '../../../common/constants/routes.constant';
 import { UpdateAmostraAnaliseExternaDto } from './dto/update-amostra-analise-externa.dto';
 import { AmostraAnaliseExternaQueryDto } from './dto/amostra-analise-externa-query.dto';
 import { CacheInterceptor } from '../../../common/interceptors/cache.interceptor';
+import { UpdateManyDto } from './dto/update-many.dto';
 
 const { AMOSTRAS_ANALISE_EXTERNA } = ROUTES;
 
@@ -29,11 +31,11 @@ export class AmostraAnaliseExternaController {
     return this.amostraLabExternoService.findAll(query);
   }
 
-
   @UseInterceptors(CacheInterceptor)
   @Get(AMOSTRAS_ANALISE_EXTERNA.GET.DASHBOARD_COMPLETO)
   async getDashboardCompleto(
-    @Query('laboratorioId', new ParseIntPipe({ optional: true })) laboratorioId?: number,
+    @Query('laboratorioId', new ParseIntPipe({ optional: true }))
+    laboratorioId?: number,
     @Query('dataInicio') dataInicio?: string,
     @Query('dataFim') dataFim?: string,
   ) {
@@ -45,6 +47,11 @@ export class AmostraAnaliseExternaController {
     return this.amostraLabExternoService.getDashboardCompleto(filtros);
   }
 
+  @Patch(AMOSTRAS_ANALISE_EXTERNA.PATCH.UPDATE_MANY)
+  updateMany(@Body() dto: UpdateManyDto) {
+    return this.amostraLabExternoService.updateMany(dto);
+  }
+
   @Patch(AMOSTRAS_ANALISE_EXTERNA.PATCH.UPDATE)
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -52,6 +59,4 @@ export class AmostraAnaliseExternaController {
   ) {
     return this.amostraLabExternoService.update(id, dto);
   }
-
-
 }
