@@ -62,11 +62,18 @@ export class UploadService {
       const elementos: string[] = [];
       const unidades: string[] = [];
 
-      for (let col = settings.elementosStartColumn; col < elementosRow.length; col++) {
+      for (
+        let col = settings.elementosStartColumn;
+        col < elementosRow.length;
+        col++
+      ) {
         const elemento = elementosRow[col];
         const unidade = unidadesRow[col];
 
-        if (elemento && !settings.ignoreElementNames.includes(String(elemento).trim())) {
+        if (
+          elemento &&
+          !settings.ignoreElementNames.includes(String(elemento).trim())
+        ) {
           elementos.push(String(elemento).trim());
           unidades.push(unidade ? String(unidade).trim() : '');
         }
@@ -74,16 +81,23 @@ export class UploadService {
 
       const amostras: FileAmostraResponse[] = [];
 
-      for (let i = headerRowIndex + settings.unidadesRowOffset; i < data.length; i++) {
+      for (
+        let i = headerRowIndex + settings.unidadesRowOffset;
+        i < data.length;
+        i++
+      ) {
         const row = data[i];
         if (!row) continue;
 
         // Verifica se a linha é do tipo esperado
-        if (row[settings.headerSearch.columnIndex] !== settings.sampleTypeValue) continue;
+        if (row[settings.headerSearch.columnIndex] !== settings.sampleTypeValue)
+          continue;
 
         // Extrair Sample ID
         const sampleId = String(
-          row[settings.headerSearch.columnIndex + settings.sampleIdColumnOffset] || '',
+          row[
+            settings.headerSearch.columnIndex + settings.sampleIdColumnOffset
+          ] || '',
         ).trim();
 
         // Filtro 1: verificar se contém data
@@ -101,10 +115,15 @@ export class UploadService {
           const valorCell = row[col + settings.elementosStartColumn];
           let valor = '';
 
-          if (valorCell !== undefined && valorCell !== null && valorCell !== '') {
-            valor = typeof valorCell === 'number'
-              ? valorCell.toString().replace('.', ',')
-              : String(valorCell).trim();
+          if (
+            valorCell !== undefined &&
+            valorCell !== null &&
+            valorCell !== ''
+          ) {
+            valor =
+              typeof valorCell === 'number'
+                ? valorCell.toString().replace('.', ',')
+                : String(valorCell).trim();
           }
 
           if (valor && valor !== '--') {
@@ -126,7 +145,9 @@ export class UploadService {
 
       return { amostras };
     } catch (error) {
-      throw new BadRequestException(`Erro ao processar arquivo: ${error.message}`);
+      throw new BadRequestException(
+        `Erro ao processar arquivo: ${error.message}`,
+      );
     }
   }
 
@@ -177,10 +198,24 @@ export class UploadService {
 
   async adicionaResultado(buffer: Buffer, config?: UploadConfig) {
     const formatData = (data: string): string => {
+      if (!data || typeof data !== 'string' || data.trim() === '') {
+        return '';
+      }
       const fData = data.trim().replaceAll('/', '-');
-      let [dia, mes, ano] = fData.split('-');
-      if(ano.length == 2) ano =`20${ano}`;
-      return `${ano}-${mes}-${dia}`;
+      const parts = fData.split('-');
+      const currentYear = new Date().getFullYear();
+      if (parts.length === 3) {
+        let [dia, mes, ano] = parts;
+        if (ano.length === 2) {
+          ano = `20${ano}`;
+        }
+        return `${ano}-${mes}-${dia}`;
+      }
+      if (parts.length === 2) {
+        const [dia, mes] = parts;
+        return `${currentYear}-${mes}-${dia}`;
+      }
+      return '';
     };
 
     const amostrasBuffer = this.processExcel(buffer, config).amostras;
