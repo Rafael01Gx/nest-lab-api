@@ -28,7 +28,6 @@ export class UploadService {
       hasDateConfig: true,
       hasValuesConfig: [],
     };
-
     const settings = { ...defaultConfig, ...config };
 
     try {
