@@ -4,17 +4,24 @@ import {
   UploadedFile,
   UseInterceptors,
   BadRequestException,
+  Body,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
+import { ROUTES } from '../../common/constants/routes.constant';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Role } from '@prisma/client';
+import { UploadConfig } from './interfaces/upload.interface';
 
-@Controller('upload')
+const {UPLOAD} = ROUTES;
+@Roles(Role.ADMIN, Role.OPERADOR)
+@Controller(UPLOAD.BASE)
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
-  @Post('analise')
+  @Post(UPLOAD.POST.UPLOAD_RESULTADO)
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
+  uploadFileResultado(@UploadedFile() file: Express.Multer.File, @Body('config') config:UploadConfig) {
     if (!file) {
       throw new BadRequestException('Nenhum arquivo enviado');
     }
@@ -30,6 +37,6 @@ export class UploadController {
       );
     }
 
-    return this.uploadService.adicionaResultado(file.buffer);
+    return this.uploadService.adicionaResultado(file.buffer,config);
   }
 }
