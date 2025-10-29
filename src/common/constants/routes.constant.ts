@@ -62,6 +62,7 @@ export const ROUTES = {
       CREATE: '',
     },
     PATCH: {
+      UPDATE_MANY: '',
       UPDATE: ':id',
     },
     DELETE: {
@@ -244,6 +245,25 @@ export const ROUTES = {
     },
     DELETE: {
       DELETE: ':id',
+    },
+  },
+
+  UPLOAD: {
+    BASE: 'upload',
+    GET: {
+      GET_ALL: '',
+      GET_BY_ID: '',
+    },
+    POST: {
+      UPLOAD_RESULTADO: 'analise',
+
+    },
+    PATCH: {
+      UPDATE: '',
+      UPDATE_STATUS: '',
+    },
+    DELETE: {
+      DELETE: '',
     },
   },
 };
