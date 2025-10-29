@@ -218,7 +218,8 @@ export class UploadService {
       return '';
     };
 
-    const amostrasBuffer = this.processExcel(buffer, config).amostras;
+    const resultadoProcessamento = this.processExcel(buffer, config);
+    const amostrasBuffer = resultadoProcessamento?.amostras ?? [];
 
     const promises = amostrasBuffer.map(async (a) => {
       const query = {
