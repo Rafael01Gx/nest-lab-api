@@ -168,7 +168,7 @@ export class UploadService {
   } {
     const dataRegex = '\\d{2}[-/]\\d{2}(?:[-/]\\d{2,4})?';
     const regexComIntervalo = new RegExp(
-      `^(.*?)\\s+(${dataRegex})\\s*a\\s*(${dataRegex})$`,
+      `^(.*?)\\s+(${dataRegex})\\s*[aáà]\\s*(${dataRegex})$`,
       'i',
     );
     const regexDataUnica = new RegExp(`^(.*?)\\s+(${dataRegex})$`, 'i');
