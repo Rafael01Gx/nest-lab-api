@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateAmostraAnaliseExternaDto } from '../dto/update-amostra-analise-externa.dto';
 import {
+  ElementoResultado,
   EstatisticasGerais,
   FiltrosAnalytics,
   IAmostraAnaliseExterna,
@@ -12,7 +13,7 @@ import { InputJsonValue, JsonValue } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AmostraAnaliseExternaRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async findAll(query: AmostraAnaliseExternaQueryDto): Promise<any> {
     const {
@@ -31,11 +32,11 @@ export class AmostraAnaliseExternaRepository {
       ...(labExternoId && { remessaLabExternoId: labExternoId }),
       ...(dataInicio &&
         dataFim && {
-          createdAt: {
-            gte: new Date(dataInicio),
-            lte: new Date(dataFim),
-          },
-        }),
+        createdAt: {
+          gte: new Date(dataInicio),
+          lte: new Date(dataFim),
+        },
+      }),
       ...(analiseConcluida && { analiseConcluida }),
     };
 
@@ -66,6 +67,69 @@ export class AmostraAnaliseExternaRepository {
         totalPages: Math.ceil(total / limit),
         currentPage: page,
         perPage: limit,
+      },
+    };
+  }
+
+  async findAllWithResults(query: AmostraAnaliseExternaQueryDto): Promise<any> {
+    const {
+      amostraName,
+      labExternoId,
+      dataFim,
+      dataInicio,
+      page = 1,
+      limit = 100,
+      analiseConcluida = true,
+    } = query;
+    const skip = (page - 1) * limit;
+
+    const where: any = {
+      ...(amostraName && { amostraName }),
+      ...(labExternoId && { remessaLabExternoId: labExternoId }),
+      ...(dataInicio &&
+        dataFim && {
+        createdAt: {
+          gte: new Date(dataInicio),
+          lte: new Date(dataFim),
+        },
+      }),
+      ...(analiseConcluida && { analiseConcluida }),
+    };
+
+    const [amostras, total] = await this.prisma.$transaction([
+      this.prisma.amostraAnaliseExterna.findMany({
+        where,
+        include: {
+          RemessaLabExterno: {
+            select: {
+              data: true,
+              destino: true,
+            },
+          },
+        },
+        skip,
+        take: limit,
+        orderBy: { id: 'desc' },
+      }),
+      this.prisma.amostraAnaliseExterna.count({
+        where,
+      }),
+    ]);
+
+    const todosElementos = amostras.flatMap((amostra: any) =>
+      amostra.elementosAnalisados.map(e => e.elemento)
+    );
+    const elements = Array.from(new Set(todosElementos));
+
+
+    return {
+      data: amostras,
+      meta: {
+        total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        perPage: limit,
+        elements,
       },
     };
   }
@@ -416,8 +480,8 @@ export class AmostraAnaliseExternaRepository {
       taxaConclusao:
         remessa.totalAmostras > 0
           ? Math.round(
-              (remessa.amostrasCompletas / remessa.totalAmostras) * 100,
-            )
+            (remessa.amostrasCompletas / remessa.totalAmostras) * 100,
+          )
           : 0,
     }));
 

@@ -71,3 +71,9 @@ export interface FiltrosAnalytics {
   analiseConcluida?: boolean;
 }
 
+export interface ElementoResultado {
+  elemento: string;
+  valor: string;
+  unidade: string;
+}
+

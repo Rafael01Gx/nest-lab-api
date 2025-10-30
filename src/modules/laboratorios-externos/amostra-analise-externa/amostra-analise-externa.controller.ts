@@ -30,6 +30,11 @@ export class AmostraAnaliseExternaController {
   findAll(@Query() query: AmostraAnaliseExternaQueryDto) {
     return this.amostraLabExternoService.findAll(query);
   }
+  
+  @Get(AMOSTRAS_ANALISE_EXTERNA.GET.FIND_ALL_WITH_RESULTS)
+  findAllWithResults(@Query() query: AmostraAnaliseExternaQueryDto) {
+    return this.amostraLabExternoService.findAllWithResults(query);
+  }
 
   @UseInterceptors(CacheInterceptor)
   @Get(AMOSTRAS_ANALISE_EXTERNA.GET.DASHBOARD_COMPLETO)
