@@ -89,7 +89,7 @@ export class AmostraAnaliseExternaRepository {
       ...(dataInicio &&
         dataFim && {
         createdAt: {
-          gte: new Date(dataInicio),
+          gte: new Date(dataInicio), 
           lte: new Date(dataFim),
         },
       }),
