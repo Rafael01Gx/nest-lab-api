@@ -2,14 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateAmostraAnaliseExternaDto } from '../dto/update-amostra-analise-externa.dto';
 import {
-  ElementoResultado,
   EstatisticasGerais,
   FiltrosAnalytics,
   IAmostraAnaliseExterna,
 } from '../interfaces/amostra-analise-externa.interface';
 import { AmostraAnaliseExternaQueryDto } from '../dto/amostra-analise-externa-query.dto';
 import { Prisma } from '@prisma/client';
-import { InputJsonValue, JsonValue } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class AmostraAnaliseExternaRepository {
@@ -84,7 +82,9 @@ export class AmostraAnaliseExternaRepository {
     const skip = (page - 1) * limit;
 
     const where: any = {
-      ...(amostraName && { amostraName }),
+      ...(amostraName && { amostraName : {
+        contains : amostraName 
+      } }),
       ...(labExternoId && { remessaLabExternoId: labExternoId }),
       ...(dataInicio &&
         dataFim && {
@@ -103,7 +103,12 @@ export class AmostraAnaliseExternaRepository {
           RemessaLabExterno: {
             select: {
               data: true,
-              destino: true,
+              destino: {
+                select: {
+                  id:true,
+                  nome:true,
+                }
+              },
             },
           },
         },
