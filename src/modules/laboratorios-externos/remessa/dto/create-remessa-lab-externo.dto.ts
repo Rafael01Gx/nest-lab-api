@@ -15,8 +15,7 @@ export class CreateRemessaLabExternoDto {
     message: 'A data de envio não pode ficar em branco.',
   })
   @IsDate()
-  @Transform(({value})=> (value as Date).setHours(12,0,0,0))
-  @Type(() => Date)
+  @Transform(({value})=> new Date(value + 'T00:00:00'))
   data: Date;
 
   @IsNotEmpty({
