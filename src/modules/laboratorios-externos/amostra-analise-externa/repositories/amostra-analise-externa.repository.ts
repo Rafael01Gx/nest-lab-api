@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateAmostraAnaliseExternaDto } from '../dto/update-amostra-analise-externa.dto';
 import {
+  ElementoResultado,
   EstatisticasGerais,
   FiltrosAnalytics,
   IAmostraAnaliseExterna,
@@ -69,6 +70,70 @@ export class AmostraAnaliseExternaRepository {
     };
   }
 
+  async update(id: number, dto: UpdateAmostraAnaliseExternaDto): Promise<any> {
+    const amostra = await this.prisma.amostraAnaliseExterna.update({
+      where: { id },
+      data: {
+        analiseConcluida: dto.analiseConcluida,
+        elementosAnalisados: dto.elementosAnalisados,
+      },
+      include: { analiseAlcalisZinco: true },
+    });
+
+    if (dto.analiseConcluida && dto.elementosAnalisados?.length) {
+      const ELEMENTOS_VALIDOS = ["K2O", "NA2O", "ZN"];
+      const elementos = (dto.elementosAnalisados as ElementoResultado[]).reduce((acc, el) => {
+        const elementoPadronizado = String(el.elemento).trim().toUpperCase();
+        if (ELEMENTOS_VALIDOS.includes(elementoPadronizado)) {
+          const unidade = el.unidade?.trim().toLocaleUpperCase();
+          let value = el.valor?.trim().replace(',', '.');
+          if (value.includes("<")) {
+            value = value.replace("<", "");
+            value = `${Number(value) - 0.0001}`
+          }
+          if (unidade == "PPM") {
+            value = `${Number(value) / 10000}`
+          }
+          acc[el.elemento] = value ?? null;
+        }
+        return acc;
+      }, {} as Record<string, string | null>);
+
+
+      if (Object.keys(elementos).length > 0) {
+        await this.prisma.analiseAlcalisZinco.upsert({
+          where: { amostraAnaliseExternaId: amostra.id },
+          create: {
+            amostraAnaliseExternaId: amostra.id,
+            amostraName: amostra.amostraName,
+            dataInicio: new Date(amostra.dataInicio + 'T03:00:00.000Z'),
+            dataFim: new Date(amostra.dataFim + 'T03:00:00.000Z'),
+            K2O: elementos.K2O ?? null,
+            Na2O: elementos.Na2O ?? null,
+            Zn: elementos.Zn ?? null,
+          },
+          update: {
+            amostraName: amostra.amostraName,
+            dataInicio: new Date(amostra.dataInicio + 'T03:00:00.000Z'),
+            dataFim: new Date(amostra.dataFim + 'T03:00:00.000Z'),
+            K2O: elementos.K2O ?? null,
+            Na2O: elementos.Na2O ?? null,
+            Zn: elementos.Zn ?? null,
+          },
+        });
+      }
+    } else if (!dto.analiseConcluida) {
+
+      await this.prisma.analiseAlcalisZinco.deleteMany({
+        where: { amostraAnaliseExternaId: amostra.id },
+      });
+    }
+
+    return amostra;
+  }
+
+
+
   async findAllWithResults(query: AmostraAnaliseExternaQueryDto): Promise<any> {
     const {
       amostraName,
@@ -82,14 +147,16 @@ export class AmostraAnaliseExternaRepository {
     const skip = (page - 1) * limit;
 
     const where: any = {
-      ...(amostraName && { amostraName : {
-        contains : amostraName 
-      } }),
+      ...(amostraName && {
+        amostraName: {
+          contains: amostraName
+        }
+      }),
       ...(labExternoId && { remessaLabExternoId: labExternoId }),
       ...(dataInicio &&
         dataFim && {
         createdAt: {
-          gte: new Date(dataInicio), 
+          gte: new Date(dataInicio),
           lte: new Date(dataFim),
         },
       }),
@@ -105,8 +172,8 @@ export class AmostraAnaliseExternaRepository {
               data: true,
               destino: {
                 select: {
-                  id:true,
-                  nome:true,
+                  id: true,
+                  nome: true,
                 }
               },
             },
@@ -162,16 +229,6 @@ export class AmostraAnaliseExternaRepository {
             destino: true,
           },
         },
-      },
-    });
-  }
-
-  async update(id: number, dto: UpdateAmostraAnaliseExternaDto): Promise<any> {
-    return this.prisma.amostraAnaliseExterna.update({
-      where: { id },
-      data: {
-        analiseConcluida: dto.analiseConcluida,
-        elementosAnalisados: dto.elementosAnalisados,
       },
     });
   }
@@ -626,7 +683,18 @@ export class AmostraAnaliseExternaRepository {
       },
     };
   }
+
+
 }
+// async update(id: number, dto: UpdateAmostraAnaliseExternaDto): Promise<any> {
+//   return this.prisma.amostraAnaliseExterna.update({
+//     where: { id },
+//     data: {
+//       analiseConcluida: dto.analiseConcluida,
+//       elementosAnalisados: dto.elementosAnalisados,
+//     },
+//   });
+// }
 
 // `SELECT *
 //    FROM AmostraAnaliseExterna

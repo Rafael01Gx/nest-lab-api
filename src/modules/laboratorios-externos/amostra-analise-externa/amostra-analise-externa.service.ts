@@ -32,6 +32,8 @@ export class AmostraAnaliseExternaService {
     await this.amostraExists(id);
     return this.amostraAnaliseExternaRepository.update(id, dto);
   }
+
+  
   async updateMany(dto: UpdateManyDto): Promise<IAmostraAnaliseExterna[]> {
     const allPromisse = dto.amostras.map(async (amostra) => {
       if (!amostra.id) {

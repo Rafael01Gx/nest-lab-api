@@ -184,12 +184,27 @@ model AmostraAnaliseExterna {
   updatedAt            DateTime          @updatedAt
   remessaLabExternoId  Int
   RemessaLabExterno    RemessaLabExterno @relation(fields: [remessaLabExternoId], references: [id], onDelete: Cascade)
+  analiseAlcalisZinco        AnaliseAlcalisZinco?
 
   @@index([remessaLabExternoId])
   @@index([analiseConcluida])
   @@index([createdAt])
   @@index([remessaLabExternoId, analiseConcluida])
   @@index([remessaLabExternoId], map: "AmostraAnaliseExterna_remessaLabExternoId_fkey")
+}
+
+model AnaliseAlcalisZinco {
+  id                      Int                   @id @default(autoincrement())
+  amostraAnaliseExternaId Int                   @unique
+  amostra                 AmostraAnaliseExterna @relation(fields: [amostraAnaliseExternaId], references: [id], onDelete: Cascade)
+  amostraName             String
+  dataInicio              DateTime
+  dataFim                 DateTime
+  K2O                     String?
+  Na2O                    String?
+  Zn                      String?
+  createdAt               DateTime              @default(now())
+  updatedAt               DateTime              @updatedAt
 }
 
 enum Role {
