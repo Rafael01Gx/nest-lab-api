@@ -3,9 +3,10 @@ import { PrismaModule } from 'src/prisma/prisma.module';
 import { AmostraAnaliseExternaRepository } from './repositories/amostra-analise-externa.repository';
 import { AmostraAnaliseExternaController } from './amostra-analise-externa.controller';
 import { AmostraAnaliseExternaService } from './amostra-analise-externa.service';
+import { AnaliseAlcalisZincoRepository } from './repositories/analise-alcalis-zinco.repository';
 
 @Module({
-  providers: [AmostraAnaliseExternaService, AmostraAnaliseExternaRepository],
+  providers: [AmostraAnaliseExternaService, AmostraAnaliseExternaRepository, AnaliseAlcalisZincoRepository],
   controllers: [AmostraAnaliseExternaController],
   imports: [PrismaModule],
   exports: [AmostraAnaliseExternaRepository],

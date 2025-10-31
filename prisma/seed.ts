@@ -58,20 +58,20 @@ async function main() {
     { id: 2, elementName: 'Matérias voláteis', simbolo: 'Mv' },
     { id: 3, elementName: 'C.fixo', simbolo: 'Cf' },
     { id: 4, elementName: 'Ferro', simbolo: 'Fe' },
-    { id: 5, elementName: 'Dióxido de Silício', simbolo: 'SiO₂' },
+    { id: 5, elementName: 'Dióxido de Silício', simbolo: 'SiO2' },
     { id: 6, elementName: 'Óxido Ferroso', simbolo: 'FeO' },
-    { id: 7, elementName: 'Óxido Férrico', simbolo: 'Fe₂O₃' },
+    { id: 7, elementName: 'Óxido Férrico', simbolo: 'Fe2O3' },
     { id: 8, elementName: 'Óxido de Cálcio', simbolo: 'CaO' },
-    { id: 9, elementName: 'Óxido de Alumínio', simbolo: 'Al₂O₃' },
+    { id: 9, elementName: 'Óxido de Alumínio', simbolo: 'Al2O3' },
     { id: 10, elementName: 'Óxido de Magnésio', simbolo: 'MgO' },
-    { id: 11, elementName: 'Óxido de Potássio', simbolo: 'K₂O' },
-    { id: 12, elementName: 'Óxido de Sódio', simbolo: 'Na₂O' },
+    { id: 11, elementName: 'Óxido de Potássio', simbolo: 'K2O' },
+    { id: 12, elementName: 'Óxido de Sódio', simbolo: 'Na2O' },
     { id: 13, elementName: 'Zinco', simbolo: 'Zn' },
     { id: 14, elementName: 'Cromo', simbolo: 'Cr' },
     { id: 15, elementName: 'Manganês', simbolo: 'Mn' },
     { id: 16, elementName: 'PPC', simbolo: 'PPC' },
     { id: 17, elementName: 'Fósforo', simbolo: 'P' },
-    { id: 18, elementName: 'Dióxido de Titânio', simbolo: 'TiO₂' },
+    { id: 18, elementName: 'Dióxido de Titânio', simbolo: 'TiO2' },
     { id: 19, elementName: 'Enxofre', simbolo: 'S' },
     { id: 20, elementName: 'Carbono', simbolo: 'C' },
   ];
@@ -79,7 +79,7 @@ async function main() {
   for (const elemento of elementosData) {
     await prisma.elementoQuimico.upsert({
       where: { id: elemento.id },
-      update: {},
+      update: elemento,
       create: elemento,
     });
   }
