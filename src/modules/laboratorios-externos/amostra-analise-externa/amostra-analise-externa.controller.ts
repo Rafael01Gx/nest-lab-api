@@ -30,6 +30,11 @@ export class AmostraAnaliseExternaController {
   findAll(@Query() query: AmostraAnaliseExternaQueryDto) {
     return this.amostraLabExternoService.findAll(query);
   }
+
+  @Get(AMOSTRAS_ANALISE_EXTERNA.GET.FIND_ALL_ALCALIS_ZINCO)
+  findAllAlcalisZinco(@Query() query: AmostraAnaliseExternaQueryDto) {
+    return this.amostraLabExternoService.findAllAlcalisZinco(query);
+  }
   
   @Get(AMOSTRAS_ANALISE_EXTERNA.GET.FIND_ALL_WITH_RESULTS)
   findAllWithResults(@Query() query: AmostraAnaliseExternaQueryDto) {

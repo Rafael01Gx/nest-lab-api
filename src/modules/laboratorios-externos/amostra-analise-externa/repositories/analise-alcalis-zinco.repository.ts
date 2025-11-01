@@ -5,12 +5,13 @@ import {
     ElementoResultado,
     IAmostraAnaliseExterna,
 } from '../interfaces/amostra-analise-externa.interface';
+import { AmostraAnaliseExternaQueryDto } from '../dto/amostra-analise-externa-query.dto';
 
 @Injectable()
 export class AnaliseAlcalisZincoRepository {
     constructor(private readonly prisma: PrismaService) { }
 
-    async upsert(amostra: IAmostraAnaliseExterna, elementos: any) {
+    async upsert(amostra: IAmostraAnaliseExterna, elementos: any): Promise<any> {
         await this.prisma.analiseAlcalisZinco.upsert({
             where: { amostraAnaliseExternaId: amostra.id },
             create: {
@@ -33,7 +34,54 @@ export class AnaliseAlcalisZincoRepository {
         });
     }
 
-    async deleteMany(id: number) {
+    async findAll(query: AmostraAnaliseExternaQueryDto): Promise<any> {
+        const {
+            amostraName,
+            dataFim,
+            dataInicio,
+            page = 1,
+            limit = 20,
+        } = query;
+        const skip = (page - 1) * limit;
+
+        const where: any = {
+            ...(amostraName && { amostraName }),
+            ...(dataInicio && {
+                dataInicio: {
+                    gte: new Date(dataInicio),
+                },
+            }),
+            ...(dataFim && {
+                dataFim: {
+                    lte: new Date(dataFim),
+                },
+            }),
+        };
+
+        const [amostras, total] = await this.prisma.$transaction([
+            this.prisma.analiseAlcalisZinco.findMany({
+                where,
+                skip,
+                take: limit,
+                orderBy: { id: 'desc' },
+            }),
+            this.prisma.amostraAnaliseExterna.count({
+                where,
+            }),
+        ]);
+
+        return {
+            data: amostras,
+            meta: {
+                total,
+                totalPages: Math.ceil(total / limit),
+                currentPage: page,
+                perPage: limit,
+            },
+        };
+    }
+
+    async deleteMany(id: number): Promise<any> {
         await this.prisma.analiseAlcalisZinco.deleteMany({
             where: { amostraAnaliseExternaId: id },
         });

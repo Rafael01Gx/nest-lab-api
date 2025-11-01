@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdateAmostraAnaliseExternaDto } from '../dto/update-amostra-analise-externa.dto';
 import {
-  ElementoResultado,
   EstatisticasGerais,
   FiltrosAnalytics,
   IAmostraAnaliseExterna,
@@ -80,7 +79,6 @@ export class AmostraAnaliseExternaRepository {
       include: { analiseAlcalisZinco: true },
     });
   }
-
 
   async findAllWithResults(query: AmostraAnaliseExternaQueryDto): Promise<any> {
     const {

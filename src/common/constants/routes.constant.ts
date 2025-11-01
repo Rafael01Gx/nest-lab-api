@@ -57,7 +57,8 @@ export const ROUTES = {
     GET: {
       FIND_ALL: '',
       DASHBOARD_COMPLETO: 'dashboard',
-      FIND_ALL_WITH_RESULTS:'resultados'
+      FIND_ALL_WITH_RESULTS:'resultados',
+      FIND_ALL_ALCALIS_ZINCO:'alcaliszinco'
     },
     POST: {
       CREATE: '',

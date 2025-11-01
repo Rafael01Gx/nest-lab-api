@@ -22,10 +22,17 @@ export class AmostraAnaliseExternaService {
   ): Promise<IAmostraAnaliseExterna[]> {
     return this.amostraAnaliseExternaRepository.findAll(query);
   }
+
   async findAllWithResults(
     query: AmostraAnaliseExternaQueryDto,
   ): Promise<IAmostraAnaliseExterna[]> {
     return this.amostraAnaliseExternaRepository.findAllWithResults(query);
+  }
+
+  async findAllAlcalisZinco(
+    query: AmostraAnaliseExternaQueryDto,
+  ): Promise<IAmostraAnaliseExterna[]> {
+    return this.analiseAlcalisZincoRepository.findAll(query);
   }
 
   async update(
