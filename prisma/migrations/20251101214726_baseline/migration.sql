@@ -9,6 +9,7 @@ CREATE TABLE `User` (
     `funcao` VARCHAR(191) NOT NULL DEFAULT '',
     `authorization` BOOLEAN NOT NULL DEFAULT false,
     `role` ENUM('Usuário', 'Operador', 'Administrador') NOT NULL DEFAULT 'Usuário',
+    `receives_email` BOOLEAN NOT NULL DEFAULT true,
     `passwordResetToken` VARCHAR(191) NULL,
     `passwordResetExpires` DATETIME(3) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
@@ -27,6 +28,7 @@ CREATE TABLE `Notifications` (
     `read` BOOLEAN NOT NULL DEFAULT false,
     `userId` VARCHAR(191) NOT NULL,
 
+    INDEX `Notifications_userId_fkey`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -52,6 +54,7 @@ CREATE TABLE `ParametrosAnalise` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    INDEX `ParametrosAnalise_tipoAnaliseId_fkey`(`tipoAnaliseId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -63,6 +66,7 @@ CREATE TABLE `ConfiguracaoAnalise` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    INDEX `ConfiguracaoAnalise_tipoAnaliseId_fkey`(`tipoAnaliseId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -95,6 +99,8 @@ CREATE TABLE `Amostra` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    INDEX `Amostra_numeroOs_fkey`(`numeroOs`),
+    INDEX `Amostra_userId_fkey`(`userId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -111,6 +117,7 @@ CREATE TABLE `OrdemServico` (
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    INDEX `OrdemServico_solicitanteId_fkey`(`solicitanteId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -119,19 +126,6 @@ CREATE TABLE `ElementoQuimico` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `elementName` VARCHAR(191) NOT NULL DEFAULT '',
     `simbolo` VARCHAR(191) NOT NULL DEFAULT '',
-    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `updatedAt` DATETIME(3) NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `LaboratorioExterno` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `nome` VARCHAR(191) NOT NULL,
-    `endereco` JSON NOT NULL,
-    `telefone` VARCHAR(191) NOT NULL DEFAULT '',
-    `email` VARCHAR(191) NOT NULL DEFAULT '',
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -149,13 +143,31 @@ CREATE TABLE `AmostraLabExterno` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `LaboratorioExterno` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `nome` VARCHAR(191) NOT NULL,
+    `endereco` JSON NOT NULL,
+    `telefone` VARCHAR(191) NOT NULL DEFAULT '',
+    `email` VARCHAR(191) NOT NULL DEFAULT '',
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    INDEX `LaboratorioExterno_nome_idx`(`nome`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `RemessaLabExterno` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `data` VARCHAR(191) NOT NULL,
+    `data` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `destinoId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
+    INDEX `RemessaLabExterno_destinoId_idx`(`destinoId`),
+    INDEX `RemessaLabExterno_data_idx`(`data`),
+    INDEX `RemessaLabExterno_destinoId_data_idx`(`destinoId`, `data`),
+    INDEX `RemessaLabExterno_destinoId_fkey`(`destinoId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -173,6 +185,28 @@ CREATE TABLE `AmostraAnaliseExterna` (
     `updatedAt` DATETIME(3) NOT NULL,
     `remessaLabExternoId` INTEGER NOT NULL,
 
+    INDEX `AmostraAnaliseExterna_remessaLabExternoId_idx`(`remessaLabExternoId`),
+    INDEX `AmostraAnaliseExterna_analiseConcluida_idx`(`analiseConcluida`),
+    INDEX `AmostraAnaliseExterna_createdAt_idx`(`createdAt`),
+    INDEX `AmostraAnaliseExterna_remessaLabExternoId_analiseConcluida_idx`(`remessaLabExternoId`, `analiseConcluida`),
+    INDEX `AmostraAnaliseExterna_remessaLabExternoId_fkey`(`remessaLabExternoId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `AnaliseAlcalisZinco` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `amostraAnaliseExternaId` INTEGER NOT NULL,
+    `amostraName` VARCHAR(191) NOT NULL,
+    `dataInicio` DATETIME(3) NOT NULL,
+    `dataFim` DATETIME(3) NOT NULL,
+    `K2O` VARCHAR(191) NULL,
+    `Na2O` VARCHAR(191) NULL,
+    `Zn` VARCHAR(191) NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `AnaliseAlcalisZinco_amostraAnaliseExternaId_key`(`amostraAnaliseExternaId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -226,6 +260,9 @@ ALTER TABLE `RemessaLabExterno` ADD CONSTRAINT `RemessaLabExterno_destinoId_fkey
 
 -- AddForeignKey
 ALTER TABLE `AmostraAnaliseExterna` ADD CONSTRAINT `AmostraAnaliseExterna_remessaLabExternoId_fkey` FOREIGN KEY (`remessaLabExternoId`) REFERENCES `RemessaLabExterno`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `AnaliseAlcalisZinco` ADD CONSTRAINT `AnaliseAlcalisZinco_amostraAnaliseExternaId_fkey` FOREIGN KEY (`amostraAnaliseExternaId`) REFERENCES `AmostraAnaliseExterna`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_ConfiguracaoAnaliseToParametrosAnalise` ADD CONSTRAINT `_ConfiguracaoAnaliseToParametrosAnalise_A_fkey` FOREIGN KEY (`A`) REFERENCES `ConfiguracaoAnalise`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
