@@ -9,9 +9,9 @@ import {
 export class AmostraAnaliseExternaQueryDto {
   @IsOptional()
   @Transform(({ value }) => {
-    if(!value) return undefined;
     if (value.toUpperCase() === 'TRUE' || value == 1) return  value = true;
     if (value.toUpperCase() === 'FALSE' || value == 0) return value = false;
+    if(!value) return undefined;
     return undefined;
   })
   @IsBoolean()

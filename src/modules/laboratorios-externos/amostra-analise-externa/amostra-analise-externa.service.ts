@@ -40,6 +40,9 @@ export class AmostraAnaliseExternaService {
     dto: UpdateAmostraAnaliseExternaDto,
   ): Promise<IAmostraAnaliseExterna> {
     await this.amostraExists(id);
+    if(dto.elementosAnalisados?.length! >= 1){
+      dto.analiseConcluida = true
+    }
     const amostra = await this.amostraAnaliseExternaRepository.update(id, dto);
     await this.createAndUpdateAlcalisZinco(dto, amostra);
 

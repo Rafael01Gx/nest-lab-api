@@ -26,8 +26,12 @@ export class AmostraAnaliseExternaRepository {
     const skip = (page - 1) * limit;
 
     const where: any = {
-      ...(amostraName && { amostraName }),
-      ...(labExternoId && { remessaLabExternoId: labExternoId }),
+      ...(amostraName && {
+        amostraName: {
+          contains: amostraName
+        }
+      }),
+      ...(labExternoId && { RemessaLabExterno: { destinoId: labExternoId } }),
       ...(dataInicio &&
         dataFim && {
         createdAt: {
@@ -35,7 +39,7 @@ export class AmostraAnaliseExternaRepository {
           lte: new Date(dataFim),
         },
       }),
-      ...(analiseConcluida && { analiseConcluida }),
+      ...(analiseConcluida != undefined && { analiseConcluida }),
     };
 
     const [amostras, total] = await this.prisma.$transaction([
@@ -98,7 +102,7 @@ export class AmostraAnaliseExternaRepository {
           contains: amostraName
         }
       }),
-      ...(labExternoId && { remessaLabExternoId: labExternoId }),
+      ...(labExternoId && { RemessaLabExterno: { destinoId: labExternoId } }),
       ...(dataInicio &&
         dataFim && {
         createdAt: {

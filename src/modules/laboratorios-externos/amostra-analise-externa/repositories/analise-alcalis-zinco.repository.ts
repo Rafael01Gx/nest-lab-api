@@ -16,7 +16,7 @@ export class AnaliseAlcalisZincoRepository {
             where: { amostraAnaliseExternaId: amostra.id },
             create: {
                 amostraAnaliseExternaId: amostra.id,
-                amostraName: amostra.amostraName,
+                amostraName: amostra.amostraName + " " + amostra.subIdentificacao,
                 dataInicio: new Date(amostra.dataInicio + 'T03:00:00.000Z'),
                 dataFim: new Date(amostra.dataFim + 'T03:00:00.000Z'),
                 K2O: elementos.K2O ?? null,
