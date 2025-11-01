@@ -65,7 +65,7 @@ export class AnaliseAlcalisZincoRepository {
                 take: limit,
                 orderBy: { id: 'desc' },
             }),
-            this.prisma.amostraAnaliseExterna.count({
+            this.prisma.analiseAlcalisZinco.count({
                 where,
             }),
         ]);
