@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { Roles } from 'src/common/decorators/roles.decorator';
 import { Role } from '@prisma/client';
@@ -14,6 +15,7 @@ import { RemessaLabExternoService } from './remessa-lab-externo.service';
 import { UpdateRemessaLabExternoDto } from './dto/update-remessa-lab-externo.dto';
 import { CreateRemessaLabExternoDto } from './dto/create-remessa-lab-externo.dto';
 import { ROUTES } from '../../../common/constants/routes.constant';
+import { QueryDto } from 'src/shared/dto/query.dto';
 
 const { REMESSA_LAB_EXTERNO } = ROUTES;
 
@@ -25,8 +27,8 @@ export class RemessaLabExternoController {
   ) {}
 
   @Get(REMESSA_LAB_EXTERNO.GET.FIND_ALL)
-  findAll() {
-    return this.remessaLabExternoService.findAll();
+  findAll(@Query()query:QueryDto) {
+    return this.remessaLabExternoService.findAll(query);
   }
 
   @Post(REMESSA_LAB_EXTERNO.POST.CREATE)

@@ -3,10 +3,12 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { IRemessaLabExterno } from '../interfaces/remessa-lab-externo.interface';
 import { CreateRemessaLabExternoDto } from '../dto/create-remessa-lab-externo.dto';
 import { UpdateRemessaLabExternoDto } from '../dto/update-remessa-lab-externo.dto';
+import { QueryDto } from 'src/shared/dto/query.dto';
+import { PaginatedResponse } from 'src/shared/dto/interfaces/paginated-response.interface';
 
 @Injectable()
 export class RemessaLabExternoRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async create(dto: CreateRemessaLabExternoDto): Promise<IRemessaLabExterno> {
     const remessa = await this.prisma.remessaLabExterno.create({
@@ -32,8 +34,14 @@ export class RemessaLabExternoRepository {
     return remessa;
   }
 
-  async findAll(): Promise<IRemessaLabExterno[]> {
-    return this.prisma.remessaLabExterno.findMany({
+  async findAll(query: QueryDto): Promise<PaginatedResponse<IRemessaLabExterno[]>> {
+    const { page = 1, limit = 20 } = query;
+    const skip = (page - 1) * limit;
+
+    const [data , total ] = await this.prisma.$transaction([
+      this.prisma.remessaLabExterno.findMany({
+        take:limit,
+        skip,
       include: {
         amostras: true,
         destino: true,
@@ -42,7 +50,19 @@ export class RemessaLabExternoRepository {
       orderBy: {
         id: 'desc',
       },
-    });
+    }),
+    this.prisma.remessaLabExterno.count({})
+    ])
+
+    return {
+      data,
+      meta: {
+        total,
+        totalPages: Math.ceil(total / limit),
+        currentPage: page,
+        perPage: limit,
+      },
+    };
   }
 
   async findById(id: number): Promise<IRemessaLabExterno | null> {

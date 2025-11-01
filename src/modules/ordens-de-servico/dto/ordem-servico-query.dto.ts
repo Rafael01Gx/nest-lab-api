@@ -1,8 +1,9 @@
 import { EStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { QueryDto } from 'src/shared/dto/query.dto';
 
-export class OrdemServicoQueryDto {
+export class OrdemServicoQueryDto extends QueryDto {
   @IsOptional()
   @IsEnum(EStatus, { each: true })
   status?: EStatus[];
@@ -30,14 +31,4 @@ export class OrdemServicoQueryDto {
   @IsOptional()
   @IsString()
   dataFim?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  page?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  limit?: number;
 }

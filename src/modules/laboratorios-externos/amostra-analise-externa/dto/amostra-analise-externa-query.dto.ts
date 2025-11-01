@@ -5,8 +5,9 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
+import { QueryDto } from 'src/shared/dto/query.dto';
 
-export class AmostraAnaliseExternaQueryDto {
+export class AmostraAnaliseExternaQueryDto extends QueryDto {
   @IsOptional()
   @Transform(({ value }) => {
     if (value.toUpperCase() === 'TRUE' || value == 1) return  value = true;
@@ -33,13 +34,4 @@ export class AmostraAnaliseExternaQueryDto {
   @Type(() => Number)
   labExternoId?: number;
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  page?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  limit?: number;
 }

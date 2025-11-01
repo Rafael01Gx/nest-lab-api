@@ -3,6 +3,7 @@ import { RemessaLabExternoRepository } from './repositories/remessa-lab-externo.
 import { UpdateRemessaLabExternoDto } from './dto/update-remessa-lab-externo.dto';
 import { CreateRemessaLabExternoDto } from './dto/create-remessa-lab-externo.dto';
 import { IRemessaLabExterno } from './interfaces/remessa-lab-externo.interface';
+import { QueryDto } from 'src/shared/dto/query.dto';
 
 @Injectable()
 export class RemessaLabExternoService {
@@ -22,8 +23,8 @@ export class RemessaLabExternoService {
     return this.remessaLabExternoRepository.create(dto);
   }
 
-  async findAll(): Promise<IRemessaLabExterno[]> {
-    return this.remessaLabExternoRepository.findAll();
+  async findAll(query:QueryDto): Promise<any> {
+    return this.remessaLabExternoRepository.findAll(query);
   }
 
   async update(
