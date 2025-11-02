@@ -79,7 +79,7 @@ async function main() {
   for (const elemento of elementosData) {
     await prisma.elementoQuimico.upsert({
       where: { id: elemento.id },
-      update: elemento,
+      update: {},
       create: elemento,
     });
   }

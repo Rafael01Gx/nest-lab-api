@@ -4,7 +4,8 @@ import { IRemessaLabExterno } from '../interfaces/remessa-lab-externo.interface'
 import { CreateRemessaLabExternoDto } from '../dto/create-remessa-lab-externo.dto';
 import { UpdateRemessaLabExternoDto } from '../dto/update-remessa-lab-externo.dto';
 import { QueryDto } from 'src/shared/dto/query.dto';
-import { PaginatedResponse } from 'src/shared/dto/interfaces/paginated-response.interface';
+import { PaginatedResponse } from 'src/shared/interfaces/paginated-response.interface';
+
 
 @Injectable()
 export class RemessaLabExternoRepository {

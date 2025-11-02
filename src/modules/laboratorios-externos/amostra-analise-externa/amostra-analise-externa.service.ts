@@ -40,7 +40,7 @@ export class AmostraAnaliseExternaService {
     dto: UpdateAmostraAnaliseExternaDto,
   ): Promise<IAmostraAnaliseExterna> {
     await this.amostraExists(id);
-    if(dto.elementosAnalisados?.length! >= 1){
+    if (dto.elementosAnalisados?.length! >= 1) {
       dto.analiseConcluida = true
     }
     const amostra = await this.amostraAnaliseExternaRepository.update(id, dto);
@@ -74,7 +74,7 @@ export class AmostraAnaliseExternaService {
           return acc;
         }, {} as Record<string, string | null>);
 
-        if (Object.keys(elementos).length > 0 && Object.values(elementos).every((v)=> v !== null)) {
+        if (Object.keys(elementos).length > 0 && Object.values(elementos).every((v) => v !== null)) {
           return this.analiseAlcalisZincoRepository.upsert(amostra, elementos);
         }
 
@@ -93,9 +93,11 @@ export class AmostraAnaliseExternaService {
         throw new HttpException(`Amostra não encontrada`, HttpStatus.NOT_FOUND);
       }
       await this.amostraExists(amostra.id);
-      return this.amostraAnaliseExternaRepository.update(amostra.id, {
+
+      const amostraAtualizada = await this.amostraAnaliseExternaRepository.update(amostra.id, {
         ...amostra,
       });
+      return this.createAndUpdateAlcalisZinco(amostra, amostraAtualizada);
     });
 
     const amostrasUpdated = (await Promise.all(
