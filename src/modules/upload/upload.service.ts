@@ -73,7 +73,7 @@ export class UploadService {
           elemento &&
           !settings.ignoreElementNames.includes(String(elemento).trim())
         ) {
-          elementos.push(String(elemento).trim().split("_")[0];
+          elementos.push(String(elemento).trim().split("_")[0]);
           unidades.push(unidade ? String(unidade).trim() : '');
         }
       }
