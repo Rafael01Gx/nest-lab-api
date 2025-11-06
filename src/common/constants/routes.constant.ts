@@ -235,6 +235,7 @@ export const ROUTES = {
     BASE: 'user',
     GET: {
       GET_ALL: '',
+      GET_ALL_ADMIN:'admins',
       GET_BY_ID: ':id',
     },
     POST: {

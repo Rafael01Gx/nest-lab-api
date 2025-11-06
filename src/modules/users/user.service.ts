@@ -11,7 +11,7 @@ export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly hashingService: HashingServiceProtocol,
-  ) {}
+  ) { }
 
   async create(user: SignUpDto) {
     try {
@@ -42,8 +42,12 @@ export class UserService {
       );
     }
   }
+  async getAllAdmin() {
+    return this.userRepository.getAllAdmin();
+  }
 
   async getById(id: string) {
+    console.log(id)
     try {
       const user = await this.userRepository.getById(id);
       if (!user) {

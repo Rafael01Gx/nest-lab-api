@@ -28,6 +28,12 @@ export class UserController {
     return this.userService.getAll();
   }
 
+    @Roles(Role.ADMIN,Role.OPERADOR)
+  @Get(USER.GET.GET_ALL_ADMIN)
+  getAllAdmin() {
+    return this.userService.getAllAdmin();
+  }
+
   @Get(USER.GET.GET_BY_ID)
   getById(@Param('id') id: string) {
     return this.userService.getById(id);
