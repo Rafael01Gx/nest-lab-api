@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Res } from '@nestjs/common';
 import { SignInDto } from './dto/signin.dto';
 import { SignUpDto } from './dto/signup.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthService } from './auth.service';
 import { Public } from 'src/common/decorators/public.decorator';
 import { Response } from 'express';
@@ -14,7 +16,7 @@ const { AUTH } = ROUTES;
 
 @Controller(AUTH.BASE)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Public()
   @Post(AUTH.POST.LOGIN)
@@ -38,5 +40,18 @@ export class AuthController {
   @Get(AUTH.GET.PROFILE)
   currentUser(@CurrentUser() user: User) {
     return { user };
+  }
+
+
+  @Public()
+  @Post(AUTH.POST.FORGOT_PASSWORD)
+  forgotPassword(@Body() { email }: ForgotPasswordDto) {
+    return this.authService.forgotPassword(email);
+  }
+
+  @Public()
+  @Post(AUTH.POST.RESET_PASSWORD)
+  resetPassword(@Body() body: ResetPasswordDto, @Query('token') token: string) {
+    return this.authService.resetPassword(body.email, body.password, token);
   }
 }

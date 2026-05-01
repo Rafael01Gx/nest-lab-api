@@ -5,6 +5,8 @@ export const ROUTES = {
       LOGIN: 'login',
       REGISTER: 'register',
       LOGOUT: 'logout',
+      FORGOT_PASSWORD: 'forgot-password',
+      RESET_PASSWORD: 'reset-password',
     },
     GET: {
       PROFILE: 'profile',
@@ -57,8 +59,8 @@ export const ROUTES = {
     GET: {
       FIND_ALL: '',
       DASHBOARD_COMPLETO: 'dashboard',
-      FIND_ALL_WITH_RESULTS:'resultados',
-      FIND_ALL_ALCALIS_ZINCO:'alcaliszinco'
+      FIND_ALL_WITH_RESULTS: 'resultados',
+      FIND_ALL_ALCALIS_ZINCO: 'alcaliszinco'
     },
     POST: {
       CREATE: '',
@@ -235,12 +237,11 @@ export const ROUTES = {
     BASE: 'user',
     GET: {
       GET_ALL: '',
-      GET_ALL_ADMIN:'admins',
+      GET_ALL_ADMIN: 'admins',
       GET_BY_ID: ':id',
     },
     POST: {
-      FORGOT_PASSWORD: 'forgot-password',
-      RESET_PASSWORD: 'reset-password',
+
     },
     PATCH: {
       UPDATE: ':id',

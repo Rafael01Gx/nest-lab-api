@@ -7,10 +7,10 @@ import { Role } from '@prisma/client';
 
 @Injectable()
 export class UserRepository {
-  constructor(private prismaService: PrismaService) {}
+  constructor(private prismaService: PrismaService) { }
 
   async create(user: SignUpDto) {
-    return this.prismaService.user.create({ data: { ...user } });
+    return this.prismaService.user.create({ data: { ...user, authorization: true } });
   }
 
   async findByEmail(email: string) {
@@ -65,6 +65,27 @@ export class UserRepository {
         funcao: true,
         authorization: true,
         role: true,
+      },
+    });
+  }
+
+  async updateResetToken(email: string, token: string, expires: Date) {
+    return this.prismaService.user.update({
+      where: { email },
+      data: {
+        passwordResetToken: token,
+        passwordResetExpires: expires,
+      },
+    });
+  }
+
+  async updatePassword(email: string, password: string) {
+    return this.prismaService.user.update({
+      where: { email },
+      data: {
+        password,
+        passwordResetToken: null,
+        passwordResetExpires: null,
       },
     });
   }

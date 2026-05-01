@@ -19,7 +19,9 @@ export class UserService {
       if (userExist) {
         throw new HttpException('Email já cadastrado', HttpStatus.CONFLICT);
       }
+
       user.password = await this.hashingService.hash(user.password);
+
       await this.userRepository.create(user);
       return { message: 'Usuário criado com sucesso.' };
     } catch (err) {
@@ -127,6 +129,7 @@ export class UserService {
       );
     }
   }
+
   async updateStatusAndRole(id: string, user: UpdateUserDto) {
     try {
       const userExist = await this.userRepository.getById(id);

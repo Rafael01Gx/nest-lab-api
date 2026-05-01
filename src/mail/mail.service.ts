@@ -9,6 +9,7 @@ import { newOrderTemplate } from './templates/new-order.template';
 import { IOrdemServico } from 'src/modules/ordens-de-servico/interfaces/ordem-servico.interface';
 import { SignUpDto } from 'src/modules/auth/dto/signup.dto';
 import { ordemConcluidaTemplate } from './templates/ordem-concluida.template.ts';
+import { passwordResetTemplate } from './templates/password-reset.template';
 
 @Injectable()
 export class MailService {
@@ -101,6 +102,25 @@ export class MailService {
         subject: 'Sua Ordem de Serviço foi concluída - LabFísico',
         data: ordem,
         htmlFunction: ordemConcluidaTemplate,
+      });
+    } catch (err) {
+      console.log(err);
+      return;
+    }
+  }
+
+  async sendPasswordResetEmail(
+    email: string,
+    name: string,
+    token: string,
+    url: string,
+  ): Promise<void> {
+    try {
+      await this.sendMailWithHtml({
+        to: email,
+        subject: 'Recuperação de Senha - LabFísico',
+        data: { email, name, token, url },
+        htmlFunction: passwordResetTemplate,
       });
     } catch (err) {
       console.log(err);

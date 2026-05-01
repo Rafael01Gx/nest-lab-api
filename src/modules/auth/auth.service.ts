@@ -9,6 +9,8 @@ import { ConfigType } from '@nestjs/config';
 import { User } from '@prisma/client';
 import { Response } from 'express';
 import { MailService } from 'src/mail/mail.service';
+import { ConfigService } from '@nestjs/config';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +21,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userRepository: UserRepository,
     private readonly mailService: MailService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) { }
 
   async signIn(user: SignInDto, res: Response) {
     const userExists = await this.userRepository.findByEmail(user.email);
@@ -74,6 +77,50 @@ export class AuthService {
     return { message: 'Usuário criado com sucesso!' };
   }
 
+  async forgotPassword(email: string) {
+    const user = await this.userRepository.findByEmail(email);
+    if (!user) {
+      throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = new Date();
+    expires.setHours(expires.getHours() + 1);
+
+    await this.userRepository.updateResetToken(email, token, expires);
+
+    const baseUrl = this.configService.get<string>('WEB_APPLICATION_BASE_URL') ?? 'http://web.rflgx.com.br';
+    await this.mailService.sendPasswordResetEmail(
+      user.email,
+      user.name,
+      token,
+      baseUrl,
+    );
+
+    return { message: 'E-mail de recuperação enviado com sucesso!' };
+  }
+
+  async resetPassword(email: string, password: string, token: string) {
+    const user = await this.userRepository.findByEmail(email);
+
+    if (!user) {
+      throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    if (!user.passwordResetToken || user.passwordResetToken !== token) {
+      throw new HttpException('Token inválido', HttpStatus.BAD_REQUEST);
+    }
+
+    if (!user.passwordResetExpires || user.passwordResetExpires < new Date()) {
+      throw new HttpException('Token expirado', HttpStatus.BAD_REQUEST);
+    }
+
+    const hashedPassword = await this.hashingService.hash(password);
+    await this.userRepository.updatePassword(email, hashedPassword);
+
+    return { message: 'Senha alterada com sucesso!' };
+  }
+
   private async generateToken(user: User) {
     return this.jwtService.signAsync(
       {
@@ -89,12 +136,13 @@ export class AuthService {
       },
       {
         secret: this.jwtConfiguration.secret,
-        expiresIn: this.jwtConfiguration.jwtTl,
+        expiresIn: this.jwtConfiguration.jwtTl as any,
         audience: this.jwtConfiguration.audience,
         issuer: this.jwtConfiguration.issuer,
       },
     );
   }
+
   private async setCookie(user: User, res: Response) {
     const token = await this.generateToken(user);
 
@@ -106,4 +154,6 @@ export class AuthService {
       path: '/',
     });
   }
+
+
 }

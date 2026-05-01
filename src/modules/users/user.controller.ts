@@ -20,7 +20,7 @@ const { USER } = ROUTES;
 
 @Controller(USER.BASE)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Roles(Role.ADMIN)
   @Get(USER.GET.GET_ALL)
@@ -28,7 +28,7 @@ export class UserController {
     return this.userService.getAll();
   }
 
-    @Roles(Role.ADMIN,Role.OPERADOR)
+  @Roles(Role.ADMIN, Role.OPERADOR)
   @Get(USER.GET.GET_ALL_ADMIN)
   getAllAdmin() {
     return this.userService.getAllAdmin();
@@ -60,15 +60,4 @@ export class UserController {
     return this.userService.delete(id);
   }
 
-  @Public()
-  @Post(USER.POST.FORGOT_PASSWORD)
-  forgotPassword() {
-    return 'forgotPassword';
-  }
-
-  @Public()
-  @Post(USER.POST.RESET_PASSWORD)
-  resetPassword() {
-    return 'resetPassword';
-  }
 }
