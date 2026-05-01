@@ -56,85 +56,85 @@ jobs:
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api:buildcache,mode=max
 
-      - name: Deploy no EC2 via Docker Compose
-        if: github.ref_name == 'master'
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd ~/lab-web-infraestrutura
+      # - name: Deploy no EC2 via Docker Compose
+      #   if: github.ref_name == 'master'
+      #   uses: appleboy/ssh-action@v1.0.0
+      #   with:
+      #     host: ${{ secrets.EC2_HOST }}
+      #     username: ubuntu
+      #     key: ${{ secrets.EC2_SSH_KEY }}
+      #     script: |
+      #       cd ~/lab-web-infraestrutura
             
-            # Define qual tag usar baseado no branch
-            if [ "${{ github.ref_name }}" == "docker-build" ]; then
-              IMAGE_TAG="developer"
-              echo "🔧 Deploy do ambiente de DESENVOLVIMENTO"
-            else
-              IMAGE_TAG="latest"
-              echo "🚀 Deploy do ambiente de PRODUÇÃO"
-            fi
+      #       # Define qual tag usar baseado no branch
+      #       if [ "${{ github.ref_name }}" == "docker-build" ]; then
+      #         IMAGE_TAG="developer"
+      #         echo "🔧 Deploy do ambiente de DESENVOLVIMENTO"
+      #       else
+      #         IMAGE_TAG="latest"
+      #         echo "🚀 Deploy do ambiente de PRODUÇÃO"
+      #       fi
             
-            echo "📦 Atualizando backend com a tag: $IMAGE_TAG"
+      #       echo "📦 Atualizando backend com a tag: $IMAGE_TAG"
             
-            # Puxa a nova imagem
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api:$IMAGE_TAG
+      #       # Puxa a nova imagem
+      #       docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nest-lab-api:$IMAGE_TAG
             
-            # Para o container da API (mantém o DB rodando)
-            echo "⏸️  Parando container da API..."
-            docker compose stop api
-            docker compose rm -f api
+      #       # Para o container da API (mantém o DB rodando)
+      #       echo "⏸️  Parando container da API..."
+      #       docker compose stop api
+      #       docker compose rm -f api
             
-            # Recria e inicia o container da API com a nova imagem
-            echo "🔄 Iniciando nova versão da API..."
-            docker compose up -d api
+      #       # Recria e inicia o container da API com a nova imagem
+      #       echo "🔄 Iniciando nova versão da API..."
+      #       docker compose up -d api
             
-            # Aguarda o healthcheck da API
-            echo "⏳ Aguardando a API ficar saudável..."
-            COUNTER=0
-            MAX_ATTEMPTS=30
-            until docker compose ps api | grep -q "healthy" || [ $COUNTER -eq $MAX_ATTEMPTS ]; do
-              sleep 3
-              COUNTER=$((COUNTER+1))
-              echo "Tentativa $COUNTER de $MAX_ATTEMPTS..."
-            done
+      #       # Aguarda o healthcheck da API
+      #       echo "⏳ Aguardando a API ficar saudável..."
+      #       COUNTER=0
+      #       MAX_ATTEMPTS=30
+      #       until docker compose ps api | grep -q "healthy" || [ $COUNTER -eq $MAX_ATTEMPTS ]; do
+      #         sleep 3
+      #         COUNTER=$((COUNTER+1))
+      #         echo "Tentativa $COUNTER de $MAX_ATTEMPTS..."
+      #       done
             
-            if [ $COUNTER -eq $MAX_ATTEMPTS ]; then
-              echo "❌ ERRO: API não ficou saudável após $((MAX_ATTEMPTS*3)) segundos"
-              echo "Últimas 50 linhas do log da API:"
-              docker compose logs --tail=50 api
-              exit 1
-            fi
+      #       if [ $COUNTER -eq $MAX_ATTEMPTS ]; then
+      #         echo "❌ ERRO: API não ficou saudável após $((MAX_ATTEMPTS*3)) segundos"
+      #         echo "Últimas 50 linhas do log da API:"
+      #         docker compose logs --tail=50 api
+      #         exit 1
+      #       fi
             
-            echo "✅ API está saudável!"
+      #       echo "✅ API está saudável!"
             
-            # Verifica se o frontend precisa ser reiniciado (depende da API)
-            echo "🔄 Reiniciando frontend para reconectar com a API..."
-            docker compose restart frontend
+      #       # Verifica se o frontend precisa ser reiniciado (depende da API)
+      #       echo "🔄 Reiniciando frontend para reconectar com a API..."
+      #       docker compose restart frontend
             
-            # Aguarda o frontend
-            echo "⏳ Aguardando frontend..."
-            timeout 60 bash -c 'until docker compose ps frontend | grep -q "healthy"; do sleep 2; done' || echo "⚠️  Timeout esperando healthcheck do frontend"
+      #       # Aguarda o frontend
+      #       echo "⏳ Aguardando frontend..."
+      #       timeout 60 bash -c 'until docker compose ps frontend | grep -q "healthy"; do sleep 2; done' || echo "⚠️  Timeout esperando healthcheck do frontend"
             
-            # Reinicia nginx para garantir conexão
-            echo "🔄 Reiniciando nginx..."
-            docker compose restart nginx
+      #       # Reinicia nginx para garantir conexão
+      #       echo "🔄 Reiniciando nginx..."
+      #       docker compose restart nginx
             
-            # Limpeza de imagens antigas
-            echo "🧹 Limpando imagens antigas..."
-            docker image prune -af
+      #       # Limpeza de imagens antigas
+      #       echo "🧹 Limpando imagens antigas..."
+      #       docker image prune -af
             
-            # Status final
-            echo ""
-            echo "=== 📊 STATUS DOS CONTAINERS ==="
-            docker compose ps
+      #       # Status final
+      #       echo ""
+      #       echo "=== 📊 STATUS DOS CONTAINERS ==="
+      #       docker compose ps
             
-            echo ""
-            echo "=== 📝 ÚLTIMAS 20 LINHAS DO LOG DA API ==="
-            docker compose logs --tail=20 api
+      #       echo ""
+      #       echo "=== 📝 ÚLTIMAS 20 LINHAS DO LOG DA API ==="
+      #       docker compose logs --tail=20 api
             
-            echo ""
-            echo "✅ Deploy concluído com sucesso!"
+      #       echo ""
+      #       echo "✅ Deploy concluído com sucesso!"
       
       - name: Notificar sucesso
         if: success()
