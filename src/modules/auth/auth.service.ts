@@ -103,6 +103,7 @@ export class AuthService {
   async resetPassword(email: string, password: string, token: string) {
     const user = await this.userRepository.findByEmail(email);
 
+    console.log(user?.name);
     if (!user) {
       throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
     }
@@ -114,6 +115,7 @@ export class AuthService {
     if (!user.passwordResetExpires || user.passwordResetExpires < new Date()) {
       throw new HttpException('Token expirado', HttpStatus.BAD_REQUEST);
     }
+
 
     const hashedPassword = await this.hashingService.hash(password);
     await this.userRepository.updatePassword(email, hashedPassword);
