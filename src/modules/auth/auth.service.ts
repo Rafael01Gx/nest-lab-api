@@ -103,7 +103,6 @@ export class AuthService {
   async resetPassword(email: string, password: string, token: string) {
     const user = await this.userRepository.findByEmail(email);
 
-    console.log(user?.name);
     if (!user) {
       throw new HttpException('Usuário não encontrado', HttpStatus.NOT_FOUND);
     }

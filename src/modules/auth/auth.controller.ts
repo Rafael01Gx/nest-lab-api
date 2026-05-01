@@ -52,7 +52,6 @@ export class AuthController {
   @Public()
   @Post(AUTH.POST.RESET_PASSWORD)
   resetPassword(@Body() body: ResetPasswordDto, @Query('token') token: string) {
-    console.log(body.email, body.password, token);
     return this.authService.resetPassword(body.email, body.password, token);
   }
 }
